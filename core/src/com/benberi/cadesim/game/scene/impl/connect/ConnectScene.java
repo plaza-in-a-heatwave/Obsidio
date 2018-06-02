@@ -146,7 +146,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         name.setSize(160, 49);
         name.setPosition(170, 225);
 
-        address = new TextField("cadesim.dejong.cc", style);
+        address = new TextField("iw.rienheuver.nl", style);
         address.setSize(225, 49);
         address.setPosition(370, 225);
 
