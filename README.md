@@ -1,4 +1,4 @@
-# This project is being moved to GitLab. Send me a message if you want access, this repo will be going down soo.
+# This project is being moved to GitLab. Send me a message if you want access, this repo will be going down soon.
 
 ## Obsidio
 A blockade simulator for a game named Puzzle Pirates (Client-side)
