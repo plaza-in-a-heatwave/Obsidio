@@ -10,6 +10,7 @@ public class BlockadeSimulator extends ApplicationAdapter {
 	/**
 	 * The game context
 	 */
+    
 	private GameContext context;
 
 	@Override

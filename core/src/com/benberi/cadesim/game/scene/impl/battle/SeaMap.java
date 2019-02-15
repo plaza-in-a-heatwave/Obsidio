@@ -2,10 +2,7 @@ package com.benberi.cadesim.game.scene.impl.battle;
 
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.GameTile;
-import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.BigRock;
-import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Cell;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.SafeZone;
-import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.SmallRock;
 
 /**
  * Represents a battle arena map

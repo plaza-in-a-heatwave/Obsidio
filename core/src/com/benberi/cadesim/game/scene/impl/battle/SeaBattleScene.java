@@ -1,7 +1,6 @@
 package com.benberi.cadesim.game.scene.impl.battle;
 
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -308,13 +306,13 @@ public class SeaBattleScene implements GameScene {
                         // When ship moving forward, we may not want to use the curve
                         int add = move.getIncrementXForRotation(vessel.getRotationIndex());
                         if (add == -1 || add == 1) {
-                            current.x += (velocityForward * (float) add);
+                            current.x += (velocityForward * add);
                             //current.x += (velocityForward * (float) add);
                         }
                         else {
                             add = move.getIncrementYForRotation(vessel.getRotationIndex());
                             // current.y += (velocityForward * (float) add);
-                            current.y += (velocityForward * (float) add);
+                            current.y += (velocityForward * add);
                         }
                         /// vessel.getAnimation().addStep(velocityForward);
                         vessel.getAnimation().addStep(velocityForward);
@@ -600,7 +598,7 @@ public class SeaBattleScene implements GameScene {
             if (vessel.hasScoreDisplay()) {
                 if (points > 0) {
                     Color color = (context.myVessel.equals(vessel.getName()) || context.myTeam.getID() == vessel.getTeam().getID()) ? Vessel.DEFAULT_BORDER_COLOR.cpy() : vessel.getTeam().getColor().cpy();
-                    color.a = (float) vessel.getScoreDisplayMovement() / 100f;
+                    color.a = vessel.getScoreDisplayMovement() / 100f;
                     if (color.a < 0) {
                         color.a = 0;
                     }

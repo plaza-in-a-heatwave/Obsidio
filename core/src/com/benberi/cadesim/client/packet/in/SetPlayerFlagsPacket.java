@@ -3,7 +3,6 @@ package com.benberi.cadesim.client.packet.in;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.client.codec.util.Packet;
 import com.benberi.cadesim.client.packet.ClientPacketExecutor;
-import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.entity.vessel.FlagSymbol;
 import com.benberi.cadesim.game.entity.vessel.Vessel;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Flag;

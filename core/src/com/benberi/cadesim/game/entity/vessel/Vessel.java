@@ -2,9 +2,7 @@ package com.benberi.cadesim.game.entity.vessel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.benberi.cadesim.GameContext;
@@ -18,7 +16,6 @@ import com.benberi.cadesim.game.entity.vessel.move.VesselMoveTurn;
 import com.benberi.cadesim.game.scene.TextureCollection;
 import com.benberi.cadesim.game.scene.impl.battle.map.GameObject;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.BigRock;
-import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Flag;
 import com.benberi.cadesim.util.OrientationLocation;
 
 import java.util.ArrayList;

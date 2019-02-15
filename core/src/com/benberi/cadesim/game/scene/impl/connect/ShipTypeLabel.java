@@ -1,8 +1,6 @@
 package com.benberi.cadesim.game.scene.impl.connect;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class ShipTypeLabel extends Label {
 

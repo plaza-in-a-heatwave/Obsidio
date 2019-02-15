@@ -11,15 +11,18 @@ public class BigShipHandMove implements HandMove {
 
     private boolean moveTemp;
 
-    public void resetLeft() {
+    @Override
+	public void resetLeft() {
         left = new boolean[2];
     }
 
-    public void resetRight() {
+    @Override
+	public void resetRight() {
         right = new boolean[2];
     }
 
-    public void addLeft() {
+    @Override
+	public void addLeft() {
         if (!left[0]) {
             left[0] = true;
         }
@@ -28,7 +31,8 @@ public class BigShipHandMove implements HandMove {
         }
     }
 
-    public void addRight() {
+    @Override
+	public void addRight() {
         if (!right[0]) {
             right[0] = true;
         }
@@ -36,7 +40,8 @@ public class BigShipHandMove implements HandMove {
             right[1] = true;
         }
     }
-    public void setMove(MoveType move) {
+    @Override
+	public void setMove(MoveType move) {
         this.move = move;
     }
 
@@ -50,15 +55,18 @@ public class BigShipHandMove implements HandMove {
         return moveTemp;
     }
 
-    public MoveType getMove() {
+    @Override
+	public MoveType getMove() {
         return this.move;
     }
 
-    public boolean[] getLeft() {
+    @Override
+	public boolean[] getLeft() {
         return this.left;
     }
 
-    public boolean[] getRight() {
+    @Override
+	public boolean[] getRight() {
         return this.right;
     }
 }

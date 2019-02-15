@@ -7,8 +7,6 @@ import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.util.OrientationLocation;
 import com.benberi.cadesim.util.PackedObjectOrientation;
 
-import javax.xml.soap.Text;
-
 /**
  * Abstract design for a game tile
  */

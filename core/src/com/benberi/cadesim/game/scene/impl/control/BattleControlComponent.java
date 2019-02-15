@@ -84,7 +84,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
      * The turn time
      */
     private int time = 0;
-
+    
+    /**
+     * modifier to calculate button placement
+     */
+	int heightmod = Gdx.graphics.getHeight() - 700;
     /**
      * Textures
      */
@@ -270,44 +274,44 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
            // return false;
         }
         if (isPlacingMoves(x, y)) {
-            if (y >= 538 && y <= 569) {
+            if (y >= heightmod + 538 && y <= heightmod + 569) {
                 handleMovePlace(0, button);
             }
-            else if (y >= 573 && y <= 603) {
+            else if (y >= heightmod + 573 && y <= heightmod + 603) {
                 handleMovePlace(1, button);
             }
-            else if (y >= 606 && y <= 637) {
+            else if (y >= heightmod + 606 && y <= heightmod + 637) {
                 handleMovePlace(2, button);
             }
-            else if(y >= 642 && y <= 670) {
+            else if(y >= heightmod + 642 && y <= heightmod + 670) {
                 handleMovePlace(3, button);
             }
         }
         else if (isPlacingLeftCannons(x, y)) {
-            if (y >= 548 && y <= 562) {
+            if (y >= heightmod + 548 && y <= heightmod + 562) {
                 getContext().sendAddCannon(0, 0);
             }
-            else if (y >= 582 && y <= 597) {
+            else if (y >= heightmod + 582 && y <= heightmod + 597) {
                 getContext().sendAddCannon(0, 1);
             }
-            else if (y >= 618 && y <= 630) {
+            else if (y >= heightmod + 618 && y <= heightmod + 630) {
                 getContext().sendAddCannon(0, 2);
             }
-            else if (y >= 650 && y <= 665) {
+            else if (y >= heightmod + 650 && y <= heightmod + 665) {
                 getContext().sendAddCannon(0, 3);
             }
         }
         else if (isPlacingRightCannons(x, y)) {
-            if (y >= 548 && y <= 562) {
+            if (y >= heightmod + 548 && y <= heightmod + 562) {
                 getContext().sendAddCannon(1, 0);
             }
-            else if (y >= 582 && y <= 597) {
+            else if (y >= heightmod + 582 && y <= heightmod + 597) {
                 getContext().sendAddCannon(1, 1);
             }
-            else if (y >= 618 && y <= 630) {
+            else if (y >= heightmod + 618 && y <= heightmod + 630) {
                 getContext().sendAddCannon(1, 2);
             }
-            else if (y >= 650 && y <= 665) {
+            else if (y >= heightmod + 650 && y <= heightmod + 665) {
                 getContext().sendAddCannon(1, 3);
             }
         }
@@ -343,7 +347,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     }
 
     private boolean isTogglingAuto(float x, float y) {
-        return x >= 52 && x <= 68 && y >= 579 && y <= 591;
+        return x >= 52 && x <= 68 && y >= heightmod + 579 && y <= heightmod + 591;
     }
 
     private boolean isPlacingLeftCannons(float x, float y) {
@@ -355,16 +359,16 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     }
 
     private int getSlotForPosition(float x, float y) {
-        if (y >= 538 && y <= 569) {
+        if (y >= heightmod + 538 && y <= heightmod + 569) {
             return 0;
         }
-        else if (y >= 573 && y <= 603) {
+        else if (y >= heightmod + 573 && y <= heightmod + 603) {
            return 1;
         }
-        else if (y >= 606 && y <= 637) {
+        else if (y >= heightmod + 606 && y <= heightmod + 637) {
             return 2;
         }
-        else if(y >= 642 && y <= 670) {
+        else if(y >= heightmod + 642 && y <= heightmod + 670) {
            return 3;
         }
         return -1;
@@ -529,7 +533,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (d > 100) {
             d = 100;
         }
-        this.damageAmount = (float) d;
+        this.damageAmount = d;
     }
 
     /**
@@ -540,7 +544,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (b > 100) {
             b = 100;
         }
-        this.bilgeAmount = (float) b;
+        this.bilgeAmount = b;
     }
 
     public void setMoveSelAutomatic(boolean auto) {
@@ -773,15 +777,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
 
     public boolean isChosedLeft(float x, float y) {
-        return x >= 80 && x <= 107 && y >= 598 && y <= 624;
+        return x >= 80 && x <= 107 && y >= heightmod + 598 && y <= heightmod + 624;
     }
 
     public boolean isChosedForward(float x, float y) {
-        return x >= 110 && x <= 135 && y >= 598 && y <= 624;
+        return x >= 110 && x <= 135 && y >= heightmod + 598 && y <= heightmod + 624;
     }
 
     public boolean isChosedRight(float x, float y) {
-        return x >= 140 && x <= 166 && y >= 598 && y <= 624;
+        return x >= 140 && x <= 166 && y >= heightmod + 598 && y <= heightmod + 624;
     }
 
     public void placeMove(int slot, MoveType move, boolean temp) {

@@ -74,6 +74,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     private Texture nameTexture;
 
     private SelectBox<ShipTypeLabel> shipType;
+    private SelectBox<ResolutionTypeLabel> resolutionType;
     private SelectBox<TeamTypeLabel> teamType;
 
     /**
@@ -120,7 +121,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     public void create() {
 
         Properties prop = new Properties();
-        String fileName = "core/assets/user.config";
+        String fileName = "user.config";
         InputStream is = null;
         try {
             is = new FileInputStream(fileName);
@@ -185,10 +186,14 @@ public class ConnectScene implements GameScene, InputProcessor {
         shipType = new SelectBox<>(selectBoxStyle);
         shipType.setSize(150, 44);
         shipType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 50);
+        
+        resolutionType = new SelectBox<>(selectBoxStyle);
+        resolutionType.setSize(150, 44);
+        resolutionType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 100);
 
         teamType = new SelectBox<>(selectBoxStyle);
         teamType.setSize(150, 44);
-        teamType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 100);
+        teamType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 150);
 
         shipBox = new Texture("core/assets/skin/ship-box.png");
         junk = new Texture("core/assets/skin/ships/junk.png");
@@ -209,17 +214,28 @@ public class ConnectScene implements GameScene, InputProcessor {
         blob[4] = new ShipTypeLabel(ShipTypeLabel.WF,"War Frigate", labelStyle);
         
         shipType.setItems(blob);
+        shipType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_ship")));
 
-
+        ResolutionTypeLabel[] blob3 = new ResolutionTypeLabel[4];
+        blob3[0] = new ResolutionTypeLabel(ResolutionTypeLabel.defaultsize,"720p", labelStyle);
+        blob3[1] = new ResolutionTypeLabel(ResolutionTypeLabel.teneighty,"1080p", labelStyle);
+        blob3[2] = new ResolutionTypeLabel(ResolutionTypeLabel.fourteenforty,"1440p", labelStyle);
+        blob3[3] = new ResolutionTypeLabel(ResolutionTypeLabel.fourk,"4K", labelStyle);
+        
+        resolutionType.setItems(blob3);
+        resolutionType.setSelectedIndex(Integer.parseInt(prop.getProperty("client.last_resolution")));;
+        
         TeamTypeLabel[] blob2 = new TeamTypeLabel[2];
         blob2[0] = new TeamTypeLabel("Green", labelStyle);
         blob2[1] = new TeamTypeLabel("Red" ,labelStyle);
+        
         teamType.setItems(blob2);
 
         stage.addActor(name);
         stage.addActor(address);
         stage.addActor(address);
         stage.addActor(shipType);
+        stage.addActor(resolutionType);
         stage.addActor(teamType);
     }
 
@@ -230,10 +246,9 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public void render() {
-        Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         batch.begin();
         batch.draw(background, 0, 0);
-
         if (state == ConnectionSceneState.DEFAULT) {
             font.setColor(Color.WHITE);
             font.draw(batch, "Display name:", 160, 300);
@@ -469,8 +484,31 @@ public class ConnectScene implements GameScene, InputProcessor {
         else {
             // Save current choices for next time
             try {
-                changeProperty("core/assets/user.config", "user.username", name.getText());
-                changeProperty("core/assets/user.config", "user.last_address", address.getText());
+            	String[] resolution = new String[2];
+            	int restype = resolutionType.getSelectedIndex();
+            	if (restype == 0) {
+            		resolution[0] = "1240";
+            		resolution[1] = "680";
+            	}
+            	if (restype == 1) {
+            		resolution[0] = "1800";
+            		resolution[1] = "1000";
+            	}
+            	if (restype == 2) {
+            		resolution[0] = "2500";
+            		resolution[1] = "1400";
+            	}
+            	if (restype == 3) {
+            		resolution[0] = "3600";
+            		resolution[1] = "2000";
+            	}
+                changeProperty("user.config", "user.username", name.getText());
+                changeProperty("user.config", "user.last_address", address.getText());
+                changeProperty("user.config", "client.width", resolution[0]);
+                changeProperty("user.config", "client.height", resolution[1]);
+                changeProperty("user.config", "user.last_ship", Integer.toString(shipType.getSelectedIndex()));
+                changeProperty("user.config", "client.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
+                
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -479,7 +517,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             context.connect(name.getText(), address.getText(), shipType.getSelected().getType(), teamType.getSelected().getType());
         }
     }
-
+    	
     public static void changeProperty(String filename, String key, String value) throws IOException {
         Properties prop =new Properties();
         prop.load(new FileInputStream(filename));
@@ -494,13 +532,19 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        if (popup) {
+        int width = Gdx.graphics.getWidth();
+        int height = Gdx.graphics.getHeight();
+    	if (popup) {
+    		int popupleftedge = width / 2 - 200;
+    		int popuprightedge = width / 2 + 200;
+    		int popuptopedge = height / 2;
+    		int popupbottomedge = height / 2 + 50;
             loginHover = false;
            // 505 398
-            popupCloseHover = screenX >= 505 && screenX <= 573 && screenY >= 349 && screenY <= 398;
+            popupCloseHover = screenX >= popupleftedge && screenX <= popuprightedge && screenY >= popuptopedge && screenY <= popupbottomedge;
         }
         else {
-            loginHover = screenX >= 164 && screenY <= 606 && screenY >= 490 && screenY <= 530;
+            loginHover = screenX >= 164 && screenX <= 606 && screenY >= height - 210 && screenY <= height - 170;
         }
         return false;
     }

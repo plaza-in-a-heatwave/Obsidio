@@ -1,6 +1,5 @@
 package com.benberi.cadesim.game.entity.vessel;
 
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 
