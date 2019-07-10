@@ -51,7 +51,7 @@ public class Junk extends Vessel {
     public void setDefaultTexture() {
         this.setTexture(getVesselTexture("junk"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/junk/properties.json").readString(),
+                Gdx.files.internal("assets/vessel/junk/properties.json").readString(),
                 PackedObjectOrientation.class));
     }
 
@@ -59,7 +59,7 @@ public class Junk extends Vessel {
     public void setSinkingTexture() {
         this.setTexture(getVesselTexture("junk_sinking"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/junk/sinking.json").readString(),
+                Gdx.files.internal("assets/vessel/junk/sinking.json").readString(),
                 PackedObjectOrientation.class));
     }
 }

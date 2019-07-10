@@ -51,7 +51,7 @@ public class Xebec extends Vessel {
     public void setDefaultTexture() {
         this.setTexture(getVesselTexture("xebec"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/xebec/properties.json").readString(),
+                Gdx.files.internal("assets/vessel/xebec/properties.json").readString(),
                 PackedObjectOrientation.class));
     }
 
@@ -59,7 +59,7 @@ public class Xebec extends Vessel {
     public void setSinkingTexture() {
         this.setTexture(getVesselTexture("xebec_sinking"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/xebec/sinking.json").readString(),
+                Gdx.files.internal("assets/vessel/xebec/sinking.json").readString(),
                 PackedObjectOrientation.class));
     }
 }

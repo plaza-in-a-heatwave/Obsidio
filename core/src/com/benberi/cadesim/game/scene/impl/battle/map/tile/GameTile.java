@@ -61,7 +61,7 @@ public abstract class GameTile {
 
     public void setPackedObjectOrientation(String pack) {
         this.orientation = context.getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/objects/" + pack + ".json").readString(),
+                Gdx.files.internal("assets/objects/" + pack + ".json").readString(),
                 PackedObjectOrientation.class);
     }
 

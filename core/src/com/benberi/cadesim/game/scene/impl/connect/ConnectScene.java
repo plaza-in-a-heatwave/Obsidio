@@ -135,7 +135,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             e.printStackTrace();
         }
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/font/FjallaOne-Regular.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 18;
         parameter.shadowColor = new Color(0, 0, 0, 0.8f);
@@ -144,11 +144,11 @@ public class ConnectScene implements GameScene, InputProcessor {
         font.setColor(Color.YELLOW);
         batch = new SpriteBatch();
 
-        background = new Texture("core/assets/bg.png");
-        nameTexture = new Texture("core/assets/skin/textfield-name.png");
-        addressTexture = new Texture("core/assets/skin/textfield-address.png");
-        loginButton = new Texture("core/assets/skin/login.png");
-        loginButtonHover = new Texture("core/assets/skin/login-hover.png");
+        background = new Texture("assets/bg.png");
+        nameTexture = new Texture("assets/skin/textfield-name.png");
+        addressTexture = new Texture("assets/skin/textfield-address.png");
+        loginButton = new Texture("assets/skin/login.png");
+        loginButtonHover = new Texture("assets/skin/login-hover.png");
 
         renderer = new ShapeRenderer();
 
@@ -159,8 +159,8 @@ public class ConnectScene implements GameScene, InputProcessor {
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = font;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
-        style.cursor = new Image(new Texture("core/assets/skin/textfield-cursor.png")).getDrawable();
-        style.selection = new Image(new Texture("core/assets/skin/textfield-selection.png")).getDrawable();
+        style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
+        style.selection = new Image(new Texture("assets/skin/textfield-selection.png")).getDrawable();
 
         name = new TextField( prop.getProperty("user.username"), style);
         name.setSize(160, 49);
@@ -171,14 +171,14 @@ public class ConnectScene implements GameScene, InputProcessor {
         address.setPosition(370, 225);
 
         SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
-        selectBoxStyle.background = new Image(new Texture("core/assets/skin/selectbg.png")).getDrawable();
+        selectBoxStyle.background = new Image(new Texture("assets/skin/selectbg.png")).getDrawable();
         selectBoxStyle.font = font;
         selectBoxStyle.fontColor = new Color(1,1,1, 1);
         selectBoxStyle.listStyle = new List.ListStyle();
-        selectBoxStyle.listStyle.selection = new Image(new Texture("core/assets/skin/selectbg.png")).getDrawable();
+        selectBoxStyle.listStyle.selection = new Image(new Texture("assets/skin/selectbg.png")).getDrawable();
         selectBoxStyle.listStyle.selection.setLeftWidth(5);
         selectBoxStyle.listStyle.font = font;
-        selectBoxStyle.listStyle.background = new Image(new Texture("core/assets/skin/select-list-bg.png")).getDrawable();
+        selectBoxStyle.listStyle.background = new Image(new Texture("assets/skin/select-list-bg.png")).getDrawable();
         selectBoxStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
         selectBoxStyle.background.setLeftWidth(10);
 
@@ -195,12 +195,12 @@ public class ConnectScene implements GameScene, InputProcessor {
         teamType.setSize(150, 44);
         teamType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 150);
 
-        shipBox = new Texture("core/assets/skin/ship-box.png");
-        junk = new Texture("core/assets/skin/ships/junk.png");
-        wb = new Texture("core/assets/skin/ships/wb.png");
-        xebec = new Texture("core/assets/skin/ships/xebec.png");
-        wg = new Texture("core/assets/skin/ships/wg.png");
-        wf = new Texture("core/assets/skin/ships/wf.png");
+        shipBox = new Texture("assets/skin/ship-box.png");
+        junk = new Texture("assets/skin/ships/junk.png");
+        wb = new Texture("assets/skin/ships/wb.png");
+        xebec = new Texture("assets/skin/ships/xebec.png");
+        wg = new Texture("assets/skin/ships/wg.png");
+        wf = new Texture("assets/skin/ships/wf.png");
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;

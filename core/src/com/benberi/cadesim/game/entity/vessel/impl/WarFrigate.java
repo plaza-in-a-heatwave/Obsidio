@@ -51,7 +51,7 @@ public class WarFrigate extends Vessel {
     public void setDefaultTexture() {
         this.setTexture(getVesselTexture("warfrigate"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/wf/properties.json").readString(),
+                Gdx.files.internal("assets/vessel/wf/properties.json").readString(),
                 PackedObjectOrientation.class));
     }
 
@@ -59,7 +59,7 @@ public class WarFrigate extends Vessel {
     public void setSinkingTexture() {
         this.setTexture(getVesselTexture("warfrigate_sinking"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/wf/sinking.json").readString(),
+                Gdx.files.internal("assets/vessel/wf/sinking.json").readString(),
                 PackedObjectOrientation.class));
     }
 }

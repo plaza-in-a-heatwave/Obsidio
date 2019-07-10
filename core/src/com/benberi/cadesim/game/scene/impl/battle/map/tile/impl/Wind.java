@@ -15,7 +15,7 @@ public class Wind extends GameTile {
      */
     public Wind(GameContext context, int direction) {
         super(context);
-        setTexture(new Texture("core/assets/sea/wind.png"));
+        setTexture(new Texture("assets/sea/wind.png"));
         setPackedObjectOrientation("cell");
 
         switch (direction) {

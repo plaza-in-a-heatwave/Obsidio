@@ -70,34 +70,34 @@ public class TextureCollection {
      * Creates vessel textures
      */
     private void createVessels() {
-        vessels.put("warfrigate", new Texture("core/assets/vessel/wf/spritesheet.png"));
-        vessels.put("xebec", new Texture("core/assets/vessel/xebec/spritesheet.png"));
-        vessels.put("warbrig", new Texture("core/assets/vessel/wb/spritesheet.png"));
-        vessels.put("junk", new Texture("core/assets/vessel/junk/spritesheet.png"));
-        vessels.put("wargalleon", new Texture("core/assets/vessel/wg/spritesheet.png"));
-        vessels.put("warfrigate_sinking", new Texture("core/assets/vessel/wf/sinking2.png"));
-        vessels.put("xebec_sinking", new Texture("core/assets/vessel/xebec/sinking.png"));
-        vessels.put("warbrig_sinking", new Texture("core/assets/vessel/wb/sinking.png"));
-        vessels.put("junk_sinking", new Texture("core/assets/vessel/junk/sinking.png"));
-        vessels.put("wargalleon_sinking", new Texture("core/assets/vessel/wg/sinking.png"));
+        vessels.put("warfrigate", new Texture("assets/vessel/wf/spritesheet.png"));
+        vessels.put("xebec", new Texture("assets/vessel/xebec/spritesheet.png"));
+        vessels.put("warbrig", new Texture("assets/vessel/wb/spritesheet.png"));
+        vessels.put("junk", new Texture("assets/vessel/junk/spritesheet.png"));
+        vessels.put("wargalleon", new Texture("assets/vessel/wg/spritesheet.png"));
+        vessels.put("warfrigate_sinking", new Texture("assets/vessel/wf/sinking2.png"));
+        vessels.put("xebec_sinking", new Texture("assets/vessel/xebec/sinking.png"));
+        vessels.put("warbrig_sinking", new Texture("assets/vessel/wb/sinking.png"));
+        vessels.put("junk_sinking", new Texture("assets/vessel/junk/sinking.png"));
+        vessels.put("wargalleon_sinking", new Texture("assets/vessel/wg/sinking.png"));
     }
 
     /**
      * Creates sea tiles textures
      */
     private void createSeaTiles() {
-        seaTiles.put("cell", new Texture("core/assets/sea/cell.png"));
-        seaTiles.put("safe", new Texture("core/assets/sea/safezone.png"));
+        seaTiles.put("cell", new Texture("assets/sea/cell.png"));
+        seaTiles.put("safe", new Texture("assets/sea/safezone.png"));
     }
 
     private void createMisc() {
-        misc.put("large_ball", new Texture("core/assets/projectile/cannonball_large.png"));
-        misc.put("medium_ball", new Texture("core/assets/projectile/cannonball.png"));
-        misc.put("large_splash", new Texture("core/assets/effects/splash_big.png"));
-        misc.put("small_splash", new Texture("core/assets/effects/splash_sm.png"));
-        misc.put("explode_big", new Texture("core/assets/effects/explode_big.png"));
-        misc.put("explode_medium", new Texture("core/assets/effects/explode_med.png"));
-        misc.put("hit", new Texture("core/assets/effects/hit.png"));
+        misc.put("large_ball", new Texture("assets/projectile/cannonball_large.png"));
+        misc.put("medium_ball", new Texture("assets/projectile/cannonball.png"));
+        misc.put("large_splash", new Texture("assets/effects/splash_big.png"));
+        misc.put("small_splash", new Texture("assets/effects/splash_sm.png"));
+        misc.put("explode_big", new Texture("assets/effects/explode_big.png"));
+        misc.put("explode_medium", new Texture("assets/effects/explode_med.png"));
+        misc.put("hit", new Texture("assets/effects/hit.png"));
     }
 
     public static Texture prepareTextureForTeam(Texture texture, Team team) {

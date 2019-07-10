@@ -51,7 +51,7 @@ public class WarGalleon extends Vessel {
     public void setDefaultTexture() {
         this.setTexture(getVesselTexture("wargalleon"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/wg/properties.json").readString(),
+                Gdx.files.internal("assets/vessel/wg/properties.json").readString(),
                 PackedObjectOrientation.class));
     }
 
@@ -59,7 +59,7 @@ public class WarGalleon extends Vessel {
     public void setSinkingTexture() {
         this.setTexture(getVesselTexture("wargalleon_sinking"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("core/assets/vessel/wg/sinking.json").readString(),
+                Gdx.files.internal("assets/vessel/wg/sinking.json").readString(),
                 PackedObjectOrientation.class));
     }
 }

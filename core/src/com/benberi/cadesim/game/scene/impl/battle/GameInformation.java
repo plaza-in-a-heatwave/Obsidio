@@ -42,23 +42,23 @@ public class GameInformation extends SceneComponent {
     @Override
     public void create() {
         this.batch = new SpriteBatch();
-        this.panel = new Texture("core/assets/ui/info.png");
+        this.panel = new Texture("assets/ui/info.png");
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/font/FjallaOne-Regular.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 14;
         parameter.shadowColor = new Color(0, 0, 0, 0.8f);
         parameter.shadowOffsetY = 1;
         fontTeam = generator.generateFont(parameter);
 
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/font/Roboto-Regular.ttf"));
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 13;
         parameter.shadowColor = new Color(0, 0, 0, 0.6f);
         parameter.shadowOffsetY = 1;
         fontPoints = generator.generateFont(parameter);
 
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/font/BreeSerif-Regular.ttf"));
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/BreeSerif-Regular.ttf"));
         parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 30;
 

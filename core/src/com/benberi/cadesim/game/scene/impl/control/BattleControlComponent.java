@@ -164,39 +164,39 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         batch = new SpriteBatch();
         shape = new ShapeRenderer();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/font/Roboto-Regular.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 14;
         font = generator.generateFont(parameter);
 
-        title = new Texture("core/assets/ui/title.png");
-        radioOn = new Texture("core/assets/ui/radio-on.png");
-        radioOff = new Texture("core/assets/ui/radio-off.png");
-        autoOn = new Texture("core/assets/ui/auto-on.png");
-        autoOff = new Texture("core/assets/ui/auto-off.png");
+        title = new Texture("assets/ui/title.png");
+        radioOn = new Texture("assets/ui/radio-on.png");
+        radioOff = new Texture("assets/ui/radio-off.png");
+        autoOn = new Texture("assets/ui/auto-on.png");
+        autoOff = new Texture("assets/ui/auto-off.png");
 
-        sandTopTexture = new Texture("core/assets/ui/sand_top.png");
-        sandBottomTexture = new Texture("core/assets/ui/sand_bot.png");
+        sandTopTexture = new Texture("assets/ui/sand_top.png");
+        sandBottomTexture = new Texture("assets/ui/sand_bot.png");
 
-        sandTrickleTexture = new Texture("core/assets/ui/sand_trickle.png");
+        sandTrickleTexture = new Texture("assets/ui/sand_trickle.png");
         sandTrickle = new TextureRegion(sandTrickleTexture, 0, 0, 1, sandTopTexture.getHeight());
 
         sandTop = new TextureRegion(sandTopTexture, sandTopTexture.getWidth(), sandTopTexture.getHeight());
         sandBottom= new TextureRegion(sandBottomTexture, sandBottomTexture.getWidth(), sandBottomTexture.getHeight());
 
-        cannonSlots = new Texture("core/assets/ui/cannonslots.png");
-        moves = new Texture("core/assets/ui/move.png");
-        emptyMoves = new Texture("core/assets/ui/move_empty.png");
-        shiphand = new Texture("core/assets/ui/shiphand.png");
-        hourGlass = new Texture("core/assets/ui/hourglass.png");
-        controlBackground = new Texture("core/assets/ui/moves-background.png");
-        shipStatus = new Texture("core/assets/ui/status.png");
-        shipStatusBg = new Texture("core/assets/ui/status-bg.png");
-        moveGetTargetTexture = new Texture("core/assets/ui/sel_border_square.png");
-        cannonSelectionEmpty = new Texture("core/assets/ui/grapplecannon_empty.png");
-        cannonSelection = new Texture("core/assets/ui/grapplecannon.png");
-        damage = new TextureRegion(new Texture("core/assets/ui/damage.png"));
-        bilge = new TextureRegion(new Texture("core/assets/ui/bilge.png"));
+        cannonSlots = new Texture("assets/ui/cannonslots.png");
+        moves = new Texture("assets/ui/move.png");
+        emptyMoves = new Texture("assets/ui/move_empty.png");
+        shiphand = new Texture("assets/ui/shiphand.png");
+        hourGlass = new Texture("assets/ui/hourglass.png");
+        controlBackground = new Texture("assets/ui/moves-background.png");
+        shipStatus = new Texture("assets/ui/status.png");
+        shipStatusBg = new Texture("assets/ui/status-bg.png");
+        moveGetTargetTexture = new Texture("assets/ui/sel_border_square.png");
+        cannonSelectionEmpty = new Texture("assets/ui/grapplecannon_empty.png");
+        cannonSelection = new Texture("assets/ui/grapplecannon.png");
+        damage = new TextureRegion(new Texture("assets/ui/damage.png"));
+        bilge = new TextureRegion(new Texture("assets/ui/bilge.png"));
         damage.flip(false, true);
         bilge.flip(false, true);
 

@@ -25,7 +25,7 @@ public class Flag extends GameObject {
     public Flag(GameContext context, int x, int y) {
         super(context);
         set(x, y);
-        setTexture(new Texture("core/assets/cade/buoy.png"));
+        setTexture(new Texture("assets/cade/buoy.png"));
 
         setCustomOffsetX(2);
         setCustomOffsetY(22);

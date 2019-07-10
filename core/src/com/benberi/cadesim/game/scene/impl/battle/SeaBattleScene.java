@@ -108,7 +108,7 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public void create() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/font/Pixel-Miners.otf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Pixel-Miners.otf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 8;
         parameter.spaceX = 0;
@@ -123,7 +123,7 @@ public class SeaBattleScene implements GameScene {
         renderer = new ShapeRenderer();
         this.batch = new SpriteBatch();
         information.create();
-        sea = new Texture("core/assets/sea/sea1.png");
+        sea = new Texture("assets/sea/sea1.png");
         sea.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
     }
