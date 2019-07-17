@@ -88,7 +88,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     /**
      * modifier to calculate button placement
      */
-	int heightmod = Gdx.graphics.getHeight() - 700;
+    int heightmod = Gdx.graphics.getHeight() - 700;
     /**
      * Textures
      */
@@ -140,7 +140,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     private boolean isBigShip;
 
-    private boolean isDragging;
+    private boolean  isDragging;     //       are we dragging
+    private MoveType startDragMove;  // what  are we dragging
+    private int      startDragSlot;  // where are we dragging from
     private Vector2 draggingPosition;
     private boolean executionMoves;
 
@@ -270,75 +272,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     @Override
     public boolean handleClick(float x, float y, int button) {
-        if (executionMoves) {
-           // return false;
-        }
-        if (isPlacingMoves(x, y)) {
-            if (y >= heightmod + 538 && y <= heightmod + 569) {
-                handleMovePlace(0, button);
-            }
-            else if (y >= heightmod + 573 && y <= heightmod + 603) {
-                handleMovePlace(1, button);
-            }
-            else if (y >= heightmod + 606 && y <= heightmod + 637) {
-                handleMovePlace(2, button);
-            }
-            else if(y >= heightmod + 642 && y <= heightmod + 670) {
-                handleMovePlace(3, button);
-            }
-        }
-        else if (isPlacingLeftCannons(x, y)) {
-            if (y >= heightmod + 548 && y <= heightmod + 562) {
-                getContext().sendAddCannon(0, 0);
-            }
-            else if (y >= heightmod + 582 && y <= heightmod + 597) {
-                getContext().sendAddCannon(0, 1);
-            }
-            else if (y >= heightmod + 618 && y <= heightmod + 630) {
-                getContext().sendAddCannon(0, 2);
-            }
-            else if (y >= heightmod + 650 && y <= heightmod + 665) {
-                getContext().sendAddCannon(0, 3);
-            }
-        }
-        else if (isPlacingRightCannons(x, y)) {
-            if (y >= heightmod + 548 && y <= heightmod + 562) {
-                getContext().sendAddCannon(1, 0);
-            }
-            else if (y >= heightmod + 582 && y <= heightmod + 597) {
-                getContext().sendAddCannon(1, 1);
-            }
-            else if (y >= heightmod + 618 && y <= heightmod + 630) {
-                getContext().sendAddCannon(1, 2);
-            }
-            else if (y >= heightmod + 650 && y <= heightmod + 665) {
-                getContext().sendAddCannon(1, 3);
-            }
-        }
-        else if (isTogglingAuto(x, y)) {
-            if (auto) {
-                auto = false;
-            }
-            else {
-                auto = true;
-            }
-            getContext().sendToggleAuto(auto);
-        }
-        else if (!auto){
-             if (isChosedLeft(x, y)) {
-                this.targetMove = MoveType.LEFT;
-                getContext().sendGenerationTarget(targetMove);
-            }
-            else if (isChosedForward(x, y)) {
-                this.targetMove = MoveType.FORWARD;
-                 getContext().sendGenerationTarget(targetMove);
-            }
-            else if (isChosedRight(x, y)) {
-                this.targetMove = MoveType.RIGHT;
-                 getContext().sendGenerationTarget(targetMove);
-            }
-        }
-
         return false;
     }
 
@@ -359,26 +292,53 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     }
 
     private int getSlotForPosition(float x, float y) {
-        if (y >= heightmod + 538 && y <= heightmod + 569) {
-            return 0;
+        // battle slots
+        if (isPlacingMoves(x, y)) {
+            if (y >= heightmod + 538 && y <= heightmod + 569) {
+                return 0;
+            }
+            else if (y >= heightmod + 573 && y <= heightmod + 603) {
+               return 1;
+            }
+            else if (y >= heightmod + 606 && y <= heightmod + 637) {
+                return 2;
+            }
+            else if(y >= heightmod + 642 && y <= heightmod + 670) {
+               return 3;
+            } else {
+                return -1;
+            }
+        } else if (isPickingMoves(x, y)) { // TODO add cannons to this enum, cant drag those yet
+            if (x >= 80 && x <= 108) {
+                return 4;
+            } else if (x >= 110 && x <= 138) {
+                return 5;
+            } else if (x >= 140 && x <= 168) {
+                return 6;
+            } else {
+                return -1;
+            }
+        } else {
+            return -1;
         }
-        else if (y >= heightmod + 573 && y <= heightmod + 603) {
-           return 1;
-        }
-        else if (y >= heightmod + 606 && y <= heightmod + 637) {
-            return 2;
-        }
-        else if(y >= heightmod + 642 && y <= heightmod + 670) {
-           return 3;
-        }
-        return -1;
     }
 
     @Override
     public boolean handleDrag(float x, float y, float ix, float iy) {
         if (!isDragging) {
-            if (getSlotForPosition(x, y) == manuaverSlot) {
-                isDragging = true;
+            isDragging = true;
+            startDragSlot = getSlotForPosition(x, y);
+            if (startDragSlot != -1) {
+                switch (startDragSlot) {
+                case 4:
+                case 5:
+                case 6:
+                    startDragMove = MoveType.forId(startDragSlot - 3);
+                    break;
+                default:
+                    startDragMove  = movesHolder[startDragSlot].getMove();
+                    break;
+                }
             }
         }
 
@@ -392,13 +352,105 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     public boolean handleRelease(float x, float y, int button) {
         if (isDragging) {
             isDragging = false;
-            int slot = getSlotForPosition(x, y);
-            if (slot != -1) {
-                manuaverSlot = slot;
-                getContext().sendManuaverSlotChanged(manuaverSlot);
+            int endDragSlot = getSlotForPosition(x, y);
+            if (endDragSlot != -1) {
+                if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
+                    manuaverSlot = endDragSlot;
+                    getContext().sendManuaverSlotChanged(manuaverSlot);
+                } else if ((manuaverSlot == endDragSlot) && startDragSlot <= 3) { // cant drag new piece onto manuaver
+                    manuaverSlot = startDragSlot;
+                    getContext().sendManuaverSlotChanged(manuaverSlot);
+                }
+
+                if (startDragSlot <= 3) {
+                    if (endDragSlot <= 3) { // drag from place to place; swap
+                        // swap
+                        int tmpSlot = startDragSlot;
+                        startDragSlot = endDragSlot;
+                        endDragSlot = tmpSlot;
+                        getContext().sendSelectMoveSlot(startDragSlot, movesHolder[endDragSlot].getMove());
+                        getContext().sendSelectMoveSlot(endDragSlot, movesHolder[startDragSlot].getMove());
+                    } else { // drag from place to nothing; discard
+                        getContext().sendSelectMoveSlot(startDragSlot, MoveType.NONE);
+                    }
+                } else if (startDragSlot > 3 && endDragSlot <= 3) { // moving from available to placed; replace
+                    // if there's anything there already, replace it, apart from a manuaver slot
+                    if (manuaverSlot != endDragSlot) {
+                        getContext().sendSelectMoveSlot(endDragSlot, MoveType.forId(startDragSlot-3));
+                    }
+                }
             }
 
             draggingPosition = null;
+        } else {
+            if (executionMoves) {
+                return false;
+             }
+             if (isPlacingMoves(x, y)) {
+                 if (y >= heightmod + 538 && y <= heightmod + 569) {
+                     handleMovePlace(0, button);
+                 }
+                 else if (y >= heightmod + 573 && y <= heightmod + 603) {
+                     handleMovePlace(1, button);
+                 }
+                 else if (y >= heightmod + 606 && y <= heightmod + 637) {
+                     handleMovePlace(2, button);
+                 }
+                 else if(y >= heightmod + 642 && y <= heightmod + 670) {
+                     handleMovePlace(3, button);
+                 }
+             }
+             else if (isPlacingLeftCannons(x, y)) {
+                 if (y >= heightmod + 548 && y <= heightmod + 562) {
+                     getContext().sendAddCannon(0, 0);
+                 }
+                 else if (y >= heightmod + 582 && y <= heightmod + 597) {
+                     getContext().sendAddCannon(0, 1);
+                 }
+                 else if (y >= heightmod + 618 && y <= heightmod + 630) {
+                     getContext().sendAddCannon(0, 2);
+                 }
+                 else if (y >= heightmod + 650 && y <= heightmod + 665) {
+                     getContext().sendAddCannon(0, 3);
+                 }
+             }
+             else if (isPlacingRightCannons(x, y)) {
+                 if (y >= heightmod + 548 && y <= heightmod + 562) {
+                     getContext().sendAddCannon(1, 0);
+                 }
+                 else if (y >= heightmod + 582 && y <= heightmod + 597) {
+                     getContext().sendAddCannon(1, 1);
+                 }
+                 else if (y >= heightmod + 618 && y <= heightmod + 630) {
+                     getContext().sendAddCannon(1, 2);
+                 }
+                 else if (y >= heightmod + 650 && y <= heightmod + 665) {
+                     getContext().sendAddCannon(1, 3);
+                 }
+             }
+             else if (isTogglingAuto(x, y)) {
+                 if (auto) {
+                     auto = false;
+                 }
+                 else {
+                     auto = true;
+                 }
+                 getContext().sendToggleAuto(auto);
+             }
+             else if (!auto){
+                  if (isChosedLeft(x, y)) {
+                     this.targetMove = MoveType.LEFT;
+                     getContext().sendGenerationTarget(targetMove);
+                 }
+                 else if (isChosedForward(x, y)) {
+                     this.targetMove = MoveType.FORWARD;
+                      getContext().sendGenerationTarget(targetMove);
+                 }
+                 else if (isChosedRight(x, y)) {
+                     this.targetMove = MoveType.RIGHT;
+                      getContext().sendGenerationTarget(targetMove);
+                 }
+             }
         }
         return false;
     }
@@ -407,10 +459,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (position == manuaverSlot) {
             return;
         }
+        if (isDragging) {
+            return;
+        }
         HandMove move = movesHolder[position];
         if (move.getMove() == MoveType.NONE) {
             if (button == Input.Buttons.LEFT) {
-                //move.setMove(MoveType.LEFT);
                 if (leftMoves > 0) {
                     placeMove(position, MoveType.LEFT, true);
                     getContext().sendSelectMoveSlot(position, MoveType.LEFT);
@@ -425,7 +479,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                 }
             }
             else if (button == Input.Buttons.MIDDLE) {
-               // move.setMove(MoveType.FORWARD);
                 if (forwardMoves > 0) {
                     placeMove(position, MoveType.FORWARD, true);
                     getContext().sendSelectMoveSlot(position, MoveType.FORWARD);
@@ -440,7 +493,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                 }
             }
             else if (button == Input.Buttons.RIGHT) {
-               // move.setMove(MoveType.RIGHT);
                 if (rightMoves > 0) {
                     placeMove(position, MoveType.RIGHT, true);
                     getContext().sendSelectMoveSlot(position, MoveType.RIGHT);
@@ -457,7 +509,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         }
         else {
             if (button == Input.Buttons.LEFT) {
-               // move.setMove(move.getMove().getNext());
                 MoveType next = move.getMove().getNext();
                 if (hasMove(next)) {
                     placeMove(position, next, true);
@@ -473,7 +524,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                 }
             }
             else if (button == Input.Buttons.RIGHT) {
-               // move.setMove(move.getMove().getPrevious());
                 MoveType prev = move.getMove().getPrevious();
                 if (hasMove(prev)) {
                     placeMove(position, prev, true);
@@ -506,8 +556,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     }
 
     private boolean isPlacingMoves(float x, float y) {
-        return x >= 208 && x <= 239;
+        return x >= 208 && x <= 239 && y >= (heightmod + 538) && y <= (heightmod + 670);
     }
+
+    private boolean isPickingMoves(float x, float y) {
+        return (x >= 80) && (x <= 166) && (y >= heightmod + 598) && (y <= heightmod + 624);
+    }
+
 
     /**
      * Sets the turn time
@@ -581,9 +636,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         drawShipStatus();
         drawTimer();
         drawMovesSelect();
+        TextureRegion t = manuaverTexture; // initial, prevent crashes
         batch.draw(title, 65, 140);
-        if (isDragging) {
-            batch.draw(manuaverTexture, draggingPosition.x - manuaverTexture.getRegionWidth() / 2, Gdx.graphics.getHeight() - draggingPosition.y - manuaverTexture.getRegionHeight() / 2);
+        if (isDragging && startDragSlot != -1) {
+            if (startDragSlot == manuaverSlot) {
+                t = manuaverTexture;
+            } else {
+                t = getTextureForMove(startDragMove);
+            }
+
+            if ((startDragMove != MoveType.NONE) || (startDragSlot == manuaverSlot)) {
+                batch.draw(t, draggingPosition.x - t.getRegionWidth() / 2, Gdx.graphics.getHeight() - draggingPosition.y - t.getRegionHeight() / 2);
+            }
         }
         batch.end();
     }
