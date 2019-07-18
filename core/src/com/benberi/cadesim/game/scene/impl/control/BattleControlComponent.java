@@ -326,9 +326,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     @Override
     public boolean handleDrag(float x, float y, float ix, float iy) {
         if (!isDragging) {
-            isDragging = true;
             startDragSlot = getSlotForPosition(x, y);
-            if (startDragSlot != -1) {
+            if (startDragSlot != -1) { // cant start dragging from an invalid region
+                isDragging = true;
                 switch (startDragSlot) {
                 case 4:
                 case 5:
@@ -353,7 +353,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (isDragging) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
-            if (endDragSlot != -1) {
+            if (endDragSlot == -1) { // dragged from nothing
+
+                if (startDragSlot <= 3) {
+                    getContext().sendSelectMoveSlot(startDragSlot, MoveType.NONE);
+                }
+            } else { // dragged from something
                 if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
                     manuaverSlot = endDragSlot;
                     getContext().sendManuaverSlotChanged(manuaverSlot);
@@ -362,17 +367,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                     getContext().sendManuaverSlotChanged(manuaverSlot);
                 }
 
-                if (startDragSlot <= 3) {
-                    if (endDragSlot <= 3) { // drag from place to place; swap
-                        // swap
-                        int tmpSlot = startDragSlot;
-                        startDragSlot = endDragSlot;
-                        endDragSlot = tmpSlot;
-                        getContext().sendSelectMoveSlot(startDragSlot, movesHolder[endDragSlot].getMove());
-                        getContext().sendSelectMoveSlot(endDragSlot, movesHolder[startDragSlot].getMove());
-                    } else { // drag from place to nothing; discard
-                        getContext().sendSelectMoveSlot(startDragSlot, MoveType.NONE);
-                    }
+                if (startDragSlot <= 3 && endDragSlot <= 3) { // drag from place to place; swap
+                    // swap
+                    int tmpSlot = startDragSlot;
+                    startDragSlot = endDragSlot;
+                    endDragSlot = tmpSlot;
+
+                    // update
+                    getContext().sendSelectMoveSlot(startDragSlot, movesHolder[endDragSlot].getMove());
+                    getContext().sendSelectMoveSlot(endDragSlot, movesHolder[startDragSlot].getMove());
                 } else if (startDragSlot > 3 && endDragSlot <= 3) { // moving from available to placed; replace
                     // if there's anything there already, replace it, apart from a manuaver slot
                     if (manuaverSlot != endDragSlot) {
