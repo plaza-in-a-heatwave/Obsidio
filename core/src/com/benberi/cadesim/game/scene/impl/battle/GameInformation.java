@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.benberi.cadesim.GameContext;
+import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.scene.GameScene;
 import com.benberi.cadesim.game.scene.SceneComponent;
 
@@ -79,16 +80,28 @@ public class GameInformation extends SceneComponent {
 
     @Override
     public void render() {
-    	int xPlacement = 40 + (longestTeam.length() * 6);
+        int xPlacement = 60 + (longestTeam.length() * 6);
+
+        // are we defender or attacker?
+        String defenderHighlight = "";
+        String attackerHighlight = "";
+        if (this.getContext().myTeam.name() == Team.GREEN.toString()) {
+            defenderHighlight = ">>>";
+        } else {
+            attackerHighlight = ">>>";
+        }
+
         Gdx.gl.glViewport(0,200, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
         batch.draw(panel, 5, 5);
         fontTeam.setColor(new Color(146 / 255f, 236 / 255f, 30 / 255f, 1));
-        fontTeam.draw(batch, this.defender + ":", 18,120 );
+        fontTeam.draw(batch, defenderHighlight, 18,120 );
+        fontTeam.draw(batch, this.defender + ":", 38,120 );
         fontPoints.draw(batch, Integer.toString(teamOneScore), xPlacement,118 );
 
         fontTeam.setColor(new Color(162 / 255f, 7 / 255f, 7 / 255f, 1));
-        fontTeam.draw(batch, this.attacker + ":", 18,97 );
+        fontTeam.draw(batch, attackerHighlight, 18,97 );
+        fontTeam.draw(batch, this.attacker + ":", 38,97 );
         fontPoints.draw(batch, Integer.toString(teamTwoScore), xPlacement,95 );
 
         int minutes = time / 60;
@@ -128,18 +141,18 @@ public class GameInformation extends SceneComponent {
         this.teamTwoScore = redPoints;
     }
 
-	public int getTime() {
-		return time;
-	}
-	
-	public void setTeamNames(String attacker, String defender) {
-		this.attacker = attacker;
-		this.defender = defender;
-		if(defender.length() > attacker.length()) {
-			this.longestTeam = defender;
-		}
-		else {
-			this.longestTeam = attacker;
-		}
-	}
+    public int getTime() {
+        return time;
+    }
+
+    public void setTeamNames(String attacker, String defender) {
+        this.attacker = attacker;
+        this.defender = defender;
+        if(defender.length() > attacker.length()) {
+            this.longestTeam = defender;
+        }
+        else {
+            this.longestTeam = attacker;
+        }
+    }
 }
