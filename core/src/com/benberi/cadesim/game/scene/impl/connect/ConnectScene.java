@@ -17,6 +17,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.benberi.cadesim.Constants;
@@ -216,14 +219,16 @@ public class ConnectScene implements GameScene, InputProcessor {
         shipType.setItems(blob);
         shipType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_ship")));
 
-        ResolutionTypeLabel[] blob3 = new ResolutionTypeLabel[4];
+        ResolutionTypeLabel[] blob3 = new ResolutionTypeLabel[5];
         blob3[0] = new ResolutionTypeLabel(ResolutionTypeLabel.defaultsize,"720p", labelStyle);
-        blob3[1] = new ResolutionTypeLabel(ResolutionTypeLabel.teneighty,"1080p", labelStyle);
-        blob3[2] = new ResolutionTypeLabel(ResolutionTypeLabel.fourteenforty,"1440p", labelStyle);
-        blob3[3] = new ResolutionTypeLabel(ResolutionTypeLabel.fourk,"4K", labelStyle);
+        blob3[1] = new ResolutionTypeLabel(ResolutionTypeLabel.sevenfifty,"750x700", labelStyle);
+        blob3[2] = new ResolutionTypeLabel(ResolutionTypeLabel.teneighty,"1080p", labelStyle);
+        blob3[3] = new ResolutionTypeLabel(ResolutionTypeLabel.fourteenforty,"1440p", labelStyle);
+        blob3[4] = new ResolutionTypeLabel(ResolutionTypeLabel.fourk,"4K", labelStyle);
         
         resolutionType.setItems(blob3);
         resolutionType.setSelectedIndex(Integer.parseInt(prop.getProperty("client.last_resolution")));;
+
         
         TeamTypeLabel[] blob2 = new TeamTypeLabel[2];
         blob2[0] = new TeamTypeLabel("Green", labelStyle);
@@ -237,6 +242,27 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage.addActor(shipType);
         stage.addActor(resolutionType);
         stage.addActor(teamType);
+
+        resolutionType.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // if graphics state not what it was, reload graphics
+                try {
+                    String last_res = getProperty("user.config", "client.last_resolution");
+
+                    if (Integer.parseInt(last_res) != resolutionType.getSelectedIndex()) {
+                        String[] resolution = restypeToRes(resolutionType.getSelectedIndex());
+                        changeProperty("user.config", "client.width", resolution[0]);
+                        changeProperty("user.config", "client.height", resolution[1]);
+                        changeProperty("user.config", "client.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+         });
     }
 
     @Override
@@ -268,9 +294,9 @@ public class ConnectScene implements GameScene, InputProcessor {
 
             batch.draw(shipBox, Gdx.graphics.getWidth() - 230, Gdx.graphics.getHeight() - 50);
             switch (shipType.getSelected().getType()) {
-	            case ShipTypeLabel.JUNK:
-	                batch.draw(junk, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
-	                break;
+                case ShipTypeLabel.JUNK:
+                    batch.draw(junk, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
+                    break;
                 case ShipTypeLabel.WB:
                     batch.draw(wb, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
                     break;
@@ -323,9 +349,9 @@ public class ConnectScene implements GameScene, InputProcessor {
         }
         else {
 
-			/*
-			 * Cheap way of animation dots lol...
-			 */
+            /*
+             * Cheap way of animation dots lol...
+             */
             String dot = "";
 
             if (connectAnimationState == 0) {
@@ -425,10 +451,10 @@ public class ConnectScene implements GameScene, InputProcessor {
                     stage.setKeyboardFocus(address);
                 } else {
                     try {
-						performLogin();
-					} catch (UnknownHostException e) {
-						return failed;
-					}
+                        performLogin();
+                    } catch (UnknownHostException e) {
+                        return failed;
+                    }
                 }
             }
             else {
@@ -460,10 +486,10 @@ public class ConnectScene implements GameScene, InputProcessor {
         }
         else if (loginHover) {
             try {
-				performLogin();
-			} catch (UnknownHostException e) {
-				return failed;
-			}
+                performLogin();
+            } catch (UnknownHostException e) {
+                return failed;
+            }
         }
         return false;
     }
@@ -484,24 +510,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         else {
             // Save current choices for next time
             try {
-            	String[] resolution = new String[2];
-            	int restype = resolutionType.getSelectedIndex();
-            	if (restype == 0) {
-            		resolution[0] = "1240";
-            		resolution[1] = "680";
-            	}
-            	if (restype == 1) {
-            		resolution[0] = "1800";
-            		resolution[1] = "1000";
-            	}
-            	if (restype == 2) {
-            		resolution[0] = "2500";
-            		resolution[1] = "1400";
-            	}
-            	if (restype == 3) {
-            		resolution[0] = "3600";
-            		resolution[1] = "2000";
-            	}
+                String[] resolution = restypeToRes(resolutionType.getSelectedIndex());
                 changeProperty("user.config", "user.username", name.getText());
                 changeProperty("user.config", "user.last_address", address.getText());
                 changeProperty("user.config", "client.width", resolution[0]);
@@ -517,12 +526,51 @@ public class ConnectScene implements GameScene, InputProcessor {
             context.connect(name.getText(), address.getText(), shipType.getSelected().getType(), teamType.getSelected().getType());
         }
     }
-    	
+
+    String[] restypeToRes(int restype) {
+        String[] resolution = new String[2];
+        switch (restype) {
+        case 0:
+            resolution[0] = "1240";
+            resolution[1] = "680";
+            break;
+        case 1:
+            resolution[0] = "750";
+            resolution[1] = "700";
+            break;
+        case 2:
+            resolution[0] = "1800";
+            resolution[1] = "1000";
+            break;
+        case 3:
+            resolution[0] = "2500";
+            resolution[1] = "1400";
+            break;
+        case 4:
+            resolution[0] = "3600";
+            resolution[1] = "2000";
+            break;
+        default:
+            // safe default
+            resolution[0] = "640";
+            resolution[1] = "480";
+            break;
+        }
+
+        return resolution;
+    }
+
     public static void changeProperty(String filename, String key, String value) throws IOException {
         Properties prop =new Properties();
         prop.load(new FileInputStream(filename));
         prop.setProperty(key, value);
         prop.store(new FileOutputStream(filename),null);
+    }
+
+    public static String getProperty(String filename, String key) throws IOException {
+        Properties prop =new Properties();
+        prop.load(new FileInputStream(filename));
+        return prop.getProperty(key);
     }
 
     @Override
@@ -534,11 +582,12 @@ public class ConnectScene implements GameScene, InputProcessor {
     public boolean mouseMoved(int screenX, int screenY) {
         int width = Gdx.graphics.getWidth();
         int height = Gdx.graphics.getHeight();
-    	if (popup) {
-    		int popupleftedge = width / 2 - 200;
-    		int popuprightedge = width / 2 + 200;
-    		int popuptopedge = height / 2;
-    		int popupbottomedge = height / 2 + 50;
+
+        if (popup) {
+            int popupleftedge = width / 2 - 200;
+            int popuprightedge = width / 2 + 200;
+            int popuptopedge = height / 2;
+            int popupbottomedge = height / 2 + 50;
             loginHover = false;
            // 505 398
             popupCloseHover = screenX >= popupleftedge && screenX <= popuprightedge && screenY >= popuptopedge && screenY <= popupbottomedge;

@@ -86,9 +86,9 @@ public class GameInformation extends SceneComponent {
         String defenderHighlight = "";
         String attackerHighlight = "";
         if (this.getContext().myTeam.name() == Team.GREEN.toString()) {
-            defenderHighlight = ">>>";
+            defenderHighlight = "->";
         } else {
-            attackerHighlight = ">>>";
+            attackerHighlight = "->";
         }
 
         Gdx.gl.glViewport(0,200, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
