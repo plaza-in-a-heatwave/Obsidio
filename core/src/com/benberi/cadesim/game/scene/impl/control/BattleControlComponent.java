@@ -244,16 +244,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     @Override
     public void update() {
+    	int turnDuration = getContext().getTurnDuration();
+    	System.out.println(turnDuration);
 
-        double ratio = (double) sandTopTexture.getHeight() / (double) Constants.TURN_TIME;
+        double ratio = (double) sandTopTexture.getHeight() / (double) turnDuration;
 
         sandTop.setRegionY(sandTopTexture.getHeight() - (int) Math.round(time * ratio));
         sandTop.setRegionHeight((int) Math.round(time * ratio));
 
-        ratio =  (double) sandBottomTexture.getHeight() / (double) Constants.TURN_TIME;
+        ratio =  (double) sandBottomTexture.getHeight() / (double) turnDuration;
 
-        sandBottom.setRegionY(sandBottomTexture.getHeight() - (int) Math.round((Constants.TURN_TIME - time) * ratio));
-        sandBottom.setRegionHeight((int) Math.round((Constants.TURN_TIME - time) * ratio));
+        sandBottom.setRegionY(sandBottomTexture.getHeight() - (int) Math.round((turnDuration - time) * ratio));
+        sandBottom.setRegionHeight((int) Math.round((turnDuration - time) * ratio));
     }
 
     @Override

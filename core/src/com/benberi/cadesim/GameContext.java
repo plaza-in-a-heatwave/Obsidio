@@ -36,8 +36,35 @@ public class GameContext {
     private Channel serverChannel;
 
     public boolean clear;
-    
+
     private int shipId = 0;
+
+    /**
+     * to allow client to display popup messages properly
+     */
+    private boolean haveServerResponse = false;
+
+    /**
+     * Constants to be populated by the server
+     */
+    private int turnDuration;
+    private int roundDuration;
+
+    public int getTurnDuration() {
+    	return this.turnDuration;
+    }
+
+	public void setTurnDuration(int turnDuration) {
+    	this.turnDuration = turnDuration;
+    }
+
+    public int getRoundDuration() {
+		return roundDuration;
+	}
+
+	public void setRoundDuration(int roundDuration) {
+		this.roundDuration = roundDuration;
+	}
 
     /**
      * The main class of the game
@@ -117,12 +144,12 @@ public class GameContext {
         textures = new TextureCollection(this);
         textures.create();
 
-        
+
 
         this.connectScene = new ConnectScene(this);
         connectScene.create();
-        
-        
+
+
 
     }
 
@@ -258,6 +285,7 @@ public class GameContext {
      * @throws UnknownHostException 
      */
     public void connect(final String displayName, String ip, int ship, int team) throws UnknownHostException {
+    	haveServerResponse = false; // reset for next connect
     	if(!RandomUtils.validIP(ip) && RandomUtils.validUrl(ip)) {
     		try {
 	    		InetAddress address = InetAddress.getByName(ip); 
@@ -279,7 +307,11 @@ public class GameContext {
             @Override
             public void onFailure() {
                 connectScene.setState(ConnectionSceneState.DEFAULT);
-                connectScene.loginFailed();
+
+                // only show if server appears dead
+                if (!haveServerResponse) {
+                	connectScene.loginFailed();
+                }
             }
         }));
     }
@@ -291,6 +323,7 @@ public class GameContext {
      */
     public void handleLoginResponse(int response) {
         if (response != LoginResponsePacket.SUCCESS) {
+        	haveServerResponse = true;
             serverChannel.disconnect();
 
             switch (response) {

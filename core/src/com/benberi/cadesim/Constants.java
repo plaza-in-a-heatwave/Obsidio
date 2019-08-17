@@ -2,12 +2,12 @@ package com.benberi.cadesim;
 
 public class Constants {
 
-    public static final String name = "Obsidio Beta v1.9.3";
+    public static final String name = "Cadesim client v1.9.4";
 
-    public static final int VERSION = 7;
+    public static final int VERSION = 8; // internal use only
 
     /**
-     * The port the simulator is using
+     * The default port the simulator is using
      */
     public static int PROTOCOL_PORT = 4666;
 
@@ -15,6 +15,4 @@ public class Constants {
      * If to debug
      */
     public static boolean PACKET_DEBUG = false;
-
-    public static final int TURN_TIME = 15;
 }

@@ -69,6 +69,10 @@ public class Packet {
     public int readInt() {
         return this.dataBuffer.readInt();
     }
+    
+    public int readShort() {
+    	return this.dataBuffer.readShort();
+    }
 
     public byte[] readBytes(int length) {
         byte[] bytes = new byte[length];

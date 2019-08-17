@@ -19,6 +19,10 @@ public class LoginResponsePacket extends ClientPacketExecutor {
     @Override
     public void execute(Packet p) {
         int response = p.readByte();
+        int turnDuration = p.readShort();
+        int roundDuration = p.readShort();
+        getContext().setTurnDuration(turnDuration);
+        getContext().setRoundDuration(roundDuration);
         getContext().handleLoginResponse(response);
     }
 
