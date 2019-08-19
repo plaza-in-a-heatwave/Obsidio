@@ -67,11 +67,6 @@ public class GameContext {
 	}
 
     /**
-     * The main class of the game
-     */
-    private BlockadeSimulator simulator;
-
-    /**
      * The main input processor of the game
      */
     private GameInputProcessor input;
@@ -129,7 +124,6 @@ public class GameContext {
     public Team myTeam;
 
     public GameContext(BlockadeSimulator main) {
-        this.simulator = main;
         this.tools = new GameToolsContainer();
 
         entities = new EntityManager(this);
@@ -400,5 +394,10 @@ public class GameContext {
     public void notifyFinishTurn() {
         TurnFinishNotification packet = new TurnFinishNotification();
         sendPacket(packet);
+    }
+    
+    public void sendOceansideRequestPacket() {
+    	OceansideRequestPacket packet = new OceansideRequestPacket();
+    	sendPacket(packet);
     }
 }

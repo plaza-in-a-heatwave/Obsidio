@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.benberi.cadesim.Constants;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.SceneComponent;
@@ -89,6 +88,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
      * modifier to calculate button placement
      */
     int heightmod = Gdx.graphics.getHeight() - 700;
+    int absheight = Gdx.graphics.getHeight(); // absolute height
+    
+    
     /**
      * Textures
      */
@@ -120,6 +122,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private TextureRegion emptyCannonLeft;
     private TextureRegion emptyCannonRight;
     private Texture controlBackground;
+    private Texture disengageBackground;
     private Texture shipStatus;
     private Texture shipStatusBg;
     private TextureRegion damage;
@@ -135,6 +138,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     private Texture cannonSelection;
     private Texture cannonSelectionEmpty;
+    
+    private Texture disengage;
+    private int disengageBackgroundOriginX = 5+336+5;
+	private int disengageBackgroundOriginY = 8;
+	private int disengageOriginX = disengageBackgroundOriginX+30;
+	private int disengageOriginY = disengageBackgroundOriginY + 24;
 
     private int manuaverSlot = 3;
 
@@ -176,6 +185,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         radioOff = new Texture("assets/ui/radio-off.png");
         autoOn = new Texture("assets/ui/auto-on.png");
         autoOff = new Texture("assets/ui/auto-off.png");
+        
+        disengage = new Texture("assets/ui/disengage.png");
 
         sandTopTexture = new Texture("assets/ui/sand_top.png");
         sandBottomTexture = new Texture("assets/ui/sand_bot.png");
@@ -192,6 +203,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         shiphand = new Texture("assets/ui/shiphand.png");
         hourGlass = new Texture("assets/ui/hourglass.png");
         controlBackground = new Texture("assets/ui/moves-background.png");
+        disengageBackground = new Texture("assets/ui/disengage_background.png");
         shipStatus = new Texture("assets/ui/status.png");
         shipStatusBg = new Texture("assets/ui/status-bg.png");
         moveGetTargetTexture = new Texture("assets/ui/sel_border_square.png");
@@ -225,7 +237,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
         moveTargetSelForce = new TextureRegion(moveGetTargetTexture, 0, 0, 36, 36);
         moveTargetSelAuto = new TextureRegion(moveGetTargetTexture, 36, 0, 36, 36);
-
+        
         setDamagePercentage(70);
         setBilgePercentage(30);
 
@@ -245,7 +257,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     @Override
     public void update() {
     	int turnDuration = getContext().getTurnDuration();
-    	System.out.println(turnDuration);
 
         double ratio = (double) sandTopTexture.getHeight() / (double) turnDuration;
 
@@ -261,6 +272,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     @Override
     public void render() {
         renderMoveControl();
+        renderDisengage();
     }
 
     @Override
@@ -291,6 +303,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     private boolean isPlacingRightCannons(float x, float y) {
         return x >= 241 && x <= 271;
+    }
+    
+    private boolean isClickingDisengage(float x, float y) {
+    	return
+    		(x >= disengageOriginX) &&
+    		(x <= (disengageOriginX + disengage.getWidth() + 1)) &&
+    		(y >= (absheight - disengageOriginY - disengage.getHeight())) &&
+    		(y <= (absheight - disengageOriginY - 1));
     }
 
     private int getSlotForPosition(float x, float y) {
@@ -352,6 +372,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     @Override
     public boolean handleRelease(float x, float y, int button) {
+    	System.out.println("x:" + x + ", y:" + y);
         if (isDragging) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
@@ -390,73 +411,77 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         } else {
             if (executionMoves) {
                 return false;
-             }
-             if (isPlacingMoves(x, y)) {
-                 if (y >= heightmod + 538 && y <= heightmod + 569) {
-                     handleMovePlace(0, button);
-                 }
-                 else if (y >= heightmod + 573 && y <= heightmod + 603) {
-                     handleMovePlace(1, button);
-                 }
-                 else if (y >= heightmod + 606 && y <= heightmod + 637) {
-                     handleMovePlace(2, button);
-                 }
-                 else if(y >= heightmod + 642 && y <= heightmod + 670) {
-                     handleMovePlace(3, button);
-                 }
-             }
-             else if (isPlacingLeftCannons(x, y)) {
-                 if (y >= heightmod + 548 && y <= heightmod + 562) {
-                     getContext().sendAddCannon(0, 0);
-                 }
-                 else if (y >= heightmod + 582 && y <= heightmod + 597) {
-                     getContext().sendAddCannon(0, 1);
-                 }
-                 else if (y >= heightmod + 618 && y <= heightmod + 630) {
-                     getContext().sendAddCannon(0, 2);
-                 }
-                 else if (y >= heightmod + 650 && y <= heightmod + 665) {
-                     getContext().sendAddCannon(0, 3);
-                 }
-             }
-             else if (isPlacingRightCannons(x, y)) {
-                 if (y >= heightmod + 548 && y <= heightmod + 562) {
-                     getContext().sendAddCannon(1, 0);
-                 }
-                 else if (y >= heightmod + 582 && y <= heightmod + 597) {
-                     getContext().sendAddCannon(1, 1);
-                 }
-                 else if (y >= heightmod + 618 && y <= heightmod + 630) {
-                     getContext().sendAddCannon(1, 2);
-                 }
-                 else if (y >= heightmod + 650 && y <= heightmod + 665) {
-                     getContext().sendAddCannon(1, 3);
-                 }
-             }
-             else if (isTogglingAuto(x, y)) {
-                 if (auto) {
-                     auto = false;
-                 }
-                 else {
-                     auto = true;
-                 }
-                 getContext().sendToggleAuto(auto);
-             }
-             else if (!auto){
-                  if (isChosedLeft(x, y)) {
-                     this.targetMove = MoveType.LEFT;
-                     getContext().sendGenerationTarget(targetMove);
-                 }
-                 else if (isChosedForward(x, y)) {
-                     this.targetMove = MoveType.FORWARD;
-                      getContext().sendGenerationTarget(targetMove);
-                 }
-                 else if (isChosedRight(x, y)) {
-                     this.targetMove = MoveType.RIGHT;
-                      getContext().sendGenerationTarget(targetMove);
-                 }
-             }
-        }
+            }
+			if (isPlacingMoves(x, y)) {
+			    if (y >= heightmod + 538 && y <= heightmod + 569) {
+			        handleMovePlace(0, button);
+			    }
+			    else if (y >= heightmod + 573 && y <= heightmod + 603) {
+			        handleMovePlace(1, button);
+			    }
+			    else if (y >= heightmod + 606 && y <= heightmod + 637) {
+			        handleMovePlace(2, button);
+			    }
+			    else if(y >= heightmod + 642 && y <= heightmod + 670) {
+			        handleMovePlace(3, button);
+			    }
+			}
+			else if (isPlacingLeftCannons(x, y)) {
+			    if (y >= heightmod + 548 && y <= heightmod + 562) {
+			        getContext().sendAddCannon(0, 0);
+			    }
+			    else if (y >= heightmod + 582 && y <= heightmod + 597) {
+			        getContext().sendAddCannon(0, 1);
+			    }
+			    else if (y >= heightmod + 618 && y <= heightmod + 630) {
+			        getContext().sendAddCannon(0, 2);
+			    }
+			    else if (y >= heightmod + 650 && y <= heightmod + 665) {
+			        getContext().sendAddCannon(0, 3);
+			    }
+			}
+			else if (isPlacingRightCannons(x, y)) {
+			    if (y >= heightmod + 548 && y <= heightmod + 562) {
+			        getContext().sendAddCannon(1, 0);
+			    }
+			    else if (y >= heightmod + 582 && y <= heightmod + 597) {
+			        getContext().sendAddCannon(1, 1);
+			    }
+			    else if (y >= heightmod + 618 && y <= heightmod + 630) {
+			        getContext().sendAddCannon(1, 2);
+			    }
+			    else if (y >= heightmod + 650 && y <= heightmod + 665) {
+			        getContext().sendAddCannon(1, 3);
+			    }
+			}
+			else if (isTogglingAuto(x, y)) {
+			    if (auto) {
+			        auto = false;
+			    }
+			    else {
+			        auto = true;
+			    }
+			    getContext().sendToggleAuto(auto);
+			}
+			else if (isClickingDisengage(x, y)) {
+				System.out.println("yes!!");
+				getContext().sendOceansideRequestPacket();
+			}
+			else if (!auto){
+			    if (isChosedLeft(x, y)) {
+			        this.targetMove = MoveType.LEFT;
+			        getContext().sendGenerationTarget(targetMove);
+			    }
+			    else if (isChosedForward(x, y)) {
+			        this.targetMove = MoveType.FORWARD;
+			        getContext().sendGenerationTarget(targetMove);
+			    }
+			     else if (isChosedRight(x, y)) {
+			         this.targetMove = MoveType.RIGHT;
+			         getContext().sendGenerationTarget(targetMove);
+			    }
+			}
+	    }
         return false;
     }
 
@@ -634,9 +659,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private void renderMoveControl() {
         batch.begin();
 
-        // The yellow BG
+        // The yellow BG for tokens and moves and hourglass
         batch.draw(controlBackground, 5, 8, controlBackground.getWidth(), controlBackground.getHeight() + 5);
-
+        
         drawMoveHolder();
         drawShipStatus();
         drawTimer();
@@ -654,6 +679,16 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                 batch.draw(t, draggingPosition.x - t.getRegionWidth() / 2, Gdx.graphics.getHeight() - draggingPosition.y - t.getRegionHeight() / 2);
             }
         }
+        batch.end();
+    }
+    
+    private void renderDisengage() {
+    	batch.begin();
+    	
+    	// the background for pirates aboard, disengage, etc
+        batch.draw(disengageBackground, disengageBackgroundOriginX, disengageBackgroundOriginY, disengageBackground.getWidth(), disengageBackground.getHeight() + 5); 
+        batch.draw(disengage, disengageOriginX, disengageOriginY, disengage.getWidth(), disengage.getHeight());
+
         batch.end();
     }
 
