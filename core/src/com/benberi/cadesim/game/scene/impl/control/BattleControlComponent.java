@@ -138,12 +138,19 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     private Texture cannonSelection;
     private Texture cannonSelectionEmpty;
-    
-    private Texture disengage;
+
+    private Texture disengageUp;
+    private Texture disengageDown;
     private int disengageBackgroundOriginX = 5+336+5;
 	private int disengageBackgroundOriginY = 8;
 	private int disengageOriginX = disengageBackgroundOriginX+30;
 	private int disengageOriginY = disengageBackgroundOriginY + 24;
+
+	/**
+	 * state of disengage button. true if pushed, false if not.
+	 */
+	private boolean disengageButtonState = false; // initial
+
 
     private int manuaverSlot = 3;
 
@@ -186,7 +193,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         autoOn = new Texture("assets/ui/auto-on.png");
         autoOff = new Texture("assets/ui/auto-off.png");
         
-        disengage = new Texture("assets/ui/disengage.png");
+        disengageUp = new Texture("assets/ui/disengage.png");
+        disengageDown = new Texture("assets/ui/disengagePressed.png");
 
         sandTopTexture = new Texture("assets/ui/sand_top.png");
         sandBottomTexture = new Texture("assets/ui/sand_bot.png");
@@ -286,6 +294,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     @Override
     public boolean handleClick(float x, float y, int button) {
+    	// only activate the disengage click if it's not active already
+    	if (!disengageButtonState) {
+    		if (isClickingDisengage(x, y)) {
+    			disengageButtonState = true;
+    		}
+    	}
         return false;
     }
 
@@ -308,8 +322,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private boolean isClickingDisengage(float x, float y) {
     	return
     		(x >= disengageOriginX) &&
-    		(x <= (disengageOriginX + disengage.getWidth() + 1)) &&
-    		(y >= (absheight - disengageOriginY - disengage.getHeight())) &&
+    		(x <= (disengageOriginX + disengageUp.getWidth() + 1)) &&
+    		(y >= (absheight - disengageOriginY - disengageUp.getHeight())) &&
     		(y <= (absheight - disengageOriginY - 1));
     }
 
@@ -367,12 +381,19 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (isDragging) {
             draggingPosition = new Vector2(x, y);
         }
+        
+        // if we drag off disengage, 
+        // deactivate it with no penalty to the user.
+        if (disengageButtonState) {
+        	if (!isClickingDisengage(x, y)) {
+        		disengageButtonState = false;
+        	}
+        }
         return false;
     }
 
     @Override
     public boolean handleRelease(float x, float y, int button) {
-    	System.out.println("x:" + x + ", y:" + y);
         if (isDragging) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
@@ -464,8 +485,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 			    getContext().sendToggleAuto(auto);
 			}
 			else if (isClickingDisengage(x, y)) {
-				System.out.println("yes!!");
 				getContext().sendOceansideRequestPacket();
+				disengageButtonState = false;
 			}
 			else if (!auto){
 			    if (isChosedLeft(x, y)) {
@@ -682,13 +703,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         batch.end();
     }
     
+    /**
+     * background for disengage button / pirates aboard
+     */
     private void renderDisengage() {
     	batch.begin();
-    	
-    	// the background for pirates aboard, disengage, etc
         batch.draw(disengageBackground, disengageBackgroundOriginX, disengageBackgroundOriginY, disengageBackground.getWidth(), disengageBackground.getHeight() + 5); 
-        batch.draw(disengage, disengageOriginX, disengageOriginY, disengage.getWidth(), disengage.getHeight());
-
+        if (disengageButtonState == false) {
+        	batch.draw(disengageUp, disengageOriginX, disengageOriginY, disengageUp.getWidth(), disengageUp.getHeight());
+        }
+        else {
+        	batch.draw(disengageDown, disengageOriginX, disengageOriginY, disengageDown.getWidth(), disengageDown.getHeight());
+        }
         batch.end();
     }
 
