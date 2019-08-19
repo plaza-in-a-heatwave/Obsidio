@@ -931,6 +931,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
             movesHolder[i].resetRight();
         }
         manuaverSlot = 3;
+
+        // fix stuck disengage button if it was clicked across a turn
+        // with no penalty to the user
+        if (disengageButtonState) {
+        	disengageButtonState = false;
+        }
     }
 
     public void setCannons(int side, int slot, int amount) {
