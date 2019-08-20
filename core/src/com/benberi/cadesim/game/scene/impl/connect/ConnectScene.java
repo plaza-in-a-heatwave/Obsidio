@@ -393,7 +393,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         batch.begin();
             font.setColor(Color.YELLOW);
-            font.draw(batch, Constants.name, 15, Gdx.graphics.getHeight() - 20);
+            font.draw(batch, Constants.name + " (version " + Constants.VERSION + ")", 15, Gdx.graphics.getHeight() - 20);
             batch.end();
 
     }

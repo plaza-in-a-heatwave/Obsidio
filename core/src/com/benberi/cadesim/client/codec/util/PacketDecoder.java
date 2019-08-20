@@ -89,8 +89,6 @@ public class PacketDecoder extends StatefulByteDecoder<PacketDecodeState> {
             else {
                 this.lengthType = PacketLength.MEDIUM;
             }
-            if (Constants.PACKET_DEBUG)
-                System.out.println("length-type: " + length);
             setState(PacketDecodeState.LENGTH);
         }
     }
@@ -114,9 +112,6 @@ public class PacketDecoder extends StatefulByteDecoder<PacketDecodeState> {
                     this.length = buffer.readUnsignedMedium();
                     break;
             }
-
-            if (Constants.PACKET_DEBUG)
-                System.out.println("Length: " + length);
             setState(PacketDecodeState.DATA);
         }
     }
@@ -131,10 +126,6 @@ public class PacketDecoder extends StatefulByteDecoder<PacketDecodeState> {
         if (buffer.readableBytes() >= length) {
             ByteBuf data = buffer.readBytes(length);
             out.add(new Packet(opcode, data));
-
-            if (Constants.PACKET_DEBUG)
-                System.out.println("data length: " + data.readableBytes());
-
             setState(PacketDecodeState.OPCODE);
         }
     }

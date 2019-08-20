@@ -537,11 +537,9 @@ public class SeaBattleScene implements GameScene {
 //            return (x * GameTile.TILE_HEIGHT / 2) + (y * GameTile.TILE_HEIGHT / 2) - (region.getRegionHeight() / 2);
 //        }
 
-        /*
-         * Render cannon balls
-         */
         for (Vessel vessel : context.getEntities().listVesselEntities()) {
-            for (CannonBall c : vessel.getCannonballs()) {
+            // render cannon balls
+        	for (CannonBall c : vessel.getCannonballs()) {
                 float cx = getIsometricX(c.getX(), c.getY(), c);
                 float cy = getIsometricY(c.getX(), c.getY(), c);
                 if (!canDraw(cx, cy, c.getRegionWidth(), c.getRegionHeight())) {
@@ -558,6 +556,7 @@ public class SeaBattleScene implements GameScene {
                 }
             }
 
+        	// render smoke
             if (vessel.isSmoking()) {
                 TextureRegion r = vessel.getShootSmoke();
                 float cx = getIsometricX(vessel.getX(), vessel.getY(), r);
@@ -568,11 +567,10 @@ public class SeaBattleScene implements GameScene {
             }
 
             batch.end();
+            
+            // render move bar
             renderer.begin(ShapeRenderer.ShapeType.Line);
-            // X position of the vessel
             float x = getIsometricX(vessel.getX(), vessel.getY(), vessel);
-
-            // Y position of the vessel
             float y = getIsometricY(vessel.getX(), vessel.getY(), vessel);
 
             int width = vessel.getMoveType().getBarWidth();
@@ -592,6 +590,7 @@ public class SeaBattleScene implements GameScene {
             }
             renderer.end();
 
+            // draw flags above vessel
             batch.begin();
             GlyphLayout layout = new GlyphLayout(font, vessel.getName());
 

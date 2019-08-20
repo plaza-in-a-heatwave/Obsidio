@@ -250,7 +250,7 @@ public class GameContext {
      */
     public void sendLoginPacket(String display, int ship, int team) {
         LoginPacket packet = new LoginPacket();
-        packet.setVersion(Constants.VERSION);
+        packet.setVersion(Constants.PROTOCOL_VERSION);
         packet.setName(display);
         packet.setShip(ship);
         packet.setTeam(team);
