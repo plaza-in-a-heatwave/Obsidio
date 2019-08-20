@@ -548,13 +548,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                     placeMove(position, MoveType.RIGHT, true);
                     getContext().sendSelectMoveSlot(position, MoveType.RIGHT);
                 }
-                else if (leftMoves > 0) {
-                    placeMove(position, MoveType.LEFT, true);
-                    getContext().sendSelectMoveSlot(position, MoveType.LEFT);
-                }
                 else if (forwardMoves > 0) {
                     placeMove(position, MoveType.FORWARD, true);
                     getContext().sendSelectMoveSlot(position, MoveType.FORWARD);
+                }
+                else if (leftMoves > 0) {
+                    placeMove(position, MoveType.LEFT, true);
+                    getContext().sendSelectMoveSlot(position, MoveType.LEFT);
                 }
             }
         }
