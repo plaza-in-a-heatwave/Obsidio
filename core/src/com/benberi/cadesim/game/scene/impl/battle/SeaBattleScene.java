@@ -2,6 +2,7 @@ package com.benberi.cadesim.game.scene.impl.battle;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -50,6 +51,16 @@ public class SeaBattleScene implements GameScene {
      * The camera view of the scene
      */
     private OrthographicCamera camera;
+    
+    /**
+     * Whether the camera follows the vessel
+     * Initially true on respawn
+     * 
+     * As per PP, drag moves the camera anywhere
+     *     if you right clicked, camera stays when you release
+     *     if you left  clicked, camera locks back onto ship
+     */
+    private boolean cameraFollowsVessel = true;
 
     /**
      * The sea texture
@@ -133,7 +144,7 @@ public class SeaBattleScene implements GameScene {
     public void update()
     {
         //System.out.println(Gdx.graphics.getDeltaTime());
-
+    	
         // update the camera
         camera.update();
 
@@ -353,6 +364,15 @@ public class SeaBattleScene implements GameScene {
 
                 }
             }
+            
+            // let camera move with vessel if it's supposed to
+            if (cameraFollowsVessel) {
+    			Vessel myVessel = context.getEntities().getVesselByName(context.myVessel);
+    			camera.translate(
+    					getIsometricX(myVessel.getX(), myVessel.getY(), myVessel) - camera.position.x,
+    					getIsometricY(myVessel.getX(), myVessel.getY(), myVessel) - camera.position.y
+    			);
+        	}
 
             if (vessel.isSmoking()) {
                 vessel.tickSmoke();
@@ -642,8 +662,11 @@ public class SeaBattleScene implements GameScene {
     }
 
     @Override
-    public boolean handleClick(float x, float y, int button) {
+    public boolean handleClick(float x, float y, int button) {    	
         if (y < camera.viewportHeight) {
+        	// handle camera not following vessel
+        	cameraFollowsVessel = false;
+
             this.canDragMap = true;
             return true;
         }
@@ -659,9 +682,22 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public boolean handleClickRelease(float x, float y, int button) {
-        if (y < camera.viewportHeight) {
+    	if (y < camera.viewportHeight) {
+    		// handle camera following/not following vessel
+        	if (button == Input.Buttons.RIGHT) {
+        		cameraFollowsVessel = false;
+        	} else {
+        		this.cameraFollowsVessel = true;
+        		Vessel vessel = context.getEntities().getVesselByName(context.myVessel);
+        		camera.translate(
+        				getIsometricX(vessel.getX(), vessel.getY(), vessel) - camera.position.x,
+        				getIsometricY(vessel.getX(), vessel.getY(), vessel) - camera.position.y
+        		);
+        	}
+    		
             return true;
         }
+        
         this.canDragMap = false;
         return false;
     }
@@ -721,8 +757,10 @@ public class SeaBattleScene implements GameScene {
     }
 
     public void initializePlayerCamera(Vessel vessel) {
-        float cameraX = getIsometricX(vessel.getX(), vessel.getY(), vessel);
-        float cameraY = getIsometricY(vessel.getX(), vessel.getY(), vessel);
-        camera.translate(cameraX, cameraY);
+        cameraFollowsVessel = true; // force reset
+        camera.translate(
+				getIsometricX(vessel.getX(), vessel.getY(), vessel) - camera.position.x,
+				getIsometricY(vessel.getX(), vessel.getY(), vessel) - camera.position.y
+		);
     }
 }
