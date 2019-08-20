@@ -929,8 +929,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
             movesHolder[i].setMove(MoveType.NONE);
             movesHolder[i].resetLeft();
             movesHolder[i].resetRight();
+
+            // fix stuck moves that might appear after a turn completes
+            getContext().sendSelectMoveSlot(i, MoveType.NONE);
         }
         manuaverSlot = 3;
+        getContext().sendManuaverSlotChanged(3);
 
         // fix stuck disengage button if it was clicked across a turn
         // with no penalty to the user
