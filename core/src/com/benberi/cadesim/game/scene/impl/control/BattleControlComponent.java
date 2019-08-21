@@ -122,7 +122,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private TextureRegion emptyCannonLeft;
     private TextureRegion emptyCannonRight;
     private Texture controlBackground;
-    private Texture disengageBackground;
+    private Texture goOceansideBackground;
     private Texture shipStatus;
     private Texture shipStatusBg;
     private TextureRegion damage;
@@ -139,17 +139,17 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private Texture cannonSelection;
     private Texture cannonSelectionEmpty;
 
-    private Texture disengageUp;
-    private Texture disengageDown;
-    private int disengageBackgroundOriginX = 5+336+5;
-	private int disengageBackgroundOriginY = 8;
-	private int disengageOriginX = disengageBackgroundOriginX+30;
-	private int disengageOriginY = disengageBackgroundOriginY + 24;
+    private Texture goOceansideUp;
+    private Texture goOceansideDown;
+    private int goOceansideBackgroundOriginX = 5+336+5;
+	private int goOceansideBackgroundOriginY = 8;
+	private int goOceansideOriginX = goOceansideBackgroundOriginX + 19;
+	private int goOceansideOriginY = goOceansideBackgroundOriginY + 24;
 
 	/**
-	 * state of disengage button. true if pushed, false if not.
+	 * state of goOceanside button. true if pushed, false if not.
 	 */
-	private boolean disengageButtonState = false; // initial
+	private boolean goOceansideButtonIsDown = false; // initial
 
 
     private int manuaverSlot = 3;
@@ -193,8 +193,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         autoOn = new Texture("assets/ui/auto-on.png");
         autoOff = new Texture("assets/ui/auto-off.png");
         
-        disengageUp = new Texture("assets/ui/disengage.png");
-        disengageDown = new Texture("assets/ui/disengagePressed.png");
+        goOceansideUp = new Texture("assets/ui/go_oceanside.png");
+        goOceansideDown = new Texture("assets/ui/go_oceansidePressed.png");
 
         sandTopTexture = new Texture("assets/ui/sand_top.png");
         sandBottomTexture = new Texture("assets/ui/sand_bot.png");
@@ -211,7 +211,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         shiphand = new Texture("assets/ui/shiphand.png");
         hourGlass = new Texture("assets/ui/hourglass.png");
         controlBackground = new Texture("assets/ui/moves-background.png");
-        disengageBackground = new Texture("assets/ui/disengage_background.png");
+        goOceansideBackground = new Texture("assets/ui/go_oceanside_background.png");
         shipStatus = new Texture("assets/ui/status.png");
         shipStatusBg = new Texture("assets/ui/status-bg.png");
         moveGetTargetTexture = new Texture("assets/ui/sel_border_square.png");
@@ -280,7 +280,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     @Override
     public void render() {
         renderMoveControl();
-        renderDisengage();
+        renderGoOceanside();
     }
 
     @Override
@@ -295,9 +295,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     @Override
     public boolean handleClick(float x, float y, int button) {
     	// only activate the disengage click if it's not active already
-    	if (!disengageButtonState) {
+    	if (!goOceansideButtonIsDown) {
     		if (isClickingDisengage(x, y)) {
-    			disengageButtonState = true;
+    			goOceansideButtonIsDown = true;
     		}
     	}
         return false;
@@ -321,10 +321,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     
     private boolean isClickingDisengage(float x, float y) {
     	return
-    		(x >= disengageOriginX) &&
-    		(x <= (disengageOriginX + disengageUp.getWidth() + 1)) &&
-    		(y >= (absheight - disengageOriginY - disengageUp.getHeight())) &&
-    		(y <= (absheight - disengageOriginY - 1));
+    		(x >= goOceansideOriginX) &&
+    		(x <= (goOceansideOriginX + goOceansideUp.getWidth() + 1)) &&
+    		(y >= (absheight - goOceansideOriginY - goOceansideUp.getHeight())) &&
+    		(y <= (absheight - goOceansideOriginY - 1));
     }
 
     private int getSlotForPosition(float x, float y) {
@@ -384,9 +384,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         
         // if we drag off disengage, 
         // deactivate it with no penalty to the user.
-        if (disengageButtonState) {
+        if (goOceansideButtonIsDown) {
         	if (!isClickingDisengage(x, y)) {
-        		disengageButtonState = false;
+        		goOceansideButtonIsDown = false;
         	}
         }
         return false;
@@ -486,7 +486,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 			}
 			else if (isClickingDisengage(x, y)) {
 				getContext().sendOceansideRequestPacket();
-				disengageButtonState = false;
+				goOceansideButtonIsDown = false;
 			}
 			else if (!auto){
 			    if (isChosedLeft(x, y)) {
@@ -706,14 +706,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     /**
      * background for disengage button / pirates aboard
      */
-    private void renderDisengage() {
+    private void renderGoOceanside() {
     	batch.begin();
-        batch.draw(disengageBackground, disengageBackgroundOriginX, disengageBackgroundOriginY, disengageBackground.getWidth(), disengageBackground.getHeight() + 5); 
-        if (disengageButtonState == false) {
-        	batch.draw(disengageUp, disengageOriginX, disengageOriginY, disengageUp.getWidth(), disengageUp.getHeight());
+        batch.draw(goOceansideBackground, goOceansideBackgroundOriginX, goOceansideBackgroundOriginY, goOceansideBackground.getWidth(), goOceansideBackground.getHeight() + 5); 
+        if (goOceansideButtonIsDown == false) {
+        	batch.draw(goOceansideUp, goOceansideOriginX, goOceansideOriginY, goOceansideUp.getWidth(), goOceansideUp.getHeight());
         }
         else {
-        	batch.draw(disengageDown, disengageOriginX, disengageOriginY, disengageDown.getWidth(), disengageDown.getHeight());
+        	batch.draw(goOceansideDown, goOceansideOriginX, goOceansideOriginY, goOceansideDown.getWidth(), goOceansideDown.getHeight());
         }
         batch.end();
     }
@@ -938,8 +938,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
         // fix stuck disengage button if it was clicked across a turn
         // with no penalty to the user
-        if (disengageButtonState) {
-        	disengageButtonState = false;
+        if (goOceansideButtonIsDown) {
+        	goOceansideButtonIsDown = false;
         }
     }
 
