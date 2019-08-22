@@ -43,6 +43,21 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
      * The selected moves
      */
     private HandMove[] movesHolder;
+    
+    /**
+     * Radio button states
+     */
+    private boolean[] radioButtons = new boolean[3];
+    
+    private void enableRadio(int radio) {
+    	for (int i=0; i<radioButtons.length; i++) {
+    		if (i == radio) {
+    			radioButtons[i] = true;
+    		} else {
+    			radioButtons[i] = false;
+    		}
+    	}
+    }
 
     /**
      * Batch renderer for sprites and textures
@@ -133,18 +148,103 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private Texture title;
     private Texture radioOn;
     private Texture radioOff;
+    private Texture radioOnDisable;
+    private Texture radioOffDisable;
     private Texture autoOn;
     private Texture autoOff;
 
     private Texture cannonSelection;
     private Texture cannonSelectionEmpty;
-
+    
     private Texture goOceansideUp;
     private Texture goOceansideDown;
-    private int goOceansideBackgroundOriginX = 5+336+5;
-	private int goOceansideBackgroundOriginY = 8;
-	private int goOceansideOriginX = goOceansideBackgroundOriginX + 19;
-	private int goOceansideOriginY = goOceansideBackgroundOriginY + 24;
+    
+    // reference coords - MOVES control
+    private int MOVES_REF_X             = 0;
+    private int MOVES_REF_Y             = 75;
+
+    private int MOVES_backgroundX       = MOVES_REF_X + 5;
+    private int MOVES_backgroundY       = MOVES_REF_Y - 67;
+    
+    private int MOVES_titleX            = MOVES_REF_X + 66;
+    private int MOVES_titleY            = MOVES_REF_Y + 76;
+    
+    private int MOVES_autoX             = MOVES_REF_X + 58;
+    private int MOVES_autoY             = MOVES_REF_Y + 33;
+
+    private int MOVES_autoTextX         = MOVES_REF_X + 30;
+    private int MOVES_autoTextY         = MOVES_REF_Y + 45; // text from top edge
+
+    private int MOVES_cannonsX          = MOVES_REF_X + 48;
+    private int MOVES_cannonsY          = MOVES_REF_Y + 3;
+
+    private int MOVES_cannonsTextX      = MOVES_REF_X + 56;
+    private int MOVES_cannonsTextY      = MOVES_REF_Y - 5;  // text from top edge
+
+    private int MOVES_leftX             = MOVES_REF_X + 80;
+    private int MOVES_forwardX          = MOVES_REF_X + 110;
+    private int MOVES_rightX            = MOVES_REF_X + 140;
+    private int MOVES_leftY             = MOVES_REF_Y + 0;
+    private int MOVES_forwardY          = MOVES_REF_Y + 0;
+    private int MOVES_rightY            = MOVES_REF_Y + 0;
+
+    private int MOVES_leftRadioX        = MOVES_REF_X + 88;
+    private int MOVES_forwardRadioX     = MOVES_REF_X + 118;
+    private int MOVES_rightRadioX       = MOVES_REF_X + 148;
+    private int MOVES_leftRadioY        = MOVES_REF_Y + 36;
+    private int MOVES_forwardRadioY     = MOVES_REF_Y + 36;
+    private int MOVES_rightRadioY       = MOVES_REF_Y + 36;
+    
+    private int MOVES_leftSelectX       = MOVES_REF_X + 76;
+    private int MOVES_forwardSelectX    = MOVES_REF_X + 106;
+    private int MOVES_rightSelectX      = MOVES_REF_X + 136;
+    private int MOVES_leftSelectY       = MOVES_REF_Y - 4;
+    private int MOVES_forwardSelectY    = MOVES_REF_Y - 4;
+    private int MOVES_rightSelectY      = MOVES_REF_Y - 4;
+    
+    private int MOVES_leftMovesTextX    = MOVES_REF_X + 88;    
+    private int MOVES_forwardMovesTextX = MOVES_REF_X + 118;
+    private int MOVES_rightMovesTextX   = MOVES_REF_X + 148;
+    private int MOVES_leftMovesTextY    = MOVES_REF_Y - 5; // text from top edge
+    private int MOVES_forwardMovesTextY = MOVES_REF_Y - 5; // "
+    private int MOVES_rightMovesTextY   = MOVES_REF_Y - 5; // " shiphand:195,19
+    
+    private int MOVES_shiphandX         = MOVES_REF_X + 195;
+    private int MOVES_shiphandY         = MOVES_REF_Y - 57;
+    
+    private int MOVES_moveSlot0X            = MOVES_REF_X + 208; // 208-239
+    private int MOVES_moveSlot0Y            = MOVES_REF_Y + 54;
+    private int MOVES_moveSlot1X            = MOVES_REF_X + 208;
+    private int MOVES_moveSlot1Y            = MOVES_REF_Y + 20;
+    private int MOVES_moveSlot2X            = MOVES_REF_X + 208;
+    private int MOVES_moveSlot2Y            = MOVES_REF_Y - 14;
+    private int MOVES_moveSlot3X            = MOVES_REF_X + 208;
+    private int MOVES_moveSlot3Y            = MOVES_REF_Y - 48;
+    
+    private int MOVES_cannonLeftSlot0X      = MOVES_REF_X + 181; // left - 181 && x <= 206;
+    private int MOVES_cannonLeftSlot0Y      = 0;
+    private int MOVES_cannonRightSlot0X     = MOVES_REF_X + 241; // right - 241 && x <= 271;
+    private int MOVES_cannonRightSlot0Y     = 0;
+    private int MOVES_cannonLeftSlot1X      = MOVES_REF_X + 181;
+    private int MOVES_cannonLeftSlot1Y      = 0;
+    private int MOVES_cannonRightSlot1X     = MOVES_REF_X + 241;
+    private int MOVES_cannonRightSlot1Y     = 0;
+    private int MOVES_cannonLeftSlot2X      = MOVES_REF_X + 181;
+    private int MOVES_cannonLeftSlot2Y      = 0;
+    private int MOVES_cannonRightSlot2X     = MOVES_REF_X + 241;
+    private int MOVES_cannonRightSlot2Y     = 0;
+    private int MOVES_cannonLeftSlot3X      = MOVES_REF_X + 181;
+    private int MOVES_cannonLeftSlot3Y      = 0;
+    private int MOVES_cannonRightSlot3X     = MOVES_REF_X + 241;
+    private int MOVES_cannonRightSlot3Y     = 0;
+    
+    // reference coords - GO OCEANSIDE control
+    private int GOOCEANSIDE_REF_X       = 0;
+    private int GOOCEANSIDE_REF_Y       = 0;
+    private int GOOCEANSIDE_backgroundX = GOOCEANSIDE_REF_X + 5+336+5;
+	private int GOOCEANSIDE_backgroundY = GOOCEANSIDE_REF_Y + 8;
+	private int GOOCEANSIDE_buttonX     = GOOCEANSIDE_REF_X + 5+336+5 + 19;
+	private int GOOCEANSIDE_buttonY     = GOOCEANSIDE_REF_Y + 8 + 24;
 
 	/**
 	 * state of goOceanside button. true if pushed, false if not.
@@ -175,6 +275,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         for (int i = 0; i < movesHolder.length; i++) {
             movesHolder[i] = createMove();
         }
+        
+        radioButtons = new boolean[3];
+        enableRadio(1);
     }
 
     @Override
@@ -184,26 +287,25 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 14;
+        parameter.size = 12;
         font = generator.generateFont(parameter);
 
         title = new Texture("assets/ui/title.png");
         radioOn = new Texture("assets/ui/radio-on.png");
         radioOff = new Texture("assets/ui/radio-off.png");
+        radioOnDisable = new Texture("assets/ui/radio-on-disable.png");
+        radioOffDisable = new Texture("assets/ui/radio-off-disable.png");
         autoOn = new Texture("assets/ui/auto-on.png");
         autoOff = new Texture("assets/ui/auto-off.png");
-        
-        goOceansideUp = new Texture("assets/ui/go_oceanside.png");
-        goOceansideDown = new Texture("assets/ui/go_oceansidePressed.png");
 
         sandTopTexture = new Texture("assets/ui/sand_top.png");
         sandBottomTexture = new Texture("assets/ui/sand_bot.png");
 
         sandTrickleTexture = new Texture("assets/ui/sand_trickle.png");
-        sandTrickle = new TextureRegion(sandTrickleTexture, 0, 0, 1, sandTopTexture.getHeight());
+        sandTrickle = new TextureRegion(sandTrickleTexture, 0, 0, 1, 43);
 
-        sandTop = new TextureRegion(sandTopTexture, sandTopTexture.getWidth(), sandTopTexture.getHeight());
-        sandBottom= new TextureRegion(sandBottomTexture, sandBottomTexture.getWidth(), sandBottomTexture.getHeight());
+        sandTop = new TextureRegion(sandTopTexture, 19, 43);
+        sandBottom= new TextureRegion(sandBottomTexture, 19, 43);
 
         cannonSlots = new Texture("assets/ui/cannonslots.png");
         moves = new Texture("assets/ui/move.png");
@@ -211,7 +313,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         shiphand = new Texture("assets/ui/shiphand.png");
         hourGlass = new Texture("assets/ui/hourglass.png");
         controlBackground = new Texture("assets/ui/moves-background.png");
-        goOceansideBackground = new Texture("assets/ui/go_oceanside_background.png");
         shipStatus = new Texture("assets/ui/status.png");
         shipStatusBg = new Texture("assets/ui/status-bg.png");
         moveGetTargetTexture = new Texture("assets/ui/sel_border_square.png");
@@ -225,8 +326,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         emptyCannon = new TextureRegion(cannonSelectionEmpty, 25, 0, 25, 25);
         cannon = new TextureRegion(cannonSelection, 25, 0, 25, 25);
 
-        damage.setRegionWidth(damage.getTexture().getWidth());
-        bilge.setRegionWidth(bilge.getTexture().getWidth());
+        damage.setRegionWidth(17);
+        bilge.setRegionWidth(17);
 
         leftMoveTexture = new TextureRegion(moves, 0, 0, 28, 28);
         forwardMoveTexture = new TextureRegion(moves, 28, 0, 28, 28);
@@ -246,6 +347,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         moveTargetSelForce = new TextureRegion(moveGetTargetTexture, 0, 0, 36, 36);
         moveTargetSelAuto = new TextureRegion(moveGetTargetTexture, 36, 0, 36, 36);
         
+        goOceansideUp = new Texture("assets/ui/go_oceanside.png");
+        goOceansideDown = new Texture("assets/ui/go_oceansidePressed.png");
+        goOceansideBackground = new Texture("assets/ui/go_oceanside_background.png");
+
         setDamagePercentage(70);
         setBilgePercentage(30);
 
@@ -266,14 +371,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     public void update() {
     	int turnDuration = getContext().getTurnDuration();
 
-        double ratio = (double) sandTopTexture.getHeight() / (double) turnDuration;
+        double ratio = (double) 43 / (double) turnDuration;
 
-        sandTop.setRegionY(sandTopTexture.getHeight() - (int) Math.round(time * ratio));
+        sandTop.setRegionY(43 - (int) Math.round(time * ratio));
         sandTop.setRegionHeight((int) Math.round(time * ratio));
 
-        ratio =  (double) sandBottomTexture.getHeight() / (double) turnDuration;
+        ratio =  (double) 43 / (double) turnDuration;
 
-        sandBottom.setRegionY(sandBottomTexture.getHeight() - (int) Math.round((turnDuration - time) * ratio));
+        sandBottom.setRegionY(43 - (int) Math.round((turnDuration - time) * ratio));
         sandBottom.setRegionHeight((int) Math.round((turnDuration - time) * ratio));
     }
 
@@ -287,6 +392,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     public void dispose() {
         resetMoves();
         targetMove = MoveType.FORWARD;
+        enableRadio(1);
+
         auto = true;
         manuaverSlot = 3;
     }
@@ -302,13 +409,33 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     	}
         return false;
     }
-
-    private void handleLeftCannonPlace(float x, float y) {
-
+    
+    
+    /**
+     * return whether point is in rect or not.
+     * 
+     * note: compensates for Y weirdness by using absheight
+     * so just use normal cartesian space (x==0,y==0 bottom left)
+     * 
+     * @param inX   input x
+     * @param inY   input y
+     * @param rectX rect origin x
+     * @param rectY rect origin y
+     * @param rectW rect width
+     * @param rectH rect height
+     * @return
+     */
+    private boolean isPointInRect(float inX, float inY, int rectX, int rectY, int rectW, int rectH) {
+    	return
+    		(inX >= rectX) &&
+    		(inX < (rectX + rectW)) &&
+    		(inY >= (absheight - rectY - rectH)) &&
+    		(inY < (absheight - rectY));
     }
 
+
     private boolean isTogglingAuto(float x, float y) {
-        return x >= 52 && x <= 68 && y >= heightmod + 579 && y <= heightmod + 591;
+    	return isPointInRect(x,y,MOVES_autoX,MOVES_autoY,17,17);
     }
 
     private boolean isPlacingLeftCannons(float x, float y) {
@@ -320,43 +447,45 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     }
     
     private boolean isClickingDisengage(float x, float y) {
-    	return
-    		(x >= goOceansideOriginX) &&
-    		(x <= (goOceansideOriginX + goOceansideUp.getWidth() + 1)) &&
-    		(y >= (absheight - goOceansideOriginY - goOceansideUp.getHeight())) &&
-    		(y <= (absheight - goOceansideOriginY - 1));
+    	return isPointInRect(x,y,GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
     }
+    
+//    private boolean isPlacingMoves(float x, float y) {
+//        return x >= 208 && x < 240 && y >= (heightmod + 538) && y <= (heightmod + 670);
+//    }
+//
+//    private boolean isPickingMoves(float x, float y) {
+//        return (x >= 80) && (x <= 166) && (y >= heightmod + 598) && (y <= heightmod + 624);
+//    }
 
     private int getSlotForPosition(float x, float y) {
-        // battle slots
-        if (isPlacingMoves(x, y)) {
-            if (y >= heightmod + 538 && y <= heightmod + 569) {
-                return 0;
-            }
-            else if (y >= heightmod + 573 && y <= heightmod + 603) {
-               return 1;
-            }
-            else if (y >= heightmod + 606 && y <= heightmod + 637) {
-                return 2;
-            }
-            else if(y >= heightmod + 642 && y <= heightmod + 670) {
-               return 3;
-            } else {
-                return -1;
-            }
-        } else if (isPickingMoves(x, y)) { // TODO add cannons to this enum, cant drag those yet
-            if (x >= 80 && x <= 108) {
-                return 4;
-            } else if (x >= 110 && x <= 138) {
-                return 5;
-            } else if (x >= 140 && x <= 168) {
-                return 6;
-            } else {
-                return -1;
-            }
-        } else {
-            return -1;
-        }
+    	// move placing slots
+    	if (isPointInRect(x,y,MOVES_moveSlot0X,MOVES_moveSlot0Y,28,28)) {
+    		return 0;
+    	}
+    	else if (isPointInRect(x,y,MOVES_moveSlot1X,MOVES_moveSlot1Y,28,28)) {
+    		return 1;
+    	}
+    	else if (isPointInRect(x,y,MOVES_moveSlot2X,MOVES_moveSlot2Y,28,28)) {
+    		return 2;
+    	}
+    	else if (isPointInRect(x,y,MOVES_moveSlot3X,MOVES_moveSlot3Y,28,28)) {
+    		return 3;
+    	}
+
+    	// token slots
+    	else if (isPointInRect(x,y,MOVES_leftX, MOVES_leftY,28,28)) {
+    		return 4;
+    	}
+    	else if (isPointInRect(x,y,MOVES_forwardX, MOVES_forwardY,28,28)) {
+    		return 5;
+    	}
+    	else if (isPointInRect(x,y,MOVES_rightX, MOVES_rightY,28,28)) {
+    		return 6;
+    	}
+    	else {
+    		return -1;
+    	}
     }
 
     @Override
@@ -364,15 +493,20 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (!isDragging) {
             startDragSlot = getSlotForPosition(x, y);
             if (startDragSlot != -1) { // cant start dragging from an invalid region
-                isDragging = true;
                 switch (startDragSlot) {
                 case 4:
                 case 5:
                 case 6:
-                    startDragMove = MoveType.forId(startDragSlot - 3);
+                	// drag only if there are moves
+                	MoveType m = MoveType.forId(startDragSlot - 3);
+                	if (hasMove(m)) {
+                		startDragMove = m;
+                		isDragging = true;
+                	}
                     break;
                 default:
                     startDragMove  = movesHolder[startDragSlot].getMove();
+                    isDragging = true;
                     break;
                 }
             }
@@ -607,11 +741,25 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     }
 
     private boolean isPlacingMoves(float x, float y) {
-        return x >= 208 && x <= 239 && y >= (heightmod + 538) && y <= (heightmod + 670);
+        return isPointInRect(
+        		x,
+        		y,
+        		MOVES_moveSlot3X,
+        		MOVES_moveSlot3Y,
+        		28,
+        		(4 * 28) + (3 * 5)
+        );
     }
 
     private boolean isPickingMoves(float x, float y) {
-        return (x >= 80) && (x <= 166) && (y >= heightmod + 598) && (y <= heightmod + 624);
+    	return isPointInRect(
+        		x,
+        		y,
+        		MOVES_leftX,
+        		MOVES_leftY,
+        		(3 * 28) + (2 * 2),
+        		28
+        );
     }
 
 
@@ -623,7 +771,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         this.time = time;
         int sandX = sandTrickle.getRegionX();
         sandX++;
-        if (sandX > sandTrickleTexture.getWidth()) {
+        if (sandX > 8) {
             sandX = 0;
         }
 
@@ -681,14 +829,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         batch.begin();
 
         // The yellow BG for tokens and moves and hourglass
-        batch.draw(controlBackground, 5, 8, controlBackground.getWidth(), controlBackground.getHeight() + 5);
+        batch.draw(controlBackground, this.MOVES_backgroundX, this.MOVES_backgroundY);
         
         drawMoveHolder();
         drawShipStatus();
         drawTimer();
         drawMovesSelect();
         TextureRegion t = manuaverTexture; // initial, prevent crashes
-        batch.draw(title, 65, 140);
+        batch.draw(title, MOVES_titleX, MOVES_titleY);
         if (isDragging && startDragSlot != -1) {
             if (startDragSlot == manuaverSlot) {
                 t = manuaverTexture;
@@ -708,51 +856,46 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
      */
     private void renderGoOceanside() {
     	batch.begin();
-        batch.draw(goOceansideBackground, goOceansideBackgroundOriginX, goOceansideBackgroundOriginY, goOceansideBackground.getWidth(), goOceansideBackground.getHeight() + 5); 
-        if (goOceansideButtonIsDown == false) {
-        	batch.draw(goOceansideUp, goOceansideOriginX, goOceansideOriginY, goOceansideUp.getWidth(), goOceansideUp.getHeight());
-        }
-        else {
-        	batch.draw(goOceansideDown, goOceansideOriginX, goOceansideOriginY, goOceansideDown.getWidth(), goOceansideDown.getHeight());
-        }
+        batch.draw(goOceansideBackground, GOOCEANSIDE_backgroundX, GOOCEANSIDE_backgroundY); 
+        batch.draw((goOceansideButtonIsDown)?goOceansideDown:goOceansideUp, GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY);
         batch.end();
     }
 
     private void drawMoveHolder() {
 
         // The hand bg
-        batch.draw(shiphand, controlBackground.getWidth() - shiphand.getWidth() - 80, 19);
+        batch.draw(shiphand, this.MOVES_shiphandX, this.MOVES_shiphandY);
 
 
-        int height = controlBackground.getHeight() - 40;
+        int height = 173 - 40;
         for (int i = 0; i < movesHolder.length; i++) {
             HandMove move = movesHolder[i];
 
             boolean[] left = move.getLeft();
             boolean[] right = move.getRight();
 
-            batch.draw(emptyCannonLeft, controlBackground.getWidth() - shiphand.getWidth() - 81, height); // left
+            batch.draw(emptyCannonLeft, 336 - 61 - 81, height); // left
             if (left[0]) {
-                batch.draw(cannonLeft, controlBackground.getWidth() - shiphand.getWidth() - 81, height); // left
+                batch.draw(cannonLeft, 336 - 61 - 81, height); // left
             }
-            batch.draw(emptyCannonRight, controlBackground.getWidth() - shiphand.getWidth() - 35, height); // right
+            batch.draw(emptyCannonRight, 336 - 61 - 35, height); // right
             if (right[0]) {
-                batch.draw(cannonRight, controlBackground.getWidth() - shiphand.getWidth() - 35, height); // left
+                batch.draw(cannonRight, 336 - 61 - 35, height); // left
             }
 
             if (movesHolder instanceof BigShipHandMove[]) {
-                batch.draw(emptyCannonLeft, controlBackground.getWidth() - shiphand.getWidth() - 96, height); // left
+                batch.draw(emptyCannonLeft, 336 - 61 - 96, height); // left
                 if (left[0] && left[1]) {
-                    batch.draw(cannonLeft, controlBackground.getWidth() - shiphand.getWidth() - 96, height); // left
+                    batch.draw(cannonLeft, 336 - 61 - 96, height); // left
                 }
-                batch.draw(emptyCannonRight, controlBackground.getWidth() - shiphand.getWidth() - 20, height); // right
+                batch.draw(emptyCannonRight, 336 - 61 - 20, height); // right
                 if (right[0] && right[1]) {
-                    batch.draw(cannonRight, controlBackground.getWidth() - shiphand.getWidth() - 20, height); // right
+                    batch.draw(cannonRight, 336 - 61 - 20, height); // right
                 }
             }
 
             if (i == manuaverSlot) {
-                batch.draw(manuaverTexture, controlBackground.getWidth() - shiphand.getWidth() - 64, height - 4);
+                batch.draw(manuaverTexture, 336 - 61 - 64, height - 4);
             }
             else {
                 if (move.getMove() != MoveType.NONE) {
@@ -764,7 +907,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                         batch.setColor(color.r, color.g, color.b, 1f);
                     }
 
-                    batch.draw(getTextureForMove(move.getMove()), controlBackground.getWidth() - shiphand.getWidth() - 64, height - 4);
+                    batch.draw(getTextureForMove(move.getMove()), 336 - 61 - 64, height - 4);
                     batch.setColor(color.r, color.g, color.b, 1f);
                 }
             }
@@ -789,83 +932,58 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
      * Draws the movement selection section
      */
     private void drawMovesSelect() {
+        // auto, cannons
+        font.draw(batch, "Auto", MOVES_autoTextX, MOVES_autoTextY);
+        batch.draw(auto?autoOn:autoOff,            MOVES_autoX,    MOVES_autoY);
+        batch.draw((cannons>0)?cannon:emptyCannon, MOVES_cannonsX, MOVES_cannonsY);
+        font.draw(batch, "x" + Integer.toString(cannons), MOVES_cannonsTextX, MOVES_cannonsTextY);
 
-        font.draw(batch, "Auto", 18, controlBackground.getHeight() - 54);
-        if (auto) {
-            batch.draw(autoOn, 53, controlBackground.getHeight() - 70);
-        }
-        else {
-            batch.draw(autoOff, 53, controlBackground.getHeight() - 70);
-        }
+        // moves
+        batch.draw((leftMoves == 0)?emptyLeftMoveTexture:leftMoveTexture, MOVES_leftX, MOVES_leftY);
+        batch.draw((forwardMoves == 0)?emptyForwardMoveTexture:forwardMoveTexture, MOVES_forwardX, MOVES_forwardY);
+        batch.draw((rightMoves == 0)?emptyRightMoveTexture:rightMoveTexture,  MOVES_rightX, MOVES_rightY);
 
-        if (cannons > 0) {
-            batch.draw(cannon, 49, controlBackground.getHeight() - 103);
-        }
-        else {
-            batch.draw(emptyCannon, 49, controlBackground.getHeight() - 103);
-        }
+        // radios
+        Texture onTex  = auto?radioOnDisable:radioOn;
+    	Texture offTex = auto?radioOffDisable:radioOff;
+        batch.draw(radioButtons[0]?onTex:offTex, MOVES_leftRadioX,    MOVES_leftRadioY);
+        batch.draw(radioButtons[1]?onTex:offTex, MOVES_forwardRadioX, MOVES_forwardRadioY);
+        batch.draw(radioButtons[2]?onTex:offTex, MOVES_rightRadioX,   MOVES_rightRadioY);
 
-        font.draw(batch, "x" + Integer.toString(cannons), 56, controlBackground.getHeight() - 109);
-
-        int x = 80;
-        int y = controlBackground.getHeight() - 100;
-
-        if (leftMoves == 0) {
-            batch.draw(emptyLeftMoveTexture, x, y);
-        }
-        else {
-            batch.draw(leftMoveTexture, x, y);
-        }
-
-        if (forwardMoves == 0) {
-            batch.draw(emptyForwardMoveTexture, x + emptyLeftMoveTexture.getRegionWidth() + 2, y);
-        }
-        else {
-            batch.draw(forwardMoveTexture, x + emptyLeftMoveTexture.getRegionWidth() + 2, y);
-        }
-
-        if (rightMoves == 0) {
-            batch.draw(emptyRightMoveTexture, x + (emptyLeftMoveTexture.getRegionWidth() * 2) + 4, y);
-        }
-        else {
-            batch.draw(rightMoveTexture, x + (emptyLeftMoveTexture.getRegionWidth() * 2) + 4, y);
-        }
-
-
+        // move targeting
         TextureRegion sel = auto ? moveTargetSelAuto : moveTargetSelForce;
-
         if (targetMove != null) {
             switch(targetMove) {
                 case LEFT:
-                    batch.draw(sel, x - 4, y - 4);
+                    batch.draw(sel, MOVES_leftSelectX, MOVES_leftSelectY);
+                    enableRadio(0);
                     break;
                 case FORWARD:
-                    batch.draw(sel, x + emptyLeftMoveTexture.getRegionWidth() + 2 - 4, y - 4);
+                    batch.draw(sel, MOVES_forwardSelectX, MOVES_forwardSelectY);
+                    enableRadio(1);
                     break;
                 case RIGHT:
-                    batch.draw(sel, x + (emptyLeftMoveTexture.getRegionWidth() * 2) + 4 - 4, y - 4);
+                    batch.draw(sel, MOVES_rightSelectX, MOVES_rightSelectY);
+                    enableRadio(2);
                     break;
-
-
             }
         }
 
-
-
+        // misc labels
         font.setColor(Color.BLACK);
-        font.draw(batch, "x" + Integer.toString(leftMoves), x + 5, y - 5);
-        font.draw(batch, "x" + Integer.toString(forwardMoves), x + emptyLeftMoveTexture.getRegionWidth() + 2 + 5, y - 5);
-        font.draw(batch, "x" + Integer.toString(rightMoves), x + (emptyLeftMoveTexture.getRegionWidth() * 2) + 4 + 5, y - 5);
+        font.draw(batch, "x" + Integer.toString(leftMoves), MOVES_leftMovesTextX, MOVES_leftMovesTextY);
+        font.draw(batch, "x" + Integer.toString(forwardMoves), MOVES_forwardMovesTextX, MOVES_forwardMovesTextY);
+        font.draw(batch, "x" + Integer.toString(rightMoves), MOVES_rightMovesTextX, MOVES_rightMovesTextY);
     }
 
     /**
      * Draws the sand clock
      */
     private void drawTimer() {
-        batch.draw(hourGlass, controlBackground.getWidth() - hourGlass.getWidth() - 20, 25);
-        batch.draw(sandTrickle,controlBackground.getWidth() - hourGlass.getWidth() - 7, 30 );
-        batch.draw(sandTop, controlBackground.getWidth() - hourGlass.getWidth() - 16, 72);
-        batch.draw(sandBottom, controlBackground.getWidth() - hourGlass.getWidth() - 16, 28);
+        batch.draw(hourGlass, 336 - 27 - 20, 25);
+        batch.draw(sandTrickle,336 - 27 - 7, 30 );
+        batch.draw(sandTop, 336 - 27 - 16, 72);
+        batch.draw(sandBottom, 336 - 27 - 16, 28);
     }
 
     /**
@@ -874,8 +992,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
      * Ship damage, Ship bilge, etc
      */
     private void drawShipStatus() {
-        int x = controlBackground.getWidth() - shipStatus.getWidth() - 12;
-        int y = controlBackground.getHeight() - 50;
+        int x = 336 - 43 - 12;
+        int y = 175 - 50;
         batch.draw(shipStatusBg, x, y);
 
         batch.end();
@@ -907,15 +1025,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
 
     public boolean isChosedLeft(float x, float y) {
-        return x >= 80 && x <= 107 && y >= heightmod + 598 && y <= heightmod + 624;
+    	return isPointInRect(x,y,MOVES_leftRadioX,MOVES_leftRadioY,13,13);
     }
 
     public boolean isChosedForward(float x, float y) {
-        return x >= 110 && x <= 135 && y >= heightmod + 598 && y <= heightmod + 624;
+    	return isPointInRect(x,y,MOVES_forwardRadioX,MOVES_forwardRadioY,13,13);
     }
 
     public boolean isChosedRight(float x, float y) {
-        return x >= 140 && x <= 166 && y >= heightmod + 598 && y <= heightmod + 624;
+    	return isPointInRect(x,y,MOVES_rightRadioX,MOVES_rightRadioY,13,13);
     }
 
     public void placeMove(int slot, MoveType move, boolean temp) {
