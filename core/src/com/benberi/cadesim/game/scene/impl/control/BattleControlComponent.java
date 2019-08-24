@@ -2,10 +2,12 @@ package com.benberi.cadesim.game.scene.impl.control;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,17 +15,28 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.math.Vector2;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.SceneComponent;
+import com.benberi.cadesim.game.scene.GameScene;
 import com.benberi.cadesim.game.scene.impl.control.hand.HandMove;
 import com.benberi.cadesim.game.scene.impl.control.hand.impl.BigShipHandMove;
 import com.benberi.cadesim.game.scene.impl.control.hand.impl.SmallShipHandMove;
 
-public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
-
+public class BattleControlComponent extends SceneComponent<ControlAreaScene> implements InputProcessor {
     /**
+     * The context
+     */
+	private GameContext context;
+	
+	/**
      * Left moves
      */
     private int leftMoves = 2;
@@ -106,9 +119,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     /**
      * modifier to calculate button placement
      */
-    int heightmod = Gdx.graphics.getHeight() - 700;
     int absheight = Gdx.graphics.getHeight(); // absolute height
     
+    /** 
+     * TextField for Chat (with its own Stage)
+     */
+    private Stage stage;
+    private TextField chatBar;
     
     /**
      * Textures
@@ -142,6 +159,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private TextureRegion emptyCannonRight;
     private Texture controlBackground;
     private Texture goOceansideBackground;
+    private Texture chatBackground;
     private Texture shipStatus;
     private Texture shipStatusBg;
     private TextureRegion damage;
@@ -162,6 +180,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     private Texture goOceansideUp;
     private Texture goOceansideDown;
+    
+    private Texture chatIndicator;
+    private Texture chatBarBackground;
+    private Texture chatButtonSend;
+    private Texture chatButtonSendPressed;
 
     // reference coords - MOVES control
     private int MOVES_REF_X             = 0;
@@ -301,7 +324,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 	Rectangle MOVES_shape_rightRadio          = new Rectangle(MOVES_rightRadioX,       MOVES_rightRadioY,       13, 13);
 
 	Rectangle MOVES_shape_placingMoves        = new Rectangle(MOVES_moveSlot3X,        MOVES_moveSlot3Y,        28, (4 * 28) + (3 * 5));
-    Rectangle MOVES_shape_pickingMoves        = new Rectangle(MOVES_leftX,             MOVES_leftY,             (3 * 28) + (2 * 2), 28);
+    Rectangle MOVES_shape_pickingMoves        = new Rectangle(MOVES_cannonsX,          MOVES_cannonsY,          (4 * 28) + (3 * 2), 28);
 
     // reference coords - GO OCEANSIDE control
     private int GOOCEANSIDE_REF_X       = 0;
@@ -314,10 +337,32 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 	// GOOCEANSIDE shapes
 	Rectangle MOVES_shape_clickingDisengage   = new Rectangle(GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
 
+	// reference coords - CHAT control
+	private int CHAT_REF_X              = 0;
+	private int CHAT_REF_Y              = 0;
+	
+	// CHAT
+	private int CHAT_backgroundX        = CHAT_REF_X + 484;
+	private int CHAT_backgroundY        = CHAT_REF_Y + 8;
+	
+	private int CHAT_indicatorX         = CHAT_REF_X + 487;
+	private int CHAT_indicatorY         = CHAT_REF_Y + 8;
+	
+	private int CHAT_boxX               = CHAT_REF_X + 585;
+	private int CHAT_boxY               = CHAT_REF_Y + 7;
+	
+	private int CHAT_buttonSendX        = CHAT_REF_X + 718;
+	private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
+	
+	// CHAT shapes
+	Rectangle CHAT_shape_clickingSend   = new Rectangle(CHAT_buttonSendX, CHAT_buttonSendY, 45, 16);
+	Rectangle CHAT_shape_chatBox        = new Rectangle(CHAT_boxX, CHAT_boxY, 128, 17);
+	
 	/**
-	 * state of goOceanside button. true if pushed, false if not.
+	 * state of buttons. true if pushed, false if not.
 	 */
 	private boolean goOceansideButtonIsDown = false; // initial
+	private boolean sendChatButtonIsDown    = false; // initial
 
 
     private int manuaverSlot = 3;
@@ -346,6 +391,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         
         radioButtons = new boolean[3];
         enableRadio(1);
+        
+        this.context = context;
     }
 
     @Override
@@ -419,9 +466,33 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         goOceansideDown = new Texture("assets/ui/go_oceansidePressed.png");
         goOceansideBackground = new Texture("assets/ui/go_oceanside_background.png");
 
+        chatBackground = new Texture("assets/ui/chat_background.png");
+        chatIndicator  = new Texture("assets/ui/chat_indicator.png");
+        chatBarBackground = new Texture("assets/ui/chat_bar_background.png");
+        chatButtonSend = new Texture("assets/ui/chat_button_send.png");
+        chatButtonSendPressed = new Texture("assets/ui/chat_button_sendPressed.png");
+        // text field for chat (based off ConnectScene)
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        
+        TextField.TextFieldStyle style = new TextField.TextFieldStyle();
+        style.font = font;
+        style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
+        style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
+        style.selection = new Image(new Texture("assets/skin/textfield-selection.png")).getDrawable();
+        chatBar = new TextField("I'm a turtle", style);
+        chatBar.setSize(CHAT_shape_chatBox.width - 5, CHAT_shape_chatBox.height);
+        chatBar.setPosition(CHAT_boxX, CHAT_boxY);
+        chatBar.setColor(235f, 240f, 242f, 255f);
+        chatBar.setDisabled(false);
+        chatBar.setVisible(true);
+        chatBar.setFocusTraversal(true);
+        chatBar.setBlinkTime(0.5f);
+        stage.addActor(chatBar);
+        stage.setKeyboardFocus(chatBar);
+        
+        // initialise
         setDamagePercentage(70);
         setBilgePercentage(30);
-
     }
 
     public void setExecutingMoves(boolean flag) {
@@ -454,6 +525,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     public void render() {
         renderMoveControl();
         renderGoOceanside();
+        renderChat();
+        // TODO - I can't get the TextFIeld working. It requires a stage??
+//        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        stage.act();
+        stage.draw();
     }
 
     @Override
@@ -469,13 +545,26 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     @Override
     public boolean handleClick(float x, float y, int button) {
-    	// only activate the disengage click if it's not active already
+    	System.out.println("text: " + chatBar.getText());
     	if (!goOceansideButtonIsDown) {
     		if (isClickingDisengage(x, y)) {
     			goOceansideButtonIsDown = true;
     		}
     	}
-        return false;
+
+    	if (!sendChatButtonIsDown) {
+    		if (isClickingSend(x, y)) {
+    			sendChatButtonIsDown = true;
+    		}
+    	}
+    	return false;
+    }
+    
+    private void sendChat() {
+    	String message = chatBar.getText();
+    	if (message.length() > 0 && message.length() <= 240) {
+    		// TODO send the text string
+    	}
     }
     
     
@@ -516,16 +605,22 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private boolean isClickingDisengage(float x, float y) {
     	return isPointInRect(x,y,MOVES_shape_clickingDisengage);
     }
+    
+    private boolean isClickingSend(float x, float y) {
+    	return isPointInRect(x,y,CHAT_shape_clickingSend);
+    }
 
     private boolean isPlacingMoves(float x, float y) {
     	return isPointInRect(x,y,MOVES_shape_placingMoves);
     }
 
     private boolean isPickingMoves(float x, float y) {
+    	// cannons, L,F,R
     	return isPointInRect(x,y,MOVES_shape_pickingMoves);
     }
 
     private int getSlotForPosition(float x, float y) {
+    	// TODO enumerate these properly
     	if (isPlacingMoves(x,y)) {
 	    	if (isPointInRect(x,y,MOVES_shape_moveSlot0)) {
 	    		return 0;
@@ -549,6 +644,30 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 	    	}
 	    	else if (isPointInRect(x,y,MOVES_shape_rightToken)) {
 	    		return 6;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0)) {
+	    		return 7;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1)) {
+	    		return 8;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot2)) {
+	    		return 9;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3)) {
+	    		return 10;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0)) {
+	    		return 11;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1)) {
+	    		return 12;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot2)) {
+	    		return 13;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3)) {
+	    		
 	    	}
     	}
 
@@ -589,6 +708,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (goOceansideButtonIsDown) {
         	if (!isClickingDisengage(x, y)) {
         		goOceansideButtonIsDown = false;
+        	}
+        }
+        
+        // if we drag off chatButtonSend,
+        // deactivate it with no penalty to the user.
+        if (sendChatButtonIsDown) {
+        	if (!isClickingSend(x, y)) {
+        		sendChatButtonIsDown = false;
         	}
         }
         return false;
@@ -694,9 +821,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 			    }
 			    getContext().sendToggleAuto(auto);
 			}
-			else if (isClickingDisengage(x, y)) {
+			else if (goOceansideButtonIsDown && isClickingDisengage(x, y)) {
 				getContext().sendOceansideRequestPacket();
 				goOceansideButtonIsDown = false;
+			}
+			else if (sendChatButtonIsDown && isClickingSend(x, y)) {
+				sendChat();
+				sendChatButtonIsDown = false;
 			}
 			else if (!auto){
 				// can either click on the radio button or the move				
@@ -923,6 +1054,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         batch.draw((goOceansideButtonIsDown)?goOceansideDown:goOceansideUp, GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY);
         batch.end();
     }
+    
+    private void renderChat() {
+    	batch.begin();
+    	batch.draw(chatBackground, CHAT_backgroundX, CHAT_backgroundY);
+    	batch.draw(chatIndicator,  CHAT_indicatorX, CHAT_indicatorY);
+    	batch.draw(chatBarBackground, CHAT_boxX, CHAT_boxY);
+    	batch.draw(sendChatButtonIsDown?chatButtonSendPressed:chatButtonSend, CHAT_buttonSendX, CHAT_buttonSendY);
+    	batch.end();
+    }
 
     private void drawMoveHolder() {
         // The hand bg
@@ -1115,6 +1255,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         if (goOceansideButtonIsDown) {
         	goOceansideButtonIsDown = false;
         }
+        
+        // fix stuck send button if it was clicked across a turn
+        // with no penalty to the user
+        if (sendChatButtonIsDown) {
+        	sendChatButtonIsDown = false;
+        }
     }
 
     public void setCannons(int side, int slot, int amount) {
@@ -1150,4 +1296,119 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
             }
         }
     }
+
+    @Override
+    // TODO accelerate key & repeat if held for >0.5s
+    public boolean keyDown(int keycode) {
+    	if (keycode == Input.Keys.LEFT) {
+    		int p = chatBar.getCursorPosition();
+    		if (p > 0)
+    		{
+    			chatBar.setCursorPosition(p - 1);
+    		}
+    		return true;
+    	}
+    	else if (keycode == Input.Keys.RIGHT) {
+    		int p = chatBar.getCursorPosition();
+    		if (p < (chatBar.getText().length()))
+    		{
+    			chatBar.setCursorPosition(p + 1);
+    		}
+    		return true;
+    	}
+    	else if (keycode == Input.Keys.BACKSPACE)
+    	{
+    		String text = chatBar.getText();
+    		int p = chatBar.getCursorPosition();
+    		if (p > 0)
+    		{
+    			String newText =
+    	    			text.substring(0, p - 1) +
+    	    			text.substring(p, text.length()
+    	    	);
+    			chatBar.setText(newText);
+    			chatBar.setCursorPosition(p - 1);
+    		}
+    		return true;
+    	}
+    	else if (keycode == Input.Keys.FORWARD_DEL) {
+    		System.out.println("got DEL");
+    		String text = chatBar.getText();
+    		int p = chatBar.getCursorPosition();
+    		if (p < text.length())
+    		{
+    			String newText =
+    	    			text.substring(0, p) +
+    	    			text.substring(p + 1, text.length()
+    	    	);
+    			chatBar.setText(newText);
+    			chatBar.setCursorPosition(p);
+    		}
+    		return true;
+    	}
+    	else if (keycode == Input.Keys.ENTER) {
+    		System.out.println("got an enter");
+    		sendChat();
+    		chatBar.setCursorPosition(0);
+    		chatBar.setText("");
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+    	System.out.println("i got a key: " + Character.toString(character));
+    	if (character >= 32 && character < 127)
+    	{
+    		String text = chatBar.getText();
+    		int p = chatBar.getCursorPosition();
+    		String newText =
+    			text.substring(0, p) +
+    			Character.toString(character) +
+    			text.substring(p, text.length()
+    		);
+    		chatBar.setText(newText);
+    		chatBar.setCursorPosition(p + 1);
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

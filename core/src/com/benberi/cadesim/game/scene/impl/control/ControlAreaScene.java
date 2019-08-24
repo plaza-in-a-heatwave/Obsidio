@@ -80,7 +80,8 @@ public class ControlAreaScene implements GameScene {
 
     private void renderBackground() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(new Color(65 / 255f, 101 / 255f, 139 / 255f, 1));
+        shapeRenderer.setColor(new Color(48 / 255f, 98 / 255f, 123 / 255f, 1));
+        //shapeRenderer.setColor(new Color(65 / 255f, 101 / 255f, 139 / 255f, 1));
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), 200);
 
         shapeRenderer.setColor(new Color(72 / 255f, 72 / 255f, 72 / 255f, 1));

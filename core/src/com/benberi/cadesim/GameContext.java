@@ -2,6 +2,7 @@ package com.benberi.cadesim;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.benberi.cadesim.client.ClientConnectionCallback;
 import com.benberi.cadesim.client.ClientConnectionTask;
 import com.benberi.cadesim.client.codec.util.Packet;
@@ -352,6 +353,10 @@ public class GameContext {
         Gdx.input.setInputProcessor(input);
         clear = true;
 
+    }
+    
+    public GameInputProcessor getInputProcessor() {
+    	return input;
     }
 
     public void dispose() {

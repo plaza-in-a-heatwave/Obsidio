@@ -16,16 +16,26 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+    	// TODO this is garbage - but I can't pass the key any other way.
+    	
+    	// for LEFT/RIGHT
+        context.getControlScene().getBnavComponent().keyDown(keycode);
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
+    	// TODO this is garbage - but I can't pass the key any other way.
+    	
+    	// for LEFT/RIGHT
+        context.getControlScene().getBnavComponent().keyUp(keycode);
         return false;
     }
 
     @Override
     public boolean keyTyped(char character) {
+    	// TODO this is garbage - but I can't pass the key any other way.
+        context.getControlScene().getBnavComponent().keyTyped(character);
         return false;
     }
 
