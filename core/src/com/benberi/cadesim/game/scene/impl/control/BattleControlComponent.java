@@ -1,5 +1,9 @@
 package com.benberi.cadesim.game.scene.impl.control;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -155,10 +159,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
     private Texture cannonSelection;
     private Texture cannonSelectionEmpty;
-    
+
     private Texture goOceansideUp;
     private Texture goOceansideDown;
-    
+
     // reference coords - MOVES control
     private int MOVES_REF_X             = 0;
     private int MOVES_REF_Y             = 75;
@@ -194,50 +198,111 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     private int MOVES_leftRadioY        = MOVES_REF_Y + 36;
     private int MOVES_forwardRadioY     = MOVES_REF_Y + 36;
     private int MOVES_rightRadioY       = MOVES_REF_Y + 36;
-    
+
     private int MOVES_leftSelectX       = MOVES_REF_X + 76;
     private int MOVES_forwardSelectX    = MOVES_REF_X + 106;
     private int MOVES_rightSelectX      = MOVES_REF_X + 136;
     private int MOVES_leftSelectY       = MOVES_REF_Y - 4;
     private int MOVES_forwardSelectY    = MOVES_REF_Y - 4;
     private int MOVES_rightSelectY      = MOVES_REF_Y - 4;
-    
+
     private int MOVES_leftMovesTextX    = MOVES_REF_X + 88;    
     private int MOVES_forwardMovesTextX = MOVES_REF_X + 118;
     private int MOVES_rightMovesTextX   = MOVES_REF_X + 148;
     private int MOVES_leftMovesTextY    = MOVES_REF_Y - 5; // text from top edge
     private int MOVES_forwardMovesTextY = MOVES_REF_Y - 5; // "
-    private int MOVES_rightMovesTextY   = MOVES_REF_Y - 5; // " shiphand:195,19
+    private int MOVES_rightMovesTextY   = MOVES_REF_Y - 5; // "
     
     private int MOVES_shiphandX         = MOVES_REF_X + 195;
     private int MOVES_shiphandY         = MOVES_REF_Y - 57;
-    
-    private int MOVES_moveSlot0X            = MOVES_REF_X + 208; // 208-239
+
+    // general moveSlot
+    private int MOVES_moveSlotX             = MOVES_REF_X + 211;
+
+    // specific moveSlot
+    private int MOVES_moveSlot0X            = MOVES_moveSlotX;
     private int MOVES_moveSlot0Y            = MOVES_REF_Y + 54;
-    private int MOVES_moveSlot1X            = MOVES_REF_X + 208;
+    private int MOVES_moveSlot1X            = MOVES_moveSlotX;
     private int MOVES_moveSlot1Y            = MOVES_REF_Y + 20;
-    private int MOVES_moveSlot2X            = MOVES_REF_X + 208;
+    private int MOVES_moveSlot2X            = MOVES_moveSlotX;
     private int MOVES_moveSlot2Y            = MOVES_REF_Y - 14;
-    private int MOVES_moveSlot3X            = MOVES_REF_X + 208;
+    private int MOVES_moveSlot3X            = MOVES_moveSlotX;
     private int MOVES_moveSlot3Y            = MOVES_REF_Y - 48;
-    
-    private int MOVES_cannonLeftSlot0X      = MOVES_REF_X + 181; // left - 181 && x <= 206;
-    private int MOVES_cannonLeftSlot0Y      = 0;
-    private int MOVES_cannonRightSlot0X     = MOVES_REF_X + 241; // right - 241 && x <= 271;
-    private int MOVES_cannonRightSlot0Y     = 0;
-    private int MOVES_cannonLeftSlot1X      = MOVES_REF_X + 181;
-    private int MOVES_cannonLeftSlot1Y      = 0;
-    private int MOVES_cannonRightSlot1X     = MOVES_REF_X + 241;
-    private int MOVES_cannonRightSlot1Y     = 0;
-    private int MOVES_cannonLeftSlot2X      = MOVES_REF_X + 181;
-    private int MOVES_cannonLeftSlot2Y      = 0;
-    private int MOVES_cannonRightSlot2X     = MOVES_REF_X + 241;
-    private int MOVES_cannonRightSlot2Y     = 0;
-    private int MOVES_cannonLeftSlot3X      = MOVES_REF_X + 181;
-    private int MOVES_cannonLeftSlot3Y      = 0;
-    private int MOVES_cannonRightSlot3X     = MOVES_REF_X + 241;
-    private int MOVES_cannonRightSlot3Y     = 0;
-    
+
+    // general cannons
+    private int MOVES_cannonLeftSlotBigX    = MOVES_REF_X + 179;
+    private int MOVES_cannonRightSlotSmallX = MOVES_REF_X + 240;
+    private int MOVES_cannonLeftSlotSmallX  = MOVES_cannonLeftSlotBigX + 15;
+    private int MOVES_cannonRightSlotBigX   = MOVES_cannonRightSlotSmallX + 15;
+    private int MOVES_cannonSlot0Y          = MOVES_REF_Y + 59;
+    private int MOVES_cannonSlot1Y          = MOVES_REF_Y + 25;
+    private int MOVES_cannonSlot2Y          = MOVES_REF_Y - 9;
+    private int MOVES_cannonSlot3Y          = MOVES_REF_Y - 43;
+
+    // specific cannons
+    private int MOVES_cannonLeftSlot0X      = MOVES_cannonLeftSlotBigX;
+    private int MOVES_cannonLeftSlot0Y      = MOVES_cannonSlot0Y;
+    private int MOVES_cannonRightSlot0X     = MOVES_cannonRightSlotSmallX;
+    private int MOVES_cannonRightSlot0Y     = MOVES_cannonSlot0Y;
+    private int MOVES_cannonLeftSlot1X      = MOVES_cannonLeftSlotBigX;
+    private int MOVES_cannonLeftSlot1Y      = MOVES_cannonSlot1Y;
+    private int MOVES_cannonRightSlot1X     = MOVES_cannonRightSlotSmallX;
+    private int MOVES_cannonRightSlot1Y     = MOVES_cannonSlot1Y;
+    private int MOVES_cannonLeftSlot2X      = MOVES_cannonLeftSlotBigX;
+    private int MOVES_cannonLeftSlot2Y      = MOVES_cannonSlot2Y;
+    private int MOVES_cannonRightSlot2X     = MOVES_cannonRightSlotSmallX;
+    private int MOVES_cannonRightSlot2Y     = MOVES_cannonSlot2Y;
+    private int MOVES_cannonLeftSlot3X      = MOVES_cannonLeftSlotBigX;
+    private int MOVES_cannonLeftSlot3Y      = MOVES_cannonSlot3Y;
+    private int MOVES_cannonRightSlot3X     = MOVES_cannonRightSlotSmallX;
+    private int MOVES_cannonRightSlot3Y     = MOVES_cannonSlot3Y;
+
+    // hourglass
+    int MOVES_hourGlassX     = MOVES_REF_X + 289;
+    int MOVES_hourGlassY     = MOVES_REF_Y - 50;
+    int MOVES_sandTrickleX   = MOVES_REF_X + 302;
+    int MOVES_sandTrickleY   = MOVES_REF_Y - 45;
+    int MOVES_sandTopX       = MOVES_REF_X + 293;
+    int MOVES_sandTopY       = MOVES_REF_Y - 3;
+    int MOVES_sandBottomX    = MOVES_REF_X + 293;
+    int MOVES_sandBottomY    = MOVES_REF_Y - 47;
+
+    // ship status/ship status background
+    int MOVES_shipStatusBackgroundX = MOVES_REF_X + 281;
+    int MOVES_shipStatusBackgroundY = MOVES_REF_Y + 50;
+    int MOVES_shipStatusX           = MOVES_shipStatusBackgroundX;
+    int MOVES_shipStatusY           = MOVES_shipStatusBackgroundY;
+
+    // MOVES shapes
+    Rectangle MOVES_shape_auto                = new Rectangle(MOVES_autoX,             MOVES_autoY,             17, 17);
+    Rectangle MOVES_shape_placingLeftCannons  = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y,  32, 120);
+    Rectangle MOVES_shape_placingRightCannons = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonLeftSlot3Y,  32, 120);
+
+    Rectangle MOVES_shape_moveSlot0           = new Rectangle(MOVES_moveSlot0X,        MOVES_moveSlot0Y,        28, 28);
+    Rectangle MOVES_shape_moveSlot1           = new Rectangle(MOVES_moveSlot1X,        MOVES_moveSlot1Y,        28, 28);
+    Rectangle MOVES_shape_moveSlot2           = new Rectangle(MOVES_moveSlot2X,        MOVES_moveSlot2Y,        28, 28);
+    Rectangle MOVES_shape_moveSlot3           = new Rectangle(MOVES_moveSlot3X,        MOVES_moveSlot3Y,        28, 28);
+
+    Rectangle MOVES_shape_leftToken           = new Rectangle(MOVES_leftX,             MOVES_leftY,             28, 28);
+    Rectangle MOVES_shape_forwardToken        = new Rectangle(MOVES_forwardX,          MOVES_forwardY,          28, 28);
+    Rectangle MOVES_shape_rightToken          = new Rectangle(MOVES_rightX,            MOVES_rightY,            28, 28);
+
+    Rectangle MOVES_shape_cannonLeftSlot0     = new Rectangle(MOVES_cannonLeftSlot0X,  MOVES_cannonLeftSlot0Y,  32, 18);
+	Rectangle MOVES_shape_cannonLeftSlot1     = new Rectangle(MOVES_cannonLeftSlot1X,  MOVES_cannonLeftSlot1Y,  32, 18);
+	Rectangle MOVES_shape_cannonLeftSlot2     = new Rectangle(MOVES_cannonLeftSlot2X,  MOVES_cannonLeftSlot2Y,  32, 18);
+	Rectangle MOVES_shape_cannonLeftSlot3     = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y,  32, 18);
+	Rectangle MOVES_shape_cannonRightSlot0    = new Rectangle(MOVES_cannonRightSlot0X, MOVES_cannonRightSlot0Y, 32, 18);
+	Rectangle MOVES_shape_cannonRightSlot1    = new Rectangle(MOVES_cannonRightSlot1X, MOVES_cannonRightSlot1Y, 32, 18);
+	Rectangle MOVES_shape_cannonRightSlot2    = new Rectangle(MOVES_cannonRightSlot2X, MOVES_cannonRightSlot2Y, 32, 18);
+	Rectangle MOVES_shape_cannonRightSlot3    = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonRightSlot3Y, 32, 18);
+
+	Rectangle MOVES_shape_leftRadio           = new Rectangle(MOVES_leftRadioX,        MOVES_leftRadioY,        13, 13);
+	Rectangle MOVES_shape_forwardRadio        = new Rectangle(MOVES_forwardRadioX,     MOVES_forwardRadioY,     13, 13);
+	Rectangle MOVES_shape_rightRadio          = new Rectangle(MOVES_rightRadioX,       MOVES_rightRadioY,       13, 13);
+
+	Rectangle MOVES_shape_placingMoves        = new Rectangle(MOVES_moveSlot3X,        MOVES_moveSlot3Y,        28, (4 * 28) + (3 * 5));
+    Rectangle MOVES_shape_pickingMoves        = new Rectangle(MOVES_leftX,             MOVES_leftY,             (3 * 28) + (2 * 2), 28);
+
     // reference coords - GO OCEANSIDE control
     private int GOOCEANSIDE_REF_X       = 0;
     private int GOOCEANSIDE_REF_Y       = 0;
@@ -245,6 +310,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 	private int GOOCEANSIDE_backgroundY = GOOCEANSIDE_REF_Y + 8;
 	private int GOOCEANSIDE_buttonX     = GOOCEANSIDE_REF_X + 5+336+5 + 19;
 	private int GOOCEANSIDE_buttonY     = GOOCEANSIDE_REF_Y + 8 + 24;
+	
+	// GOOCEANSIDE shapes
+	Rectangle MOVES_shape_clickingDisengage   = new Rectangle(GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
 
 	/**
 	 * state of goOceanside button. true if pushed, false if not.
@@ -425,67 +493,67 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
      * @param rectH rect height
      * @return
      */
-    private boolean isPointInRect(float inX, float inY, int rectX, int rectY, int rectW, int rectH) {
+    private boolean isPointInRect(float inX, float inY, Rectangle rect) {
     	return
-    		(inX >= rectX) &&
-    		(inX < (rectX + rectW)) &&
-    		(inY >= (absheight - rectY - rectH)) &&
-    		(inY < (absheight - rectY));
+    		(inX >= rect.x) &&
+    		(inX < (rect.x + rect.width)) &&
+    		(inY >= (absheight - rect.y - rect.height)) &&
+    		(inY < (absheight - rect.y));
     }
 
-
     private boolean isTogglingAuto(float x, float y) {
-    	return isPointInRect(x,y,MOVES_autoX,MOVES_autoY,17,17);
+    	return isPointInRect(x,y,MOVES_shape_auto);
     }
 
     private boolean isPlacingLeftCannons(float x, float y) {
-        return x >= 181 && x <= 206;
+    	return isPointInRect(x,y,MOVES_shape_placingLeftCannons);
     }
 
     private boolean isPlacingRightCannons(float x, float y) {
-        return x >= 241 && x <= 271;
+    	return isPointInRect(x,y,MOVES_shape_placingRightCannons);
     }
     
     private boolean isClickingDisengage(float x, float y) {
-    	return isPointInRect(x,y,GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
+    	return isPointInRect(x,y,MOVES_shape_clickingDisengage);
     }
-    
-//    private boolean isPlacingMoves(float x, float y) {
-//        return x >= 208 && x < 240 && y >= (heightmod + 538) && y <= (heightmod + 670);
-//    }
-//
-//    private boolean isPickingMoves(float x, float y) {
-//        return (x >= 80) && (x <= 166) && (y >= heightmod + 598) && (y <= heightmod + 624);
-//    }
+
+    private boolean isPlacingMoves(float x, float y) {
+    	return isPointInRect(x,y,MOVES_shape_placingMoves);
+    }
+
+    private boolean isPickingMoves(float x, float y) {
+    	return isPointInRect(x,y,MOVES_shape_pickingMoves);
+    }
 
     private int getSlotForPosition(float x, float y) {
-    	// move placing slots
-    	if (isPointInRect(x,y,MOVES_moveSlot0X,MOVES_moveSlot0Y,28,28)) {
-    		return 0;
+    	if (isPlacingMoves(x,y)) {
+	    	if (isPointInRect(x,y,MOVES_shape_moveSlot0)) {
+	    		return 0;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_moveSlot1)) {
+	    		return 1;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_moveSlot2)) {
+	    		return 2;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_moveSlot3)) {
+	    		return 3;
+	    	}
     	}
-    	else if (isPointInRect(x,y,MOVES_moveSlot1X,MOVES_moveSlot1Y,28,28)) {
-    		return 1;
-    	}
-    	else if (isPointInRect(x,y,MOVES_moveSlot2X,MOVES_moveSlot2Y,28,28)) {
-    		return 2;
-    	}
-    	else if (isPointInRect(x,y,MOVES_moveSlot3X,MOVES_moveSlot3Y,28,28)) {
-    		return 3;
+    	else if (isPickingMoves(x,y)) {
+	    	if (isPointInRect(x,y,MOVES_shape_leftToken)) {
+	    		return 4;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_forwardToken)) {
+	    		return 5;
+	    	}
+	    	else if (isPointInRect(x,y,MOVES_shape_rightToken)) {
+	    		return 6;
+	    	}
     	}
 
-    	// token slots
-    	else if (isPointInRect(x,y,MOVES_leftX, MOVES_leftY,28,28)) {
-    		return 4;
-    	}
-    	else if (isPointInRect(x,y,MOVES_forwardX, MOVES_forwardY,28,28)) {
-    		return 5;
-    	}
-    	else if (isPointInRect(x,y,MOVES_rightX, MOVES_rightY,28,28)) {
-    		return 6;
-    	}
-    	else {
-    		return -1;
-    	}
+    	// default return
+    	return -1;
     }
 
     @Override
@@ -568,46 +636,54 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                 return false;
             }
 			if (isPlacingMoves(x, y)) {
-			    if (y >= heightmod + 538 && y <= heightmod + 569) {
-			        handleMovePlace(0, button);
-			    }
-			    else if (y >= heightmod + 573 && y <= heightmod + 603) {
-			        handleMovePlace(1, button);
-			    }
-			    else if (y >= heightmod + 606 && y <= heightmod + 637) {
-			        handleMovePlace(2, button);
-			    }
-			    else if(y >= heightmod + 642 && y <= heightmod + 670) {
-			        handleMovePlace(3, button);
-			    }
+				int slot = getSlotForPosition(x,y);
+				switch (slot) {
+				case 0:
+				case 1:
+				case 2:
+				case 3:
+					handleMovePlace(slot, button);
+					break;
+				default:
+					break;
+				}				
 			}
 			else if (isPlacingLeftCannons(x, y)) {
-			    if (y >= heightmod + 548 && y <= heightmod + 562) {
-			        getContext().sendAddCannon(0, 0);
-			    }
-			    else if (y >= heightmod + 582 && y <= heightmod + 597) {
-			        getContext().sendAddCannon(0, 1);
-			    }
-			    else if (y >= heightmod + 618 && y <= heightmod + 630) {
-			        getContext().sendAddCannon(0, 2);
-			    }
-			    else if (y >= heightmod + 650 && y <= heightmod + 665) {
-			        getContext().sendAddCannon(0, 3);
-			    }
+				
+				if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0))
+				{
+					getContext().sendAddCannon(0,0);
+				}
+				else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1))
+				{
+					getContext().sendAddCannon(0,1);
+				}
+				else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot2))
+				{
+					getContext().sendAddCannon(0,2);
+				}
+				else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3))
+				{
+					getContext().sendAddCannon(0,3);
+				}
 			}
 			else if (isPlacingRightCannons(x, y)) {
-			    if (y >= heightmod + 548 && y <= heightmod + 562) {
-			        getContext().sendAddCannon(1, 0);
-			    }
-			    else if (y >= heightmod + 582 && y <= heightmod + 597) {
-			        getContext().sendAddCannon(1, 1);
-			    }
-			    else if (y >= heightmod + 618 && y <= heightmod + 630) {
-			        getContext().sendAddCannon(1, 2);
-			    }
-			    else if (y >= heightmod + 650 && y <= heightmod + 665) {
-			        getContext().sendAddCannon(1, 3);
-			    }
+				if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0))
+				{
+					getContext().sendAddCannon(1,0);
+				}
+				else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1))
+				{
+					getContext().sendAddCannon(1,1);
+				}
+				else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot2))
+				{
+					getContext().sendAddCannon(1,2);
+				}
+				else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3))
+				{
+					getContext().sendAddCannon(1,3);
+				}
 			}
 			else if (isTogglingAuto(x, y)) {
 			    if (auto) {
@@ -623,16 +699,26 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 				goOceansideButtonIsDown = false;
 			}
 			else if (!auto){
-			    if (isChosedLeft(x, y)) {
-			        this.targetMove = MoveType.LEFT;
+				// can either click on the radio button or the move				
+			    if (
+			    		(isPointInRect(x,y,MOVES_shape_leftRadio)) ||
+			    		(isPointInRect(x,y,MOVES_shape_leftToken))
+			    ) {
+			        targetMove = MoveType.LEFT;
 			        getContext().sendGenerationTarget(targetMove);
 			    }
-			    else if (isChosedForward(x, y)) {
-			        this.targetMove = MoveType.FORWARD;
+			    else if (
+			    		(isPointInRect(x,y,MOVES_shape_forwardRadio)) ||
+			    		(isPointInRect(x,y,MOVES_shape_forwardToken))
+			    ) {
+			        targetMove = MoveType.FORWARD;
 			        getContext().sendGenerationTarget(targetMove);
 			    }
-			     else if (isChosedRight(x, y)) {
-			         this.targetMove = MoveType.RIGHT;
+			    else if (
+			    		(isPointInRect(x,y,MOVES_shape_rightRadio)) ||
+			    		(isPointInRect(x,y,MOVES_shape_rightToken))
+			    ) {
+			         targetMove = MoveType.RIGHT;
 			         getContext().sendGenerationTarget(targetMove);
 			    }
 			}
@@ -740,29 +826,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
         }
     }
 
-    private boolean isPlacingMoves(float x, float y) {
-        return isPointInRect(
-        		x,
-        		y,
-        		MOVES_moveSlot3X,
-        		MOVES_moveSlot3Y,
-        		28,
-        		(4 * 28) + (3 * 5)
-        );
-    }
-
-    private boolean isPickingMoves(float x, float y) {
-    	return isPointInRect(
-        		x,
-        		y,
-        		MOVES_leftX,
-        		MOVES_leftY,
-        		(3 * 28) + (2 * 2),
-        		28
-        );
-    }
-
-
     /**
      * Sets the turn time
      * @param time  The turn time in seconds
@@ -862,42 +925,52 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
     }
 
     private void drawMoveHolder() {
-
         // The hand bg
-        batch.draw(shiphand, this.MOVES_shiphandX, this.MOVES_shiphandY);
+        batch.draw(shiphand, MOVES_shiphandX, MOVES_shiphandY);
 
+        // get cannonheights for each slot
+        ArrayList<Integer> cannonHeights = new ArrayList<Integer>();
+        cannonHeights.add(MOVES_cannonSlot0Y);
+        cannonHeights.add(MOVES_cannonSlot1Y);
+        cannonHeights.add(MOVES_cannonSlot2Y);
+        cannonHeights.add(MOVES_cannonSlot3Y);
 
-        int height = 173 - 40;
+        // get moveheights for each slot
+        ArrayList<Integer> moveHeights = new ArrayList<Integer>();
+        moveHeights.add(MOVES_moveSlot0Y);
+        moveHeights.add(MOVES_moveSlot1Y);
+        moveHeights.add(MOVES_moveSlot2Y);
+        moveHeights.add(MOVES_moveSlot3Y);
+
+        boolean isBigShip = (movesHolder instanceof BigShipHandMove[]);
         for (int i = 0; i < movesHolder.length; i++) {
-            HandMove move = movesHolder[i];
-
+            // helper variables
+        	HandMove move = movesHolder[i];
             boolean[] left = move.getLeft();
             boolean[] right = move.getRight();
+            int cH = cannonHeights.get(i);
+            int mH =   moveHeights.get(i);
 
-            batch.draw(emptyCannonLeft, 336 - 61 - 81, height); // left
-            if (left[0]) {
-                batch.draw(cannonLeft, 336 - 61 - 81, height); // left
+            // draw left (guns AB |__| CD - place A, then B)
+            // must be in this order to create blur together
+            batch.draw((left[0])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotSmallX, cH); // left
+            if (isBigShip) {
+            	batch.draw((left[0] && left[1])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotBigX, cH); // left
             }
-            batch.draw(emptyCannonRight, 336 - 61 - 35, height); // right
-            if (right[0]) {
-                batch.draw(cannonRight, 336 - 61 - 35, height); // left
-            }
-
-            if (movesHolder instanceof BigShipHandMove[]) {
-                batch.draw(emptyCannonLeft, 336 - 61 - 96, height); // left
-                if (left[0] && left[1]) {
-                    batch.draw(cannonLeft, 336 - 61 - 96, height); // left
-                }
-                batch.draw(emptyCannonRight, 336 - 61 - 20, height); // right
-                if (right[0] && right[1]) {
-                    batch.draw(cannonRight, 336 - 61 - 20, height); // right
-                }
+            
+            // draw left (guns AB |__| CD - place D, then C)
+            // must be in this order to create blur together
+            batch.draw((right[0] && right[1])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
+            if (isBigShip) {
+            	batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
             }
 
+            // draw moves and manauver
             if (i == manuaverSlot) {
-                batch.draw(manuaverTexture, 336 - 61 - 64, height - 4);
+                batch.draw(manuaverTexture, MOVES_moveSlotX, mH);
             }
-            else {
+            else 
+            {
                 if (move.getMove() != MoveType.NONE) {
                     Color color = batch.getColor();
                     if (move.isMoveTemp()) {
@@ -907,12 +980,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
                         batch.setColor(color.r, color.g, color.b, 1f);
                     }
 
-                    batch.draw(getTextureForMove(move.getMove()), 336 - 61 - 64, height - 4);
+                    batch.draw(getTextureForMove(move.getMove()), MOVES_moveSlotX, mH);
                     batch.setColor(color.r, color.g, color.b, 1f);
                 }
             }
-
-            height -= 34;
         }
     }
 
@@ -971,30 +1042,28 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
         // misc labels
         font.setColor(Color.BLACK);
-        font.draw(batch, "x" + Integer.toString(leftMoves), MOVES_leftMovesTextX, MOVES_leftMovesTextY);
+        font.draw(batch, "x" + Integer.toString(leftMoves   ), MOVES_leftMovesTextX,    MOVES_leftMovesTextY);
         font.draw(batch, "x" + Integer.toString(forwardMoves), MOVES_forwardMovesTextX, MOVES_forwardMovesTextY);
-        font.draw(batch, "x" + Integer.toString(rightMoves), MOVES_rightMovesTextX, MOVES_rightMovesTextY);
+        font.draw(batch, "x" + Integer.toString(rightMoves  ), MOVES_rightMovesTextX,   MOVES_rightMovesTextY);
     }
 
     /**
      * Draws the sand clock
      */
     private void drawTimer() {
-        batch.draw(hourGlass, 336 - 27 - 20, 25);
-        batch.draw(sandTrickle,336 - 27 - 7, 30 );
-        batch.draw(sandTop, 336 - 27 - 16, 72);
-        batch.draw(sandBottom, 336 - 27 - 16, 28);
+        batch.draw(hourGlass, MOVES_hourGlassX, MOVES_hourGlassY);
+        batch.draw(sandTrickle,MOVES_sandTrickleX, MOVES_sandTrickleY );
+        batch.draw(sandTop, MOVES_sandTopX, MOVES_sandTopY);
+        batch.draw(sandBottom, MOVES_sandBottomX, MOVES_sandBottomY);
     }
 
     /**
      * Draws ship status
      *
      * Ship damage, Ship bilge, etc
-     */
+     */    
     private void drawShipStatus() {
-        int x = 336 - 43 - 12;
-        int y = 175 - 50;
-        batch.draw(shipStatusBg, x, y);
+        batch.draw(shipStatusBg, MOVES_shipStatusBackgroundX, MOVES_shipStatusBackgroundY);
 
         batch.end();
 
@@ -1020,20 +1089,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> {
 
         batch.begin();
 
-        batch.draw(shipStatus, x, y);
-    }
-
-
-    public boolean isChosedLeft(float x, float y) {
-    	return isPointInRect(x,y,MOVES_leftRadioX,MOVES_leftRadioY,13,13);
-    }
-
-    public boolean isChosedForward(float x, float y) {
-    	return isPointInRect(x,y,MOVES_forwardRadioX,MOVES_forwardRadioY,13,13);
-    }
-
-    public boolean isChosedRight(float x, float y) {
-    	return isPointInRect(x,y,MOVES_rightRadioX,MOVES_rightRadioY,13,13);
+        batch.draw(shipStatus, MOVES_shipStatusX, MOVES_shipStatusY);
     }
 
     public void placeMove(int slot, MoveType move, boolean temp) {
