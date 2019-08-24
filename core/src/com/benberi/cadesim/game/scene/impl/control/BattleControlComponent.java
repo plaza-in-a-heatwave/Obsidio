@@ -479,9 +479,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
         style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
         style.selection = new Image(new Texture("assets/skin/textfield-selection.png")).getDrawable();
-        chatBar = new TextField("I'm a turtle", style);
-        chatBar.setSize(CHAT_shape_chatBox.width - 5, CHAT_shape_chatBox.height);
-        chatBar.setPosition(CHAT_boxX, CHAT_boxY);
+        chatBar = new TextField("", style);
+        chatBar.setSize(CHAT_shape_chatBox.width - 6, CHAT_shape_chatBox.height);
+        chatBar.setPosition(CHAT_boxX + 3, CHAT_boxY);
         chatBar.setColor(235f, 240f, 242f, 255f);
         chatBar.setDisabled(false);
         chatBar.setVisible(true);
