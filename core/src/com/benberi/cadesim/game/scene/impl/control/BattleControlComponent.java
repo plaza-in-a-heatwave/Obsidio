@@ -174,6 +174,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private Texture radioOffDisable;
     private Texture autoOn;
     private Texture autoOff;
+    private Texture autoBackground;
 
     private Texture cannonSelection;
     private Texture cannonSelectionEmpty;
@@ -185,6 +186,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private Texture chatBarBackground;
     private Texture chatButtonSend;
     private Texture chatButtonSendPressed;
+    
+    private Texture chatScrollBarUp;
+    private Texture chatScrollBarUpPressed;
+    private Texture chatScrollBarDown;
+    private Texture chatScrollBarDownPressed;
+    private Texture chatScrollBarMiddle;
 
     // reference coords - MOVES control
     private int MOVES_REF_X             = 0;
@@ -193,54 +200,57 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int MOVES_backgroundX       = MOVES_REF_X + 5;
     private int MOVES_backgroundY       = MOVES_REF_Y - 67;
     
-    private int MOVES_titleX            = MOVES_REF_X + 66;
+    private int MOVES_titleX            = MOVES_REF_X + 68;
     private int MOVES_titleY            = MOVES_REF_Y + 76;
     
-    private int MOVES_autoX             = MOVES_REF_X + 58;
+    private int MOVES_autoX             = MOVES_REF_X + 64;
     private int MOVES_autoY             = MOVES_REF_Y + 33;
+    
+    private int MOVES_autoBackgroundX   = MOVES_REF_X + 81;
+    private int MOVES_autoBackgroundY   = MOVES_REF_Y + 28;
 
-    private int MOVES_autoTextX         = MOVES_REF_X + 30;
-    private int MOVES_autoTextY         = MOVES_REF_Y + 45; // text from top edge
+    private int MOVES_autoTextX         = MOVES_REF_X + 36;
+    private int MOVES_autoTextY         = MOVES_REF_Y + 46; // text from top edge
 
-    private int MOVES_cannonsX          = MOVES_REF_X + 48;
+    private int MOVES_cannonsX          = MOVES_REF_X + 54;
     private int MOVES_cannonsY          = MOVES_REF_Y + 3;
 
-    private int MOVES_cannonsTextX      = MOVES_REF_X + 56;
-    private int MOVES_cannonsTextY      = MOVES_REF_Y - 5;  // text from top edge
+    private int MOVES_cannonsTextX      = MOVES_REF_X + 61;
+    private int MOVES_cannonsTextY      = MOVES_REF_Y - 4;  // text from top edge
 
-    private int MOVES_leftX             = MOVES_REF_X + 80;
-    private int MOVES_forwardX          = MOVES_REF_X + 110;
-    private int MOVES_rightX            = MOVES_REF_X + 140;
+    private int MOVES_leftX             = MOVES_REF_X + 86;
+    private int MOVES_forwardX          = MOVES_REF_X + 116;
+    private int MOVES_rightX            = MOVES_REF_X + 146;
     private int MOVES_leftY             = MOVES_REF_Y + 0;
     private int MOVES_forwardY          = MOVES_REF_Y + 0;
     private int MOVES_rightY            = MOVES_REF_Y + 0;
 
-    private int MOVES_leftRadioX        = MOVES_REF_X + 88;
-    private int MOVES_forwardRadioX     = MOVES_REF_X + 118;
-    private int MOVES_rightRadioX       = MOVES_REF_X + 148;
+    private int MOVES_leftRadioX        = MOVES_REF_X + 94;
+    private int MOVES_forwardRadioX     = MOVES_REF_X + 124;
+    private int MOVES_rightRadioX       = MOVES_REF_X + 154;
     private int MOVES_leftRadioY        = MOVES_REF_Y + 36;
     private int MOVES_forwardRadioY     = MOVES_REF_Y + 36;
     private int MOVES_rightRadioY       = MOVES_REF_Y + 36;
 
-    private int MOVES_leftSelectX       = MOVES_REF_X + 76;
-    private int MOVES_forwardSelectX    = MOVES_REF_X + 106;
-    private int MOVES_rightSelectX      = MOVES_REF_X + 136;
+    private int MOVES_leftSelectX       = MOVES_REF_X + 82;
+    private int MOVES_forwardSelectX    = MOVES_REF_X + 112;
+    private int MOVES_rightSelectX      = MOVES_REF_X + 142;
     private int MOVES_leftSelectY       = MOVES_REF_Y - 4;
     private int MOVES_forwardSelectY    = MOVES_REF_Y - 4;
     private int MOVES_rightSelectY      = MOVES_REF_Y - 4;
 
-    private int MOVES_leftMovesTextX    = MOVES_REF_X + 88;    
-    private int MOVES_forwardMovesTextX = MOVES_REF_X + 118;
-    private int MOVES_rightMovesTextX   = MOVES_REF_X + 148;
-    private int MOVES_leftMovesTextY    = MOVES_REF_Y - 5; // text from top edge
-    private int MOVES_forwardMovesTextY = MOVES_REF_Y - 5; // "
-    private int MOVES_rightMovesTextY   = MOVES_REF_Y - 5; // "
+    private int MOVES_leftMovesTextX    = MOVES_REF_X + 94;    
+    private int MOVES_forwardMovesTextX = MOVES_REF_X + 124;
+    private int MOVES_rightMovesTextX   = MOVES_REF_X + 154;
+    private int MOVES_leftMovesTextY    = MOVES_REF_Y - 4; // text from top edge
+    private int MOVES_forwardMovesTextY = MOVES_REF_Y - 4; // "
+    private int MOVES_rightMovesTextY   = MOVES_REF_Y - 4; // "
     
-    private int MOVES_shiphandX         = MOVES_REF_X + 195;
+    private int MOVES_shiphandX         = MOVES_REF_X + 200;
     private int MOVES_shiphandY         = MOVES_REF_Y - 57;
 
     // general moveSlot
-    private int MOVES_moveSlotX             = MOVES_REF_X + 211;
+    private int MOVES_moveSlotX             = MOVES_REF_X + 216;
 
     // specific moveSlot
     private int MOVES_moveSlot0X            = MOVES_moveSlotX;
@@ -253,8 +263,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int MOVES_moveSlot3Y            = MOVES_REF_Y - 48;
 
     // general cannons
-    private int MOVES_cannonLeftSlotBigX    = MOVES_REF_X + 179;
-    private int MOVES_cannonRightSlotSmallX = MOVES_REF_X + 240;
+    private int MOVES_cannonLeftSlotBigX    = MOVES_REF_X + 182;
+    private int MOVES_cannonRightSlotSmallX = MOVES_REF_X + 245;
     private int MOVES_cannonLeftSlotSmallX  = MOVES_cannonLeftSlotBigX + 15;
     private int MOVES_cannonRightSlotBigX   = MOVES_cannonRightSlotSmallX + 15;
     private int MOVES_cannonSlot0Y          = MOVES_REF_Y + 59;
@@ -281,18 +291,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int MOVES_cannonRightSlot3Y     = MOVES_cannonSlot3Y;
 
     // hourglass
-    int MOVES_hourGlassX     = MOVES_REF_X + 289;
-    int MOVES_hourGlassY     = MOVES_REF_Y - 50;
-    int MOVES_sandTrickleX   = MOVES_REF_X + 302;
-    int MOVES_sandTrickleY   = MOVES_REF_Y - 45;
-    int MOVES_sandTopX       = MOVES_REF_X + 293;
-    int MOVES_sandTopY       = MOVES_REF_Y - 3;
-    int MOVES_sandBottomX    = MOVES_REF_X + 293;
-    int MOVES_sandBottomY    = MOVES_REF_Y - 47;
+    int MOVES_hourGlassX     = MOVES_REF_X + 290;
+    int MOVES_hourGlassY     = MOVES_REF_Y - 52;
+    int MOVES_sandTrickleX   = MOVES_REF_X + 303;
+    int MOVES_sandTrickleY   = MOVES_REF_Y - 47;
+    int MOVES_sandTopX       = MOVES_REF_X + 294;
+    int MOVES_sandTopY       = MOVES_REF_Y - 5;
+    int MOVES_sandBottomX    = MOVES_REF_X + 294;
+    int MOVES_sandBottomY    = MOVES_REF_Y - 49;
 
     // ship status/ship status background
-    int MOVES_shipStatusBackgroundX = MOVES_REF_X + 281;
-    int MOVES_shipStatusBackgroundY = MOVES_REF_Y + 50;
+    int MOVES_shipStatusBackgroundX = MOVES_REF_X + 282;
+    int MOVES_shipStatusBackgroundY = MOVES_REF_Y + 47;
     int MOVES_shipStatusX           = MOVES_shipStatusBackgroundX;
     int MOVES_shipStatusY           = MOVES_shipStatusBackgroundY;
 
@@ -353,17 +363,32 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 	
 	private int CHAT_buttonSendX        = CHAT_REF_X + 718;
 	private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
+
+	private int CHAT_scrollBarUpX       = CHAT_REF_X + 776;
+    private int CHAT_scrollBarUpY       = CHAT_REF_Y + 163;
+    private int CHAT_scrollBarDownX     = CHAT_REF_X + 776;
+    private int CHAT_scrollBarDownY     = CHAT_REF_Y + 38;
+    private int CHAT_scrollBarMiddleX   = CHAT_REF_X + 776;
+    private int CHAT_scrollBarMiddleY   = CHAT_REF_Y + 50;
 	
 	// CHAT shapes
 	Rectangle CHAT_shape_clickingSend   = new Rectangle(CHAT_buttonSendX, CHAT_buttonSendY, 45, 16);
 	Rectangle CHAT_shape_chatBox        = new Rectangle(CHAT_boxX, CHAT_boxY, 128, 17);
+	Rectangle CHAT_shape_scrollingUp    = new Rectangle(CHAT_scrollBarUpX, CHAT_scrollBarUpY, 12, 12);
+	Rectangle CHAT_shape_scrollingDown  = new Rectangle(CHAT_scrollBarDownX, CHAT_scrollBarDownY, 12, 12);
 	
 	/**
 	 * state of buttons. true if pushed, false if not.
 	 */
 	private boolean goOceansideButtonIsDown = false; // initial
 	private boolean sendChatButtonIsDown    = false; // initial
-
+	private boolean scrollUpButtonIsDown    = false; // initial (confusing!)
+	private boolean scrollDownButtonIsDown  = false; // initial (confusing!) 
+	
+	/**
+	 * Max length for a chat message
+	 */
+	private static final int CHAT_MESSAGE_MAX_LENGTH = 240;
 
     private int manuaverSlot = 3;
 
@@ -412,6 +437,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         radioOffDisable = new Texture("assets/ui/radio-off-disable.png");
         autoOn = new Texture("assets/ui/auto-on.png");
         autoOff = new Texture("assets/ui/auto-off.png");
+        autoBackground = new Texture("assets/ui/auto_background.png");
 
         sandTopTexture = new Texture("assets/ui/sand_top.png");
         sandBottomTexture = new Texture("assets/ui/sand_bot.png");
@@ -473,11 +499,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatButtonSendPressed = new Texture("assets/ui/chat_button_sendPressed.png");
         // text field for chat (based off ConnectScene)
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = font;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
+        style.font.getData().setScale(0.95f);
         style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
+        style.cursor.setMinWidth(1f);
         style.selection = new Image(new Texture("assets/skin/textfield-selection.png")).getDrawable();
         chatBar = new TextField("", style);
         chatBar.setSize(CHAT_shape_chatBox.width - 6, CHAT_shape_chatBox.height);
@@ -489,6 +516,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatBar.setBlinkTime(0.5f);
         stage.addActor(chatBar);
         stage.setKeyboardFocus(chatBar);
+        
+        chatScrollBarUp = new Texture("assets/ui/scrollbar_top.png");
+        chatScrollBarUpPressed = new Texture("assets/ui/scrollbar_topPressed.png");
+        chatScrollBarDown = new Texture("assets/ui/scrollbar_bottom.png");
+        chatScrollBarDownPressed = new Texture("assets/ui/scrollbar_bottomPressed.png");
+        chatScrollBarMiddle = new Texture("assets/ui/scrollbar_center.png");
         
         // initialise
         setDamagePercentage(70);
@@ -526,8 +559,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         renderMoveControl();
         renderGoOceanside();
         renderChat();
-        // TODO - I can't get the TextFIeld working. It requires a stage??
-//        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         stage.act();
         stage.draw();
     }
@@ -545,28 +576,33 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleClick(float x, float y, int button) {
-    	System.out.println("text: " + chatBar.getText());
-    	if (!goOceansideButtonIsDown) {
-    		if (isClickingDisengage(x, y)) {
-    			goOceansideButtonIsDown = true;
-    		}
+    	if ((!goOceansideButtonIsDown) && isClickingDisengage(x,y)) {
+    		goOceansideButtonIsDown = true;
+    		return true;
     	}
-
-    	if (!sendChatButtonIsDown) {
-    		if (isClickingSend(x, y)) {
-    			sendChatButtonIsDown = true;
-    		}
+    	else if ((!sendChatButtonIsDown) && isClickingSend(x,y)) {
+			sendChatButtonIsDown = true;
+    		return true;
     	}
-    	return false;
+    	else if ((!scrollUpButtonIsDown) && isClickingScrollUp(x,y)) {
+    		scrollUpButtonIsDown = true;
+    		return true;
+    	}
+    	else if ((!scrollDownButtonIsDown) && isClickingScrollDown(x,y)) {
+    		scrollDownButtonIsDown = true;
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
     }
     
     private void sendChat() {
     	String message = chatBar.getText();
-    	if (message.length() > 0 && message.length() <= 240) {
+    	if (message.length() > 0 && message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
     		// TODO send the text string
     	}
     }
-    
     
     /**
      * return whether point is in rect or not.
@@ -608,6 +644,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     
     private boolean isClickingSend(float x, float y) {
     	return isPointInRect(x,y,CHAT_shape_clickingSend);
+    }
+    
+    private boolean isClickingScrollUp(float x, float y) {
+    	return isPointInRect(x,y,CHAT_shape_scrollingUp);
+    }
+    
+    private boolean isClickingScrollDown(float x, float y) {
+    	return isPointInRect(x,y,CHAT_shape_scrollingDown);
     }
 
     private boolean isPlacingMoves(float x, float y) {
@@ -718,6 +762,23 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         		sendChatButtonIsDown = false;
         	}
         }
+        
+        // if we drag off chatScrollBarUp,
+        // deactivate it with no penalty to the user.
+        if (scrollUpButtonIsDown) {
+        	if (!isClickingScrollUp(x, y)) {
+        		scrollUpButtonIsDown = false;
+        	}
+        }
+        
+        // if we drag off chatScrollBarDown,
+        // deactivate it with no penalty to the user.
+        if (scrollDownButtonIsDown) {
+        	if (!isClickingScrollDown(x, y)) {
+        		scrollDownButtonIsDown = false;
+        	}
+        }
+
         return false;
     }
 
@@ -826,8 +887,17 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 				goOceansideButtonIsDown = false;
 			}
 			else if (sendChatButtonIsDown && isClickingSend(x, y)) {
+				System.out.println("released sendChat");
 				sendChat();
 				sendChatButtonIsDown = false;
+			}
+			else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
+				// TODO scroll here
+				scrollUpButtonIsDown = false;
+			}
+			else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
+				// TODO scroll here
+				scrollDownButtonIsDown = false;
 			}
 			else if (!auto){
 				// can either click on the radio button or the move				
@@ -1061,6 +1131,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     	batch.draw(chatIndicator,  CHAT_indicatorX, CHAT_indicatorY);
     	batch.draw(chatBarBackground, CHAT_boxX, CHAT_boxY);
     	batch.draw(sendChatButtonIsDown?chatButtonSendPressed:chatButtonSend, CHAT_buttonSendX, CHAT_buttonSendY);
+    	batch.draw(scrollUpButtonIsDown?chatScrollBarUpPressed:chatScrollBarUp, CHAT_scrollBarUpX, CHAT_scrollBarUpY);
+    	batch.draw(scrollDownButtonIsDown?chatScrollBarDownPressed:chatScrollBarDown, CHAT_scrollBarDownX, CHAT_scrollBarDownY);
+    	batch.draw(chatScrollBarMiddle, CHAT_scrollBarMiddleX, CHAT_scrollBarMiddleY);
     	batch.end();
     }
 
@@ -1144,6 +1217,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      */
     private void drawMovesSelect() {
         // auto, cannons
+    	batch.draw(autoBackground, MOVES_autoBackgroundX, MOVES_autoBackgroundY);
         font.draw(batch, "Auto", MOVES_autoTextX, MOVES_autoTextY);
         batch.draw(auto?autoOn:autoOff,            MOVES_autoX,    MOVES_autoY);
         batch.draw((cannons>0)?cannon:emptyCannon, MOVES_cannonsX, MOVES_cannonsY);
@@ -1250,16 +1324,19 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         manuaverSlot = 3;
         getContext().sendManuaverSlotChanged(3);
 
-        // fix stuck disengage button if it was clicked across a turn
+        // fix stuck buttons if they were clicked across a turn
         // with no penalty to the user
         if (goOceansideButtonIsDown) {
         	goOceansideButtonIsDown = false;
         }
-        
-        // fix stuck send button if it was clicked across a turn
-        // with no penalty to the user
         if (sendChatButtonIsDown) {
         	sendChatButtonIsDown = false;
+        }
+        if (scrollUpButtonIsDown) {
+        	scrollUpButtonIsDown = false;
+        }
+        if (scrollDownButtonIsDown) {
+        	scrollDownButtonIsDown = false;
         }
     }
 
@@ -1375,8 +1452,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     			Character.toString(character) +
     			text.substring(p, text.length()
     		);
-    		chatBar.setText(newText);
-    		chatBar.setCursorPosition(p + 1);
+    		if (newText.length() < CHAT_MESSAGE_MAX_LENGTH) {
+    			chatBar.setText(newText);
+        		chatBar.setCursorPosition(p + 1);
+    		}
     		return true;
     	}
     	else {
