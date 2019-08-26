@@ -305,6 +305,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     int MOVES_shipStatusBackgroundY = MOVES_REF_Y + 47;
     int MOVES_shipStatusX           = MOVES_shipStatusBackgroundX;
     int MOVES_shipStatusY           = MOVES_shipStatusBackgroundY;
+    int MOVES_shipDamageX           = MOVES_shipStatusBackgroundX + 20;
+    int MOVES_shipDamageY           = MOVES_REF_Y + 69;
+    int MOVES_shipBilgeX            = MOVES_shipStatusBackgroundX + 23;
+    int MOVES_shipBilgeY            = MOVES_REF_Y + 69;
 
     // MOVES shapes
     Rectangle MOVES_shape_auto                = new Rectangle(MOVES_autoX,             MOVES_autoY,             17, 17);
@@ -1299,9 +1303,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         float blueLength = 180.0f * bluestuff;
 
         shape.setColor(new Color(131 / 255f, 6 / 255f, 0f, .7f));
-        shape.arc(301, 146, 16.5f, redStart, redLength);
+        shape.arc(MOVES_shipDamageX, MOVES_shipDamageY, 16.50f, redStart, redLength);
         shape.setColor(new Color(0f, 207 / 255f, 249f, .7f));
-        shape.arc(304, 146, 16.5f, blueStart, blueLength);
+        shape.arc(MOVES_shipBilgeX, MOVES_shipBilgeY, 16.50f, blueStart, blueLength);
         shape.end();
 
         batch.begin();
