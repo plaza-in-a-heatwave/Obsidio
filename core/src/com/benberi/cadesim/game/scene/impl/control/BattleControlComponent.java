@@ -1,6 +1,12 @@
 package com.benberi.cadesim.game.scene.impl.control;
 
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -25,6 +31,12 @@ import com.benberi.cadesim.game.scene.impl.control.hand.impl.BigShipHandMove;
 import com.benberi.cadesim.game.scene.impl.control.hand.impl.SmallShipHandMove;
 
 public class BattleControlComponent extends SceneComponent<ControlAreaScene> implements InputProcessor {
+    /**
+     * for copy/paste
+     */
+    Toolkit toolkit;
+    Clipboard clipboard;
+
     /**
      * The context
      */
@@ -127,6 +139,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int  keyDown     = -1;  // keycode if down? (or -1 for none)
     private int characterDown = -1; // charactercode if down? (or -1 for none)
     private long keyDownTimeMillis = 0;  // when did key go down?
+    private boolean modifierDown = false; // ctrl or mac key
+    private boolean handledChord = false; // did we handle a modifier chord?
     private static final int KEY_REPEAT_THRESHOLD_MILLIS = 500;
     private void doAccelerate() {
         if ((System.currentTimeMillis() - keyDownTimeMillis) >= KEY_REPEAT_THRESHOLD_MILLIS) {
@@ -141,41 +155,52 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private void startKeyAcceleration(int keycode) {
         // use when a key has been pushed down once.
         // it schedules acceleration.
-
-        keyDown = keycode;
-        keyDownTimeMillis = System.currentTimeMillis();
-        characterDown = -1;
+        if (!modifierDown) {
+            keyDown = keycode;
+            keyDownTimeMillis = System.currentTimeMillis();
+            characterDown = -1;
+        }
     }
     private void startCharacterAcceleration(char character) {
         // use when a charater has been pushed down once.
         // it schedules acceleration.
-        characterDown = character;
-        keyDownTimeMillis = System.currentTimeMillis();
-        keyDown = -1;
+        if (!modifierDown) {
+            characterDown = character;
+            keyDownTimeMillis = System.currentTimeMillis();
+            keyDown = -1;
+        }
     }
     private void stopAllAcceleration() {
         // use when a key up has been detected
+        if (!modifierDown) {
+            keyDown = -1;
+            characterDown = -1;
+            keyDownTimeMillis = System.currentTimeMillis();
+        }
+    }
+    private boolean isAcceleratingCharacter(char character) {
+        if (modifierDown) {
+            return false;
+        }
+        else if (characterDown == -1) {
+            return false;
+        }
+        else {
+            return character == characterDown;
+        }
+    }
+    private void startModifier() {
+        modifierDown = true;
+        handledChord = false;
         keyDown = -1;
         characterDown = -1;
         keyDownTimeMillis = System.currentTimeMillis();
     }
-    private boolean isAcceleratingKey(int keycode) {
-        if (keyDown == -1) {
-            return false;
-        }
-        else
-        {
-            return keycode == keyDown;
-        }
+    private boolean isModifying() {
+        return modifierDown;
     }
-    private boolean isAcceleratingCharacter(char character) {
-        if (characterDown == -1) {
-            return false;
-        }
-        else
-        {
-            return character == characterDown;
-        }
+    private void stopModifier() {
+        modifierDown = false;
     }
 
     /**
@@ -483,6 +508,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch = new SpriteBatch();
         shape = new ShapeRenderer();
 
+        toolkit=Toolkit.getDefaultToolkit();
+        clipboard=Toolkit.getDefaultToolkit().getSystemClipboard();
+
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 12;
@@ -560,10 +588,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = font;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
-        style.font.getData().setScale(0.95f);
+
+        // TODO how to change font color when selected
+        //style.focusedFontColor = new Color(215f, 201f, 79f, 1);
         style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
         style.cursor.setMinWidth(1f);
-        style.selection = new Image(new Texture("assets/skin/textfield-selection.png")).getDrawable();
+        style.selection = new Image(new Texture("assets/skin/battle-textfield-selection.png")).getDrawable();
         chatBar = new TextField("", style);
         chatBar.setSize(CHAT_shape_chatBox.width - 6, CHAT_shape_chatBox.height);
         chatBar.setPosition(CHAT_boxX + 3, CHAT_boxY);
@@ -677,6 +707,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * need to lookup enums once e.g. Input.Keys.LEFT
      */
     private void handleLeftButton(int keycode) {
+        // move cursor to left of selection, if any,
+        // and clear it
+        if (chatBar.getSelection().length() > 0) {
+            chatBar.setCursorPosition(chatBar.getSelectionStart());
+            chatBar.clearSelection();
+        }
+
         int p = chatBar.getCursorPosition();
         if (p > 0)
         {
@@ -685,6 +722,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     private void handleRightButton(int keycode) {
+        // move cursor to right of selection, if any,
+        // and clear it
+        int length = chatBar.getSelection().length();
+        if (length > 0) {
+            chatBar.setCursorPosition(chatBar.getSelectionStart() + length);
+            chatBar.clearSelection();
+        }
+
+        chatBar.clearSelection();
         int p = chatBar.getCursorPosition();
         if (p < (chatBar.getText().length()))
         {
@@ -692,35 +738,83 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
     }
 
-    private void handleBackspace(int keycode) {
+    /**
+     * helper method to remove a selection
+     */
+    private void removeSelection() {
+        String selection = chatBar.getSelection();
+        int length = selection.length();
+        if (length == 0) {
+            return;
+        }
+
+        int start = chatBar.getSelectionStart();
+
+        // delete all indices not including end
         String text = chatBar.getText();
-        int p = chatBar.getCursorPosition();
-        if (p > 0)
+
+        // get the first portion, checking the range.
+        String textStart = "";
+        if (start > 0) {
+            textStart = text.substring(0, start - 1);
+        }
+
+        String newText = textStart + text.substring(start+length, text.length());
+        chatBar.setText(newText);
+        chatBar.setCursorPosition(start);
+        chatBar.clearSelection();
+    }
+
+    private void handleBackspace(int keycode) {
+        if (chatBar.getSelection().length() > 0)
         {
-            String newText =
-                    text.substring(0, p - 1) +
-                    text.substring(p, text.length()
-            );
-            chatBar.setText(newText);
-            chatBar.setCursorPosition(p - 1);
+            removeSelection();
+        }
+        else
+        {
+            String text = chatBar.getText();
+            int p = chatBar.getCursorPosition();
+            if (p > 0)
+            {
+                String newText =
+                        text.substring(0, p - 1) +
+                        text.substring(p, text.length()
+                );
+                chatBar.setText(newText);
+                chatBar.setCursorPosition(p - 1);
+            }
         }
     }
 
     private void handleDel(int keycode) {
-        String text = chatBar.getText();
-        int p = chatBar.getCursorPosition();
-        if (p < text.length())
+        if (chatBar.getSelection().length() > 0)
         {
-            String newText =
-                    text.substring(0, p) +
-                    text.substring(p + 1, text.length()
-            );
-            chatBar.setText(newText);
-            chatBar.setCursorPosition(p);
+            removeSelection();
+        }
+        else
+        {
+            String text = chatBar.getText();
+            int p = chatBar.getCursorPosition();
+            if (p < text.length())
+            {
+                String newText =
+                        text.substring(0, p) +
+                        text.substring(p + 1, text.length()
+                );
+                chatBar.setText(newText);
+                chatBar.setCursorPosition(p);
+            }
         }
     }
 
     private void handleChar(char character) {
+        // optionally remove any selection first
+        if (chatBar.getSelection().length() > 0)
+        {
+            removeSelection();
+        }
+
+        // insert char at cursor position
         String text = chatBar.getText();
         int p = chatBar.getCursorPosition();
         String newText =
@@ -738,8 +832,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         sendChat();
         chatBar.setCursorPosition(0);
         chatBar.setText("");
+        chatBar.clearSelection();
     }
-
     /**
      * wrapper around textfield helper methods
      * returns true if handled, false otherwise
@@ -765,6 +859,55 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
 
         return handled;
+    }
+
+    private void handleModifierChord(int keycode) {
+        switch (keycode) {
+        case Input.Keys.A:
+            chatBar.selectAll();
+            break;
+        case Input.Keys.C:
+            StringSelection data = new StringSelection(chatBar.getSelection());
+             clipboard.setContents(data, data);
+            break;
+        case Input.Keys.V:
+            try {
+                 String pastedData = "";
+                 Transferable t = clipboard.getContents(null);
+                 if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
+                 {
+                    pastedData = (String)t.getTransferData(DataFlavor.stringFlavor);
+
+                     // optionally remove any selection first
+                     if (chatBar.getSelection().length() > 0)
+                     {
+                         removeSelection();
+                     }
+
+                     // use the pasted data
+                        String text = chatBar.getText();
+                        int p = chatBar.getCursorPosition();
+                        String newText =
+                            text.substring(0, p) +
+                            pastedData +
+                            text.substring(p, text.length()
+                        );
+                        if (newText.length() < CHAT_MESSAGE_MAX_LENGTH) {
+                            chatBar.setText(newText);
+                            chatBar.setCursorPosition(p + 1);
+                        }
+                 }
+              } catch (Exception ex) {
+                  // do nothing
+              }
+            break;
+        default:
+            // unrecognised
+            break;
+        }
+
+        // don't handle again
+        handledChord = true;
     }
 
     /**
@@ -1571,10 +1714,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ENTER) {
+        if (isModifying()) {
+            handleModifierChord(keycode);
+            return true;
+        }
+        else if (keycode == Input.Keys.ENTER) {
             // enter shouldnt accelerate
             stopAllAcceleration();
             handleEnter(keycode);
+            return true;
+        }
+        else if (keycode == Input.Keys.CONTROL_LEFT) {
+            startModifier();
             return true;
         }
         else
@@ -1586,7 +1737,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean keyUp(int keycode) {
-        stopAllAcceleration();
+        if (keycode == Input.Keys.CONTROL_LEFT)
+        {
+            stopModifier();
+        }
+        else
+        {
+            stopAllAcceleration();
+        }
 
         // eat all teh keys
         return true;
@@ -1599,13 +1757,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     public boolean keyTyped(char character) {
         if (character >= 32 && character < 127)
         {
-            // only handle once
             if (!isAcceleratingCharacter(character))
-            {
-                startCharacterAcceleration(character);
-                handleChar(character); // printable ascii
-            }
-            return true;
+                // only handle once
+                {
+                    startCharacterAcceleration(character);
+                    handleChar(character); // printable ascii
+                }
+                return true;
         }
         else
         {
