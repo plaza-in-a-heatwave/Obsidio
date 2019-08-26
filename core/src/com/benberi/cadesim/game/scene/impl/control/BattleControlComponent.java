@@ -1,13 +1,10 @@
 package com.benberi.cadesim.game.scene.impl.control;
 
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -17,15 +14,12 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.math.Vector2;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.SceneComponent;
-import com.benberi.cadesim.game.scene.GameScene;
 import com.benberi.cadesim.game.scene.impl.control.hand.HandMove;
 import com.benberi.cadesim.game.scene.impl.control.hand.impl.BigShipHandMove;
 import com.benberi.cadesim.game.scene.impl.control.hand.impl.SmallShipHandMove;
@@ -34,9 +28,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * The context
      */
-	private GameContext context;
-	
-	/**
+    private GameContext context;
+
+    /**
      * Left moves
      */
     private int leftMoves = 2;
@@ -60,20 +54,20 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * The selected moves
      */
     private HandMove[] movesHolder;
-    
+
     /**
      * Radio button states
      */
     private boolean[] radioButtons = new boolean[3];
-    
+
     private void enableRadio(int radio) {
-    	for (int i=0; i<radioButtons.length; i++) {
-    		if (i == radio) {
-    			radioButtons[i] = true;
-    		} else {
-    			radioButtons[i] = false;
-    		}
-    	}
+        for (int i=0; i<radioButtons.length; i++) {
+            if (i == radio) {
+                radioButtons[i] = true;
+            } else {
+                radioButtons[i] = false;
+            }
+        }
     }
 
     /**
@@ -115,18 +109,75 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * The turn time
      */
     private int time = 0;
-    
+
     /**
      * modifier to calculate button placement
      */
     int absheight = Gdx.graphics.getHeight(); // absolute height
-    
-    /** 
+
+    /**
      * TextField for Chat (with its own Stage)
      */
     private Stage stage;
     private TextField chatBar;
-    
+
+    /**
+     * helpers for Textfield key processing
+     */
+    private int  keyDown     = -1;  // keycode if down? (or -1 for none)
+    private int characterDown = -1; // charactercode if down? (or -1 for none)
+    private long keyDownTimeMillis = 0;  // when did key go down?
+    private static final int KEY_REPEAT_THRESHOLD_MILLIS = 500;
+    private void doAccelerate() {
+        if ((System.currentTimeMillis() - keyDownTimeMillis) >= KEY_REPEAT_THRESHOLD_MILLIS) {
+            if (keyDown != -1) {
+                handleAcceleratableKeys(keyDown);
+            }
+            else if (characterDown != -1) {
+                handleChar((char)characterDown);
+            }
+        }
+    }
+    private void startKeyAcceleration(int keycode) {
+        // use when a key has been pushed down once.
+        // it schedules acceleration.
+
+        keyDown = keycode;
+        keyDownTimeMillis = System.currentTimeMillis();
+        characterDown = -1;
+    }
+    private void startCharacterAcceleration(char character) {
+        // use when a charater has been pushed down once.
+        // it schedules acceleration.
+        characterDown = character;
+        keyDownTimeMillis = System.currentTimeMillis();
+        keyDown = -1;
+    }
+    private void stopAllAcceleration() {
+        // use when a key up has been detected
+        keyDown = -1;
+        characterDown = -1;
+        keyDownTimeMillis = System.currentTimeMillis();
+    }
+    private boolean isAcceleratingKey(int keycode) {
+        if (keyDown == -1) {
+            return false;
+        }
+        else
+        {
+            return keycode == keyDown;
+        }
+    }
+    private boolean isAcceleratingCharacter(char character) {
+        if (characterDown == -1) {
+            return false;
+        }
+        else
+        {
+            return character == characterDown;
+        }
+    }
+
     /**
      * Textures
      */
@@ -181,12 +232,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     private Texture goOceansideUp;
     private Texture goOceansideDown;
-    
+
     private Texture chatIndicator;
     private Texture chatBarBackground;
     private Texture chatButtonSend;
     private Texture chatButtonSendPressed;
-    
+
     private Texture chatScrollBarUp;
     private Texture chatScrollBarUpPressed;
     private Texture chatScrollBarDown;
@@ -199,13 +250,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     private int MOVES_backgroundX       = MOVES_REF_X + 5;
     private int MOVES_backgroundY       = MOVES_REF_Y - 67;
-    
+
     private int MOVES_titleX            = MOVES_REF_X + 68;
     private int MOVES_titleY            = MOVES_REF_Y + 76;
-    
+
     private int MOVES_autoX             = MOVES_REF_X + 64;
     private int MOVES_autoY             = MOVES_REF_Y + 33;
-    
+
     private int MOVES_autoBackgroundX   = MOVES_REF_X + 81;
     private int MOVES_autoBackgroundY   = MOVES_REF_Y + 28;
 
@@ -239,13 +290,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int MOVES_forwardSelectY    = MOVES_REF_Y - 4;
     private int MOVES_rightSelectY      = MOVES_REF_Y - 4;
 
-    private int MOVES_leftMovesTextX    = MOVES_REF_X + 94;    
+    private int MOVES_leftMovesTextX    = MOVES_REF_X + 94;
     private int MOVES_forwardMovesTextX = MOVES_REF_X + 124;
     private int MOVES_rightMovesTextX   = MOVES_REF_X + 154;
     private int MOVES_leftMovesTextY    = MOVES_REF_Y - 4; // text from top edge
     private int MOVES_forwardMovesTextY = MOVES_REF_Y - 4; // "
     private int MOVES_rightMovesTextY   = MOVES_REF_Y - 4; // "
-    
+
     private int MOVES_shiphandX         = MOVES_REF_X + 200;
     private int MOVES_shiphandY         = MOVES_REF_Y - 57;
 
@@ -328,74 +379,74 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     // load a gun by clicking on a 28x28 square around it (regardless of
     // whether it's a large/small ship).
     Rectangle MOVES_shape_cannonLeftSlot0     = new Rectangle(MOVES_cannonLeftSlot0X,  MOVES_cannonLeftSlot0Y  - 5, 32, 18+10);
-	Rectangle MOVES_shape_cannonLeftSlot1     = new Rectangle(MOVES_cannonLeftSlot1X,  MOVES_cannonLeftSlot1Y  - 5, 32, 18+10);
-	Rectangle MOVES_shape_cannonLeftSlot2     = new Rectangle(MOVES_cannonLeftSlot2X,  MOVES_cannonLeftSlot2Y  - 5, 32, 18+10);
-	Rectangle MOVES_shape_cannonLeftSlot3     = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y  - 5, 32, 18+10);
-	Rectangle MOVES_shape_cannonRightSlot0    = new Rectangle(MOVES_cannonRightSlot0X, MOVES_cannonRightSlot0Y - 5, 32, 18+10);
-	Rectangle MOVES_shape_cannonRightSlot1    = new Rectangle(MOVES_cannonRightSlot1X, MOVES_cannonRightSlot1Y - 5, 32, 18+10);
-	Rectangle MOVES_shape_cannonRightSlot2    = new Rectangle(MOVES_cannonRightSlot2X, MOVES_cannonRightSlot2Y - 5, 32, 18+10);
-	Rectangle MOVES_shape_cannonRightSlot3    = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonRightSlot3Y - 5, 32, 18+10);
+    Rectangle MOVES_shape_cannonLeftSlot1     = new Rectangle(MOVES_cannonLeftSlot1X,  MOVES_cannonLeftSlot1Y  - 5, 32, 18+10);
+    Rectangle MOVES_shape_cannonLeftSlot2     = new Rectangle(MOVES_cannonLeftSlot2X,  MOVES_cannonLeftSlot2Y  - 5, 32, 18+10);
+    Rectangle MOVES_shape_cannonLeftSlot3     = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y  - 5, 32, 18+10);
+    Rectangle MOVES_shape_cannonRightSlot0    = new Rectangle(MOVES_cannonRightSlot0X, MOVES_cannonRightSlot0Y - 5, 32, 18+10);
+    Rectangle MOVES_shape_cannonRightSlot1    = new Rectangle(MOVES_cannonRightSlot1X, MOVES_cannonRightSlot1Y - 5, 32, 18+10);
+    Rectangle MOVES_shape_cannonRightSlot2    = new Rectangle(MOVES_cannonRightSlot2X, MOVES_cannonRightSlot2Y - 5, 32, 18+10);
+    Rectangle MOVES_shape_cannonRightSlot3    = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonRightSlot3Y - 5, 32, 18+10);
 
-	Rectangle MOVES_shape_leftRadio           = new Rectangle(MOVES_leftRadioX,        MOVES_leftRadioY,        13, 13);
-	Rectangle MOVES_shape_forwardRadio        = new Rectangle(MOVES_forwardRadioX,     MOVES_forwardRadioY,     13, 13);
-	Rectangle MOVES_shape_rightRadio          = new Rectangle(MOVES_rightRadioX,       MOVES_rightRadioY,       13, 13);
+    Rectangle MOVES_shape_leftRadio           = new Rectangle(MOVES_leftRadioX,        MOVES_leftRadioY,        13, 13);
+    Rectangle MOVES_shape_forwardRadio        = new Rectangle(MOVES_forwardRadioX,     MOVES_forwardRadioY,     13, 13);
+    Rectangle MOVES_shape_rightRadio          = new Rectangle(MOVES_rightRadioX,       MOVES_rightRadioY,       13, 13);
 
-	Rectangle MOVES_shape_placingMoves        = new Rectangle(MOVES_moveSlot3X,        MOVES_moveSlot3Y,        28, (4 * 28) + (3 * 5));
+    Rectangle MOVES_shape_placingMoves        = new Rectangle(MOVES_moveSlot3X,        MOVES_moveSlot3Y,        28, (4 * 28) + (3 * 5));
     Rectangle MOVES_shape_pickingMoves        = new Rectangle(MOVES_cannonsX,          MOVES_cannonsY,          (4 * 28) + (3 * 2), 28);
 
     // reference coords - GO OCEANSIDE control
     private int GOOCEANSIDE_REF_X       = 0;
     private int GOOCEANSIDE_REF_Y       = 0;
     private int GOOCEANSIDE_backgroundX = GOOCEANSIDE_REF_X + 5+336+5;
-	private int GOOCEANSIDE_backgroundY = GOOCEANSIDE_REF_Y + 8;
-	private int GOOCEANSIDE_buttonX     = GOOCEANSIDE_REF_X + 5+336+5 + 19;
-	private int GOOCEANSIDE_buttonY     = GOOCEANSIDE_REF_Y + 8 + 24;
+    private int GOOCEANSIDE_backgroundY = GOOCEANSIDE_REF_Y + 8;
+    private int GOOCEANSIDE_buttonX     = GOOCEANSIDE_REF_X + 5+336+5 + 19;
+    private int GOOCEANSIDE_buttonY     = GOOCEANSIDE_REF_Y + 8 + 24;
 
-	// GOOCEANSIDE shapes
-	Rectangle GOOCEANSIDE_shape_clickingDisengage   = new Rectangle(GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
+    // GOOCEANSIDE shapes
+    Rectangle GOOCEANSIDE_shape_clickingDisengage   = new Rectangle(GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
 
-	// reference coords - CHAT control
-	private int CHAT_REF_X              = 0;
-	private int CHAT_REF_Y              = 0;
-	
-	// CHAT
-	private int CHAT_backgroundX        = CHAT_REF_X + 484;
-	private int CHAT_backgroundY        = CHAT_REF_Y + 8;
-	
-	private int CHAT_indicatorX         = CHAT_REF_X + 487;
-	private int CHAT_indicatorY         = CHAT_REF_Y + 8;
-	
-	private int CHAT_boxX               = CHAT_REF_X + 585;
-	private int CHAT_boxY               = CHAT_REF_Y + 7;
-	
-	private int CHAT_buttonSendX        = CHAT_REF_X + 718;
-	private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
+    // reference coords - CHAT control
+    private int CHAT_REF_X              = 0;
+    private int CHAT_REF_Y              = 0;
 
-	private int CHAT_scrollBarUpX       = CHAT_REF_X + 776;
+    // CHAT
+    private int CHAT_backgroundX        = CHAT_REF_X + 484;
+    private int CHAT_backgroundY        = CHAT_REF_Y + 8;
+
+    private int CHAT_indicatorX         = CHAT_REF_X + 487;
+    private int CHAT_indicatorY         = CHAT_REF_Y + 8;
+
+    private int CHAT_boxX               = CHAT_REF_X + 585;
+    private int CHAT_boxY               = CHAT_REF_Y + 7;
+
+    private int CHAT_buttonSendX        = CHAT_REF_X + 718;
+    private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
+
+    private int CHAT_scrollBarUpX       = CHAT_REF_X + 776;
     private int CHAT_scrollBarUpY       = CHAT_REF_Y + 163;
     private int CHAT_scrollBarDownX     = CHAT_REF_X + 776;
     private int CHAT_scrollBarDownY     = CHAT_REF_Y + 38;
     private int CHAT_scrollBarMiddleX   = CHAT_REF_X + 776;
     private int CHAT_scrollBarMiddleY   = CHAT_REF_Y + 50;
-	
-	// CHAT shapes
-	Rectangle CHAT_shape_clickingSend   = new Rectangle(CHAT_buttonSendX, CHAT_buttonSendY, 45, 16);
-	Rectangle CHAT_shape_chatBox        = new Rectangle(CHAT_boxX, CHAT_boxY, 128, 17);
-	Rectangle CHAT_shape_scrollingUp    = new Rectangle(CHAT_scrollBarUpX, CHAT_scrollBarUpY, 12, 12);
-	Rectangle CHAT_shape_scrollingDown  = new Rectangle(CHAT_scrollBarDownX, CHAT_scrollBarDownY, 12, 12);
-	
-	/**
-	 * state of buttons. true if pushed, false if not.
-	 */
-	private boolean goOceansideButtonIsDown = false; // initial
-	private boolean sendChatButtonIsDown    = false; // initial
-	private boolean scrollUpButtonIsDown    = false; // initial (confusing!)
-	private boolean scrollDownButtonIsDown  = false; // initial (confusing!) 
-	
-	/**
-	 * Max length for a chat message
-	 */
-	private static final int CHAT_MESSAGE_MAX_LENGTH = 240;
+
+    // CHAT shapes
+    Rectangle CHAT_shape_clickingSend   = new Rectangle(CHAT_buttonSendX, CHAT_buttonSendY, 45, 16);
+    Rectangle CHAT_shape_chatBox        = new Rectangle(CHAT_boxX, CHAT_boxY, 128, 17);
+    Rectangle CHAT_shape_scrollingUp    = new Rectangle(CHAT_scrollBarUpX, CHAT_scrollBarUpY, 12, 12);
+    Rectangle CHAT_shape_scrollingDown  = new Rectangle(CHAT_scrollBarDownX, CHAT_scrollBarDownY, 12, 12);
+
+    /**
+     * state of buttons. true if pushed, false if not.
+     */
+    private boolean goOceansideButtonIsDown = false; // initial
+    private boolean sendChatButtonIsDown    = false; // initial
+    private boolean scrollUpButtonIsDown    = false; // initial (confusing!)
+    private boolean scrollDownButtonIsDown  = false; // initial (confusing!)
+
+    /**
+     * Max length for a chat message
+     */
+    private static final int CHAT_MESSAGE_MAX_LENGTH = 240;
 
     private int manuaverSlot = 3;
 
@@ -420,10 +471,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         for (int i = 0; i < movesHolder.length; i++) {
             movesHolder[i] = createMove();
         }
-        
+
         radioButtons = new boolean[3];
         enableRadio(1);
-        
+
         this.context = context;
     }
 
@@ -494,7 +545,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
         moveTargetSelForce = new TextureRegion(moveGetTargetTexture, 0, 0, 36, 36);
         moveTargetSelAuto = new TextureRegion(moveGetTargetTexture, 36, 0, 36, 36);
-        
+
         goOceansideUp = new Texture("assets/ui/go_oceanside.png");
         goOceansideDown = new Texture("assets/ui/go_oceansidePressed.png");
         goOceansideBackground = new Texture("assets/ui/go_oceanside_background.png");
@@ -523,13 +574,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatBar.setBlinkTime(0.5f);
         stage.addActor(chatBar);
         stage.setKeyboardFocus(chatBar);
-        
+
         chatScrollBarUp = new Texture("assets/ui/scrollbar_top.png");
         chatScrollBarUpPressed = new Texture("assets/ui/scrollbar_topPressed.png");
         chatScrollBarDown = new Texture("assets/ui/scrollbar_bottom.png");
         chatScrollBarDownPressed = new Texture("assets/ui/scrollbar_bottomPressed.png");
         chatScrollBarMiddle = new Texture("assets/ui/scrollbar_center.png");
-        
+
         // initialise
         setDamagePercentage(70);
         setBilgePercentage(30);
@@ -538,7 +589,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     public void setExecutingMoves(boolean flag) {
         this.executionMoves = flag;
     }
-    
+
     public HandMove createMove() {
         if (isBigShip) {
             return new BigShipHandMove();
@@ -548,7 +599,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public void update() {
-    	int turnDuration = getContext().getTurnDuration();
+        int turnDuration = getContext().getTurnDuration();
 
         double ratio = (double) 43 / (double) turnDuration;
 
@@ -568,6 +619,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         renderChat();
         stage.act();
         stage.draw();
+
+        // accelerate anything that needs it
+        doAccelerate();
     }
 
     @Override
@@ -583,40 +637,142 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleClick(float x, float y, int button) {
-    	if ((!goOceansideButtonIsDown) && isClickingDisengage(x,y)) {
-    		goOceansideButtonIsDown = true;
-    		return true;
-    	}
-    	else if ((!sendChatButtonIsDown) && isClickingSend(x,y)) {
-			sendChatButtonIsDown = true;
-    		return true;
-    	}
-    	else if ((!scrollUpButtonIsDown) && isClickingScrollUp(x,y)) {
-    		scrollUpButtonIsDown = true;
-    		return true;
-    	}
-    	else if ((!scrollDownButtonIsDown) && isClickingScrollDown(x,y)) {
-    		scrollDownButtonIsDown = true;
-    		return true;
-    	}
-    	else {
-    		return false;
-    	}
+        if ((!goOceansideButtonIsDown) && isClickingDisengage(x,y)) {
+            goOceansideButtonIsDown = true;
+            return true;
+        }
+        else if ((!sendChatButtonIsDown) && isClickingSend(x,y)) {
+            sendChatButtonIsDown = true;
+            return true;
+        }
+        else if ((!scrollUpButtonIsDown) && isClickingScrollUp(x,y)) {
+            scrollUpButtonIsDown = true;
+            return true;
+        }
+        else if ((!scrollDownButtonIsDown) && isClickingScrollDown(x,y)) {
+            scrollDownButtonIsDown = true;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    
+
+    /**
+     * handle send message functionality, and reset TextField
+     */
     private void sendChat() {
-    	String message = chatBar.getText();
-    	if (message.length() > 0 && message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-    		// TODO send the text string
-    	}
+        String message = chatBar.getText();
+        if (message.length() > 0 && message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
+            // TODO send the text string
+        }
     }
-    
+
+    /**
+     * TextField key handlers
+     * I wrote my own
+     * Yeah
+     *
+     * keycodes passed as args for consistency so we only
+     * need to lookup enums once e.g. Input.Keys.LEFT
+     */
+    private void handleLeftButton(int keycode) {
+        int p = chatBar.getCursorPosition();
+        if (p > 0)
+        {
+            chatBar.setCursorPosition(p - 1);
+        }
+    }
+
+    private void handleRightButton(int keycode) {
+        int p = chatBar.getCursorPosition();
+        if (p < (chatBar.getText().length()))
+        {
+            chatBar.setCursorPosition(p + 1);
+        }
+    }
+
+    private void handleBackspace(int keycode) {
+        String text = chatBar.getText();
+        int p = chatBar.getCursorPosition();
+        if (p > 0)
+        {
+            String newText =
+                    text.substring(0, p - 1) +
+                    text.substring(p, text.length()
+            );
+            chatBar.setText(newText);
+            chatBar.setCursorPosition(p - 1);
+        }
+    }
+
+    private void handleDel(int keycode) {
+        String text = chatBar.getText();
+        int p = chatBar.getCursorPosition();
+        if (p < text.length())
+        {
+            String newText =
+                    text.substring(0, p) +
+                    text.substring(p + 1, text.length()
+            );
+            chatBar.setText(newText);
+            chatBar.setCursorPosition(p);
+        }
+    }
+
+    private void handleChar(char character) {
+        String text = chatBar.getText();
+        int p = chatBar.getCursorPosition();
+        String newText =
+            text.substring(0, p) +
+            Character.toString(character) +
+            text.substring(p, text.length()
+        );
+        if (newText.length() < CHAT_MESSAGE_MAX_LENGTH) {
+            chatBar.setText(newText);
+            chatBar.setCursorPosition(p + 1);
+        }
+    }
+
+    private void handleEnter(int keycode) {
+        sendChat();
+        chatBar.setCursorPosition(0);
+        chatBar.setText("");
+    }
+
+    /**
+     * wrapper around textfield helper methods
+     * returns true if handled, false otherwise
+     */
+    private boolean handleAcceleratableKeys(int keycode) {
+        boolean handled = true; // assume we handle it
+        if (keycode == Input.Keys.LEFT) {
+            handleLeftButton(keycode);
+        }
+        else if (keycode == Input.Keys.RIGHT) {
+            handleRightButton(keycode);
+        }
+        else if (keycode == Input.Keys.BACKSPACE)
+        {
+            handleBackspace(keycode);
+        }
+        else if (keycode == Input.Keys.FORWARD_DEL) { // not del!!
+            handleDel(keycode);
+        }
+        else
+        {
+            handled = false;
+        }
+
+        return handled;
+    }
+
     /**
      * return whether point is in rect or not.
-     * 
+     *
      * note: compensates for Y weirdness by using absheight
      * so just use normal cartesian space (x==0,y==0 bottom left)
-     * 
+     *
      * @param inX   input x
      * @param inY   input y
      * @param rectX rect origin x
@@ -626,104 +782,104 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * @return
      */
     private boolean isPointInRect(float inX, float inY, Rectangle rect) {
-    	return
-    		(inX >= rect.x) &&
-    		(inX < (rect.x + rect.width)) &&
-    		(inY >= (absheight - rect.y - rect.height)) &&
-    		(inY < (absheight - rect.y));
+        return
+            (inX >= rect.x) &&
+            (inX < (rect.x + rect.width)) &&
+            (inY >= (absheight - rect.y - rect.height)) &&
+            (inY < (absheight - rect.y));
     }
 
     private boolean isTogglingAuto(float x, float y) {
-    	return isPointInRect(x,y,MOVES_shape_auto);
+        return isPointInRect(x,y,MOVES_shape_auto);
     }
 
     private boolean isPlacingLeftCannons(float x, float y) {
-    	return isPointInRect(x,y,MOVES_shape_placingLeftCannons);
+        return isPointInRect(x,y,MOVES_shape_placingLeftCannons);
     }
 
     private boolean isPlacingRightCannons(float x, float y) {
-    	return isPointInRect(x,y,MOVES_shape_placingRightCannons);
+        return isPointInRect(x,y,MOVES_shape_placingRightCannons);
     }
-    
+
     private boolean isClickingDisengage(float x, float y) {
-    	return isPointInRect(x,y,GOOCEANSIDE_shape_clickingDisengage);
+        return isPointInRect(x,y,GOOCEANSIDE_shape_clickingDisengage);
     }
-    
+
     private boolean isClickingSend(float x, float y) {
-    	return isPointInRect(x,y,CHAT_shape_clickingSend);
+        return isPointInRect(x,y,CHAT_shape_clickingSend);
     }
-    
+
     private boolean isClickingScrollUp(float x, float y) {
-    	return isPointInRect(x,y,CHAT_shape_scrollingUp);
+        return isPointInRect(x,y,CHAT_shape_scrollingUp);
     }
-    
+
     private boolean isClickingScrollDown(float x, float y) {
-    	return isPointInRect(x,y,CHAT_shape_scrollingDown);
+        return isPointInRect(x,y,CHAT_shape_scrollingDown);
     }
 
     private boolean isPlacingMoves(float x, float y) {
-    	return isPointInRect(x,y,MOVES_shape_placingMoves);
+        return isPointInRect(x,y,MOVES_shape_placingMoves);
     }
 
     private boolean isPickingMoves(float x, float y) {
-    	// cannons, L,F,R
-    	return isPointInRect(x,y,MOVES_shape_pickingMoves);
+        // cannons, L,F,R
+        return isPointInRect(x,y,MOVES_shape_pickingMoves);
     }
 
     private int getSlotForPosition(float x, float y) {
-    	// TODO enumerate these properly
-    	if (isPlacingMoves(x,y)) {
-	    	if (isPointInRect(x,y,MOVES_shape_moveSlot0)) {
-	    		return 0;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_moveSlot1)) {
-	    		return 1;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_moveSlot2)) {
-	    		return 2;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_moveSlot3)) {
-	    		return 3;
-	    	}
-    	}
-    	else if (isPickingMoves(x,y)) {
-	    	if (isPointInRect(x,y,MOVES_shape_leftToken)) {
-	    		return 4;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_forwardToken)) {
-	    		return 5;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_rightToken)) {
-	    		return 6;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0)) {
-	    		return 7;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1)) {
-	    		return 8;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot2)) {
-	    		return 9;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3)) {
-	    		return 10;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0)) {
-	    		return 11;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1)) {
-	    		return 12;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot2)) {
-	    		return 13;
-	    	}
-	    	else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3)) {
-	    		
-	    	}
-    	}
+        // TODO enumerate these properly
+        if (isPlacingMoves(x,y)) {
+            if (isPointInRect(x,y,MOVES_shape_moveSlot0)) {
+                return 0;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_moveSlot1)) {
+                return 1;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_moveSlot2)) {
+                return 2;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_moveSlot3)) {
+                return 3;
+            }
+        }
+        else if (isPickingMoves(x,y)) {
+            if (isPointInRect(x,y,MOVES_shape_leftToken)) {
+                return 4;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_forwardToken)) {
+                return 5;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_rightToken)) {
+                return 6;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0)) {
+                return 7;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1)) {
+                return 8;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot2)) {
+                return 9;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3)) {
+                return 10;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0)) {
+                return 11;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1)) {
+                return 12;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot2)) {
+                return 13;
+            }
+            else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3)) {
 
-    	// default return
-    	return -1;
+            }
+        }
+
+        // default return
+        return -1;
     }
 
     @Override
@@ -735,12 +891,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 case 4:
                 case 5:
                 case 6:
-                	// drag only if there are moves
-                	MoveType m = MoveType.forId(startDragSlot - 3);
-                	if (hasMove(m)) {
-                		startDragMove = m;
-                		isDragging = true;
-                	}
+                    // drag only if there are moves
+                    MoveType m = MoveType.forId(startDragSlot - 3);
+                    if (hasMove(m)) {
+                        startDragMove = m;
+                        isDragging = true;
+                    }
                     break;
                 default:
                     startDragMove  = movesHolder[startDragSlot].getMove();
@@ -753,37 +909,37 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         if (isDragging) {
             draggingPosition = new Vector2(x, y);
         }
-        
-        // if we drag off disengage, 
+
+        // if we drag off disengage,
         // deactivate it with no penalty to the user.
         if (goOceansideButtonIsDown) {
-        	if (!isClickingDisengage(x, y)) {
-        		goOceansideButtonIsDown = false;
-        	}
+            if (!isClickingDisengage(x, y)) {
+                goOceansideButtonIsDown = false;
+            }
         }
-        
+
         // if we drag off chatButtonSend,
         // deactivate it with no penalty to the user.
         if (sendChatButtonIsDown) {
-        	if (!isClickingSend(x, y)) {
-        		sendChatButtonIsDown = false;
-        	}
+            if (!isClickingSend(x, y)) {
+                sendChatButtonIsDown = false;
+            }
         }
-        
+
         // if we drag off chatScrollBarUp,
         // deactivate it with no penalty to the user.
         if (scrollUpButtonIsDown) {
-        	if (!isClickingScrollUp(x, y)) {
-        		scrollUpButtonIsDown = false;
-        	}
+            if (!isClickingScrollUp(x, y)) {
+                scrollUpButtonIsDown = false;
+            }
         }
-        
+
         // if we drag off chatScrollBarDown,
         // deactivate it with no penalty to the user.
         if (scrollDownButtonIsDown) {
-        	if (!isClickingScrollDown(x, y)) {
-        		scrollDownButtonIsDown = false;
-        	}
+            if (!isClickingScrollDown(x, y)) {
+                scrollDownButtonIsDown = false;
+            }
         }
 
         return false;
@@ -830,107 +986,106 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             if (executionMoves) {
                 return false;
             }
-			if (isPlacingMoves(x, y)) {
-				int slot = getSlotForPosition(x,y);
-				switch (slot) {
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-					handleMovePlace(slot, button);
-					break;
-				default:
-					break;
-				}				
-			}
-			else if (isPlacingLeftCannons(x, y)) {
-				
-				if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0))
-				{
-					getContext().sendAddCannon(0,0);
-				}
-				else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1))
-				{
-					getContext().sendAddCannon(0,1);
-				}
-				else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot2))
-				{
-					getContext().sendAddCannon(0,2);
-				}
-				else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3))
-				{
-					getContext().sendAddCannon(0,3);
-				}
-			}
-			else if (isPlacingRightCannons(x, y)) {
-				if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0))
-				{
-					getContext().sendAddCannon(1,0);
-				}
-				else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1))
-				{
-					getContext().sendAddCannon(1,1);
-				}
-				else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot2))
-				{
-					getContext().sendAddCannon(1,2);
-				}
-				else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3))
-				{
-					getContext().sendAddCannon(1,3);
-				}
-			}
-			else if (isTogglingAuto(x, y)) {
-			    if (auto) {
-			        auto = false;
-			    }
-			    else {
-			        auto = true;
-			    }
-			    getContext().sendToggleAuto(auto);
-			}
-			else if (goOceansideButtonIsDown && isClickingDisengage(x, y)) {
-				getContext().sendOceansideRequestPacket();
-				goOceansideButtonIsDown = false;
-			}
-			else if (sendChatButtonIsDown && isClickingSend(x, y)) {
-				System.out.println("released sendChat");
-				sendChat();
-				sendChatButtonIsDown = false;
-			}
-			else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
-				// TODO scroll here
-				scrollUpButtonIsDown = false;
-			}
-			else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
-				// TODO scroll here
-				scrollDownButtonIsDown = false;
-			}
-			else if (!auto){
-				// can either click on the radio button or the move				
-			    if (
-			    		(isPointInRect(x,y,MOVES_shape_leftRadio)) ||
-			    		(isPointInRect(x,y,MOVES_shape_leftToken))
-			    ) {
-			        targetMove = MoveType.LEFT;
-			        getContext().sendGenerationTarget(targetMove);
-			    }
-			    else if (
-			    		(isPointInRect(x,y,MOVES_shape_forwardRadio)) ||
-			    		(isPointInRect(x,y,MOVES_shape_forwardToken))
-			    ) {
-			        targetMove = MoveType.FORWARD;
-			        getContext().sendGenerationTarget(targetMove);
-			    }
-			    else if (
-			    		(isPointInRect(x,y,MOVES_shape_rightRadio)) ||
-			    		(isPointInRect(x,y,MOVES_shape_rightToken))
-			    ) {
-			         targetMove = MoveType.RIGHT;
-			         getContext().sendGenerationTarget(targetMove);
-			    }
-			}
-	    }
+            if (isPlacingMoves(x, y)) {
+                int slot = getSlotForPosition(x,y);
+                switch (slot) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    handleMovePlace(slot, button);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (isPlacingLeftCannons(x, y)) {
+
+                if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0))
+                {
+                    getContext().sendAddCannon(0,0);
+                }
+                else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1))
+                {
+                    getContext().sendAddCannon(0,1);
+                }
+                else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot2))
+                {
+                    getContext().sendAddCannon(0,2);
+                }
+                else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3))
+                {
+                    getContext().sendAddCannon(0,3);
+                }
+            }
+            else if (isPlacingRightCannons(x, y)) {
+                if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0))
+                {
+                    getContext().sendAddCannon(1,0);
+                }
+                else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1))
+                {
+                    getContext().sendAddCannon(1,1);
+                }
+                else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot2))
+                {
+                    getContext().sendAddCannon(1,2);
+                }
+                else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3))
+                {
+                    getContext().sendAddCannon(1,3);
+                }
+            }
+            else if (isTogglingAuto(x, y)) {
+                if (auto) {
+                    auto = false;
+                }
+                else {
+                    auto = true;
+                }
+                getContext().sendToggleAuto(auto);
+            }
+            else if (goOceansideButtonIsDown && isClickingDisengage(x, y)) {
+                getContext().sendOceansideRequestPacket();
+                goOceansideButtonIsDown = false;
+            }
+            else if (sendChatButtonIsDown && isClickingSend(x, y)) {
+                sendChat();
+                sendChatButtonIsDown = false;
+            }
+            else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
+                // TODO scroll here
+                scrollUpButtonIsDown = false;
+            }
+            else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
+                // TODO scroll here
+                scrollDownButtonIsDown = false;
+            }
+            else if (!auto){
+                // can either click on the radio button or the move
+                if (
+                        (isPointInRect(x,y,MOVES_shape_leftRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_leftToken))
+                ) {
+                    targetMove = MoveType.LEFT;
+                    getContext().sendGenerationTarget(targetMove);
+                }
+                else if (
+                        (isPointInRect(x,y,MOVES_shape_forwardRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_forwardToken))
+                ) {
+                    targetMove = MoveType.FORWARD;
+                    getContext().sendGenerationTarget(targetMove);
+                }
+                else if (
+                        (isPointInRect(x,y,MOVES_shape_rightRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_rightToken))
+                ) {
+                     targetMove = MoveType.RIGHT;
+                     getContext().sendGenerationTarget(targetMove);
+                }
+            }
+        }
         return false;
     }
 
@@ -1101,7 +1256,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
         // The yellow BG for tokens and moves and hourglass
         batch.draw(controlBackground, this.MOVES_backgroundX, this.MOVES_backgroundY);
-        
+
         drawMoveHolder();
         drawShipStatus();
         drawTimer();
@@ -1121,27 +1276,27 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
         batch.end();
     }
-    
+
     /**
      * background for disengage button / pirates aboard
      */
     private void renderGoOceanside() {
-    	batch.begin();
-        batch.draw(goOceansideBackground, GOOCEANSIDE_backgroundX, GOOCEANSIDE_backgroundY); 
+        batch.begin();
+        batch.draw(goOceansideBackground, GOOCEANSIDE_backgroundX, GOOCEANSIDE_backgroundY);
         batch.draw((goOceansideButtonIsDown)?goOceansideDown:goOceansideUp, GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY);
         batch.end();
     }
-    
+
     private void renderChat() {
-    	batch.begin();
-    	batch.draw(chatBackground, CHAT_backgroundX, CHAT_backgroundY);
-    	batch.draw(chatIndicator,  CHAT_indicatorX, CHAT_indicatorY);
-    	batch.draw(chatBarBackground, CHAT_boxX, CHAT_boxY);
-    	batch.draw(sendChatButtonIsDown?chatButtonSendPressed:chatButtonSend, CHAT_buttonSendX, CHAT_buttonSendY);
-    	batch.draw(scrollUpButtonIsDown?chatScrollBarUpPressed:chatScrollBarUp, CHAT_scrollBarUpX, CHAT_scrollBarUpY);
-    	batch.draw(scrollDownButtonIsDown?chatScrollBarDownPressed:chatScrollBarDown, CHAT_scrollBarDownX, CHAT_scrollBarDownY);
-    	batch.draw(chatScrollBarMiddle, CHAT_scrollBarMiddleX, CHAT_scrollBarMiddleY);
-    	batch.end();
+        batch.begin();
+        batch.draw(chatBackground, CHAT_backgroundX, CHAT_backgroundY);
+        batch.draw(chatIndicator,  CHAT_indicatorX, CHAT_indicatorY);
+        batch.draw(chatBarBackground, CHAT_boxX, CHAT_boxY);
+        batch.draw(sendChatButtonIsDown?chatButtonSendPressed:chatButtonSend, CHAT_buttonSendX, CHAT_buttonSendY);
+        batch.draw(scrollUpButtonIsDown?chatScrollBarUpPressed:chatScrollBarUp, CHAT_scrollBarUpX, CHAT_scrollBarUpY);
+        batch.draw(scrollDownButtonIsDown?chatScrollBarDownPressed:chatScrollBarDown, CHAT_scrollBarDownX, CHAT_scrollBarDownY);
+        batch.draw(chatScrollBarMiddle, CHAT_scrollBarMiddleX, CHAT_scrollBarMiddleY);
+        batch.end();
     }
 
     private void drawMoveHolder() {
@@ -1165,7 +1320,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         boolean isBigShip = (movesHolder instanceof BigShipHandMove[]);
         for (int i = 0; i < movesHolder.length; i++) {
             // helper variables
-        	HandMove move = movesHolder[i];
+            HandMove move = movesHolder[i];
             boolean[] left = move.getLeft();
             boolean[] right = move.getRight();
             int cH = cannonHeights.get(i);
@@ -1175,21 +1330,21 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             // must be in this order to create blur together
             batch.draw((left[0])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotSmallX, cH); // left
             if (isBigShip) {
-            	batch.draw((left[0] && left[1])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotBigX, cH); // left
+                batch.draw((left[0] && left[1])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotBigX, cH); // left
             }
-            
+
             // draw left (guns AB |__| CD - place D, then C)
             // must be in this order to create blur together
             batch.draw((right[0] && right[1])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
             if (isBigShip) {
-            	batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
+                batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
             }
 
             // draw moves and manauver
             if (i == manuaverSlot) {
                 batch.draw(manuaverTexture, MOVES_moveSlotX, mH);
             }
-            else 
+            else
             {
                 if (move.getMove() != MoveType.NONE) {
                     Color color = batch.getColor();
@@ -1224,7 +1379,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      */
     private void drawMovesSelect() {
         // auto, cannons
-    	batch.draw(autoBackground, MOVES_autoBackgroundX, MOVES_autoBackgroundY);
+        batch.draw(autoBackground, MOVES_autoBackgroundX, MOVES_autoBackgroundY);
         font.draw(batch, "Auto", MOVES_autoTextX, MOVES_autoTextY);
         batch.draw(auto?autoOn:autoOff,            MOVES_autoX,    MOVES_autoY);
         batch.draw((cannons>0)?cannon:emptyCannon, MOVES_cannonsX, MOVES_cannonsY);
@@ -1237,7 +1392,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
         // radios
         Texture onTex  = auto?radioOnDisable:radioOn;
-    	Texture offTex = auto?radioOffDisable:radioOff;
+        Texture offTex = auto?radioOffDisable:radioOff;
         batch.draw(radioButtons[0]?onTex:offTex, MOVES_leftRadioX,    MOVES_leftRadioY);
         batch.draw(radioButtons[1]?onTex:offTex, MOVES_forwardRadioX, MOVES_forwardRadioY);
         batch.draw(radioButtons[2]?onTex:offTex, MOVES_rightRadioX,   MOVES_rightRadioY);
@@ -1282,7 +1437,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * Draws ship status
      *
      * Ship damage, Ship bilge, etc
-     */    
+     */
     private void drawShipStatus() {
         batch.draw(shipStatusBg, MOVES_shipStatusBackgroundX, MOVES_shipStatusBackgroundY);
 
@@ -1334,47 +1489,47 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         // fix stuck buttons if they were clicked across a turn
         // with no penalty to the user
         if (goOceansideButtonIsDown) {
-        	goOceansideButtonIsDown = false;
+            goOceansideButtonIsDown = false;
         }
         if (sendChatButtonIsDown) {
-        	sendChatButtonIsDown = false;
+            sendChatButtonIsDown = false;
         }
         if (scrollUpButtonIsDown) {
-        	scrollUpButtonIsDown = false;
+            scrollUpButtonIsDown = false;
         }
         if (scrollDownButtonIsDown) {
-        	scrollDownButtonIsDown = false;
+            scrollDownButtonIsDown = false;
         }
     }
-    
+
     /**
      * sets cannons both on server and on client
      */
     public void resetCannons()
     {
-    	for (int i=0; i<4; i++) {
-    		// count number of cannons we have set on each side
-    		boolean l[]  = movesHolder[i].getLeft();
-    		boolean r[] = movesHolder[i].getRight();
-    		int left  = (l[0]?1:0) + (l[1]?1:0);
-    		int right = (r[0]?1:0) + (r[1]?1:0);
-    		
-    		// calculate number of cannons we need to 'add' to cancel this
-    		// (we can only add cannons until rollover, so "3-left")
-    		// then send update n times as necessary
-    		if (left > 0) {
-    			for (int j=0; j<(3 - left); j++) {
-    				getContext().sendAddCannon(0, i);
-    			}
-    			setCannons(0, i, 0);
-    		}
-    		if (right > 0) {
-    			for (int j=0; j<(3 - right); j++) {
-    				getContext().sendAddCannon(1, i);
-    			}
-    			setCannons(1, i, 0);
-    		}
-    	}
+        for (int i=0; i<4; i++) {
+            // count number of cannons we have set on each side
+            boolean l[]  = movesHolder[i].getLeft();
+            boolean r[] = movesHolder[i].getRight();
+            int left  = (l[0]?1:0) + (l[1]?1:0);
+            int right = (r[0]?1:0) + (r[1]?1:0);
+
+            // calculate number of cannons we need to 'add' to cancel this
+            // (we can only add cannons until rollover, so "3-left")
+            // then send update n times as necessary
+            if (left > 0) {
+                for (int j=0; j<(3 - left); j++) {
+                    getContext().sendAddCannon(0, i);
+                }
+                setCannons(0, i, 0);
+            }
+            if (right > 0) {
+                for (int j=0; j<(3 - right); j++) {
+                    getContext().sendAddCannon(1, i);
+                }
+                setCannons(1, i, 0);
+            }
+        }
     }
 
     /**
@@ -1415,92 +1570,47 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     @Override
-    // TODO accelerate key & repeat if held for >0.5s
     public boolean keyDown(int keycode) {
-    	if (keycode == Input.Keys.LEFT) {
-    		int p = chatBar.getCursorPosition();
-    		if (p > 0)
-    		{
-    			chatBar.setCursorPosition(p - 1);
-    		}
-    		return true;
-    	}
-    	else if (keycode == Input.Keys.RIGHT) {
-    		int p = chatBar.getCursorPosition();
-    		if (p < (chatBar.getText().length()))
-    		{
-    			chatBar.setCursorPosition(p + 1);
-    		}
-    		return true;
-    	}
-    	else if (keycode == Input.Keys.BACKSPACE)
-    	{
-    		String text = chatBar.getText();
-    		int p = chatBar.getCursorPosition();
-    		if (p > 0)
-    		{
-    			String newText =
-    	    			text.substring(0, p - 1) +
-    	    			text.substring(p, text.length()
-    	    	);
-    			chatBar.setText(newText);
-    			chatBar.setCursorPosition(p - 1);
-    		}
-    		return true;
-    	}
-    	else if (keycode == Input.Keys.FORWARD_DEL) {
-    		System.out.println("got DEL");
-    		String text = chatBar.getText();
-    		int p = chatBar.getCursorPosition();
-    		if (p < text.length())
-    		{
-    			String newText =
-    	    			text.substring(0, p) +
-    	    			text.substring(p + 1, text.length()
-    	    	);
-    			chatBar.setText(newText);
-    			chatBar.setCursorPosition(p);
-    		}
-    		return true;
-    	}
-    	else if (keycode == Input.Keys.ENTER) {
-    		System.out.println("got an enter");
-    		sendChat();
-    		chatBar.setCursorPosition(0);
-    		chatBar.setText("");
-    		return true;
-    	}
-    	else {
-    		return false;
-    	}
+        if (keycode == Input.Keys.ENTER) {
+            // enter shouldnt accelerate
+            stopAllAcceleration();
+            handleEnter(keycode);
+            return true;
+        }
+        else
+        {
+            startKeyAcceleration(keycode);
+            return handleAcceleratableKeys(keycode);
+        }
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        return false;
+        stopAllAcceleration();
+
+        // eat all teh keys
+        return true;
     }
 
     @Override
+    /**
+     * keytyped fires on keyDown, then subsequently if key remains down.
+     */
     public boolean keyTyped(char character) {
-    	System.out.println("i got a key: " + Character.toString(character));
-    	if (character >= 32 && character < 127)
-    	{
-    		String text = chatBar.getText();
-    		int p = chatBar.getCursorPosition();
-    		String newText =
-    			text.substring(0, p) +
-    			Character.toString(character) +
-    			text.substring(p, text.length()
-    		);
-    		if (newText.length() < CHAT_MESSAGE_MAX_LENGTH) {
-    			chatBar.setText(newText);
-        		chatBar.setCursorPosition(p + 1);
-    		}
-    		return true;
-    	}
-    	else {
-    		return false;
-    	}
+        if (character >= 32 && character < 127)
+        {
+            // only handle once
+            if (!isAcceleratingCharacter(character))
+            {
+                startCharacterAcceleration(character);
+                handleChar(character); // printable ascii
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     @Override
@@ -1513,21 +1623,21 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         return false;
     }
 
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean scrolled(int amount) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }
