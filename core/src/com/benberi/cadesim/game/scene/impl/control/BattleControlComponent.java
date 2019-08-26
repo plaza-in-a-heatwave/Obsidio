@@ -93,9 +93,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private ShapeRenderer shape;
 
     /**
-     * Font for texts
+     * Font for texts/messages
      */
     private BitmapFont font;
+    private BitmapFont messageFont;
 
     /**
      * The target move
@@ -515,6 +516,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 12;
         font = generator.generateFont(parameter);
+        
+        FreeTypeFontGenerator messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        messageFontParameter.size = 11;
+        messageFont = messageFontGenerator.generateFont(messageFontParameter);
 
         title = new Texture("assets/ui/title.png");
         radioOn = new Texture("assets/ui/radio-on.png");
@@ -586,7 +592,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         // text field for chat (based off ConnectScene)
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
-        style.font = font;
+        style.font = messageFont;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
 
         // TODO how to change font color when selected
