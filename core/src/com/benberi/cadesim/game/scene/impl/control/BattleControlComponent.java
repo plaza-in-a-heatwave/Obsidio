@@ -1342,7 +1342,40 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         	scrollDownButtonIsDown = false;
         }
     }
+    
+    /**
+     * sets cannons both on server and on client
+     */
+    public void resetCannons()
+    {
+    	for (int i=0; i<4; i++) {
+    		// count number of cannons we have set on each side
+    		boolean l[]  = movesHolder[i].getLeft();
+    		boolean r[] = movesHolder[i].getRight();
+    		int left  = (l[0]?1:0) + (l[1]?1:0);
+    		int right = (r[0]?1:0) + (r[1]?1:0);
+    		
+    		// calculate number of cannons we need to 'add' to cancel this
+    		// (we can only add cannons until rollover, so "3-left")
+    		// then send update n times as necessary
+    		if (left > 0) {
+    			for (int j=0; j<(3 - left); j++) {
+    				getContext().sendAddCannon(0, i);
+    			}
+    			setCannons(0, i, 0);
+    		}
+    		if (right > 0) {
+    			for (int j=0; j<(3 - right); j++) {
+    				getContext().sendAddCannon(1, i);
+    			}
+    			setCannons(1, i, 0);
+    		}
+    	}
+    }
 
+    /**
+     * resets local copy of cannons only - does not send anything to server
+     */
     public void setCannons(int side, int slot, int amount) {
         if (side == 0) {
             movesHolder[slot].resetLeft();
