@@ -142,9 +142,7 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public void update()
-    {
-        //System.out.println(Gdx.graphics.getDeltaTime());
-    	
+    {    	
         // update the camera
         camera.update();
 
@@ -332,7 +330,6 @@ public class SeaBattleScene implements GameScene {
 
                     int result = (int) (vessel.getAnimation().getCurrentStep() * 100);
                     vessel.getAnimation().tickAnimationTicks(velocityTurns * 100);
-                    //System.out.println(result);
 
                     // check if the step is reached to the end, and dispose the movement
                     if (result >= 100) {

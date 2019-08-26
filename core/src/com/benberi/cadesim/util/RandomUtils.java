@@ -13,7 +13,6 @@ public class RandomUtils {
 
     public static String readStringFromFile(String path) {
         File file = Gdx.files.internal(path).file();
-        System.out.println(file.exists());
         try {
             return FileUtils.readFileToString(file, "utf-8");
         } catch (IOException e) {

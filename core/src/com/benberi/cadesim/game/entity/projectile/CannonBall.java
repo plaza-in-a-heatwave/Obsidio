@@ -70,7 +70,6 @@ public class CannonBall extends Sprite {
     public void tickEndingAnimation() {
         if (splashTicks >= 2) {
             ending.setRegion(regX, 0, 40, 30);
-            System.out.println(ending.getRegionX());
             regX += 40;
             splashTicks = 0;
         }
