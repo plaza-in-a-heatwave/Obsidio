@@ -1,6 +1,5 @@
 package com.benberi.cadesim.client.codec.util;
 
-import com.benberi.cadesim.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 

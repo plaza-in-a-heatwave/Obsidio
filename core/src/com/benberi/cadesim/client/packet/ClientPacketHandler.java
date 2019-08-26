@@ -96,5 +96,6 @@ public class ClientPacketHandler {
         packets.put(16, new SetFlagsPacket(context));
         packets.put(17, new SetPlayerFlagsPacket(context));
         packets.put(18, new SetTeamNamesPacket(context));
+        packets.put(19, new ReceiveMessagePacket(context));
     }
 }

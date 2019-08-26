@@ -700,8 +700,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private void sendChat() {
         String message = chatBar.getText();
         if (message.length() > 0 && message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-            // TODO send the text string
+        	context.sendPostMessagePacket(message);
         }
+        chatBar.setCursorPosition(0);
+        chatBar.setText("");
+        chatBar.clearSelection();
     }
 
     /**
@@ -828,7 +831,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             Character.toString(character) +
             text.substring(p, text.length()
         );
-        if (newText.length() < CHAT_MESSAGE_MAX_LENGTH) {
+        if (newText.length() <= CHAT_MESSAGE_MAX_LENGTH) {
             chatBar.setText(newText);
             chatBar.setCursorPosition(p + 1);
         }
@@ -836,9 +839,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     private void handleEnter(int keycode) {
         sendChat();
-        chatBar.setCursorPosition(0);
-        chatBar.setText("");
-        chatBar.clearSelection();
     }
     /**
      * wrapper around textfield helper methods
@@ -898,7 +898,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                             pastedData +
                             text.substring(p, text.length()
                         );
-                        if (newText.length() < CHAT_MESSAGE_MAX_LENGTH) {
+                        if (newText.length() <= CHAT_MESSAGE_MAX_LENGTH) {
                             chatBar.setText(newText);
                             chatBar.setCursorPosition(p + 1);
                         }

@@ -405,4 +405,10 @@ public class GameContext {
     	OceansideRequestPacket packet = new OceansideRequestPacket();
     	sendPacket(packet);
     }
+    
+    public void sendPostMessagePacket(String message) {
+    	PostMessagePacket packet = new PostMessagePacket();
+    	packet.setMessage(message);
+    	sendPacket(packet);
+    }
 }
