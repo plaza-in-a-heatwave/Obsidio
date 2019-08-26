@@ -314,7 +314,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int MOVES_moveSlot3Y            = MOVES_REF_Y - 48;
 
     // general cannons
-    private int MOVES_cannonLeftSlotBigX    = MOVES_REF_X + 182;
+    private int MOVES_cannonLeftSlotBigX    = MOVES_REF_X + 184;
     private int MOVES_cannonRightSlotSmallX = MOVES_REF_X + 245;
     private int MOVES_cannonLeftSlotSmallX  = MOVES_cannonLeftSlotBigX + 15;
     private int MOVES_cannonRightSlotBigX   = MOVES_cannonRightSlotSmallX + 15;
