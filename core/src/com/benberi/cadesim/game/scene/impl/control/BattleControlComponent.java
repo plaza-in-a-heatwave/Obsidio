@@ -308,8 +308,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     // MOVES shapes
     Rectangle MOVES_shape_auto                = new Rectangle(MOVES_autoX,             MOVES_autoY,             17, 17);
-    Rectangle MOVES_shape_placingLeftCannons  = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y,  32, 120);
-    Rectangle MOVES_shape_placingRightCannons = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonLeftSlot3Y,  32, 120);
+    Rectangle MOVES_shape_placingLeftCannons  = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y - 5,  32, 130);
+    Rectangle MOVES_shape_placingRightCannons = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonLeftSlot3Y - 5,  32, 130);
 
     Rectangle MOVES_shape_moveSlot0           = new Rectangle(MOVES_moveSlot0X,        MOVES_moveSlot0Y,        28, 28);
     Rectangle MOVES_shape_moveSlot1           = new Rectangle(MOVES_moveSlot1X,        MOVES_moveSlot1Y,        28, 28);
@@ -320,14 +320,17 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     Rectangle MOVES_shape_forwardToken        = new Rectangle(MOVES_forwardX,          MOVES_forwardY,          28, 28);
     Rectangle MOVES_shape_rightToken          = new Rectangle(MOVES_rightX,            MOVES_rightY,            28, 28);
 
-    Rectangle MOVES_shape_cannonLeftSlot0     = new Rectangle(MOVES_cannonLeftSlot0X,  MOVES_cannonLeftSlot0Y,  32, 18);
-	Rectangle MOVES_shape_cannonLeftSlot1     = new Rectangle(MOVES_cannonLeftSlot1X,  MOVES_cannonLeftSlot1Y,  32, 18);
-	Rectangle MOVES_shape_cannonLeftSlot2     = new Rectangle(MOVES_cannonLeftSlot2X,  MOVES_cannonLeftSlot2Y,  32, 18);
-	Rectangle MOVES_shape_cannonLeftSlot3     = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y,  32, 18);
-	Rectangle MOVES_shape_cannonRightSlot0    = new Rectangle(MOVES_cannonRightSlot0X, MOVES_cannonRightSlot0Y, 32, 18);
-	Rectangle MOVES_shape_cannonRightSlot1    = new Rectangle(MOVES_cannonRightSlot1X, MOVES_cannonRightSlot1Y, 32, 18);
-	Rectangle MOVES_shape_cannonRightSlot2    = new Rectangle(MOVES_cannonRightSlot2X, MOVES_cannonRightSlot2Y, 32, 18);
-	Rectangle MOVES_shape_cannonRightSlot3    = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonRightSlot3Y, 32, 18);
+    // cannon hitboxes have Y -/+ 5 because in an actual Sea Battle you can
+    // load a gun by clicking on a 28x28 square around it (regardless of
+    // whether it's a large/small ship).
+    Rectangle MOVES_shape_cannonLeftSlot0     = new Rectangle(MOVES_cannonLeftSlot0X,  MOVES_cannonLeftSlot0Y  - 5, 32, 18+10);
+	Rectangle MOVES_shape_cannonLeftSlot1     = new Rectangle(MOVES_cannonLeftSlot1X,  MOVES_cannonLeftSlot1Y  - 5, 32, 18+10);
+	Rectangle MOVES_shape_cannonLeftSlot2     = new Rectangle(MOVES_cannonLeftSlot2X,  MOVES_cannonLeftSlot2Y  - 5, 32, 18+10);
+	Rectangle MOVES_shape_cannonLeftSlot3     = new Rectangle(MOVES_cannonLeftSlot3X,  MOVES_cannonLeftSlot3Y  - 5, 32, 18+10);
+	Rectangle MOVES_shape_cannonRightSlot0    = new Rectangle(MOVES_cannonRightSlot0X, MOVES_cannonRightSlot0Y - 5, 32, 18+10);
+	Rectangle MOVES_shape_cannonRightSlot1    = new Rectangle(MOVES_cannonRightSlot1X, MOVES_cannonRightSlot1Y - 5, 32, 18+10);
+	Rectangle MOVES_shape_cannonRightSlot2    = new Rectangle(MOVES_cannonRightSlot2X, MOVES_cannonRightSlot2Y - 5, 32, 18+10);
+	Rectangle MOVES_shape_cannonRightSlot3    = new Rectangle(MOVES_cannonRightSlot3X, MOVES_cannonRightSlot3Y - 5, 32, 18+10);
 
 	Rectangle MOVES_shape_leftRadio           = new Rectangle(MOVES_leftRadioX,        MOVES_leftRadioY,        13, 13);
 	Rectangle MOVES_shape_forwardRadio        = new Rectangle(MOVES_forwardRadioX,     MOVES_forwardRadioY,     13, 13);
@@ -343,9 +346,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 	private int GOOCEANSIDE_backgroundY = GOOCEANSIDE_REF_Y + 8;
 	private int GOOCEANSIDE_buttonX     = GOOCEANSIDE_REF_X + 5+336+5 + 19;
 	private int GOOCEANSIDE_buttonY     = GOOCEANSIDE_REF_Y + 8 + 24;
-	
+
 	// GOOCEANSIDE shapes
-	Rectangle MOVES_shape_clickingDisengage   = new Rectangle(GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
+	Rectangle GOOCEANSIDE_shape_clickingDisengage   = new Rectangle(GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
 
 	// reference coords - CHAT control
 	private int CHAT_REF_X              = 0;
@@ -639,7 +642,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
     
     private boolean isClickingDisengage(float x, float y) {
-    	return isPointInRect(x,y,MOVES_shape_clickingDisengage);
+    	return isPointInRect(x,y,GOOCEANSIDE_shape_clickingDisengage);
     }
     
     private boolean isClickingSend(float x, float y) {
