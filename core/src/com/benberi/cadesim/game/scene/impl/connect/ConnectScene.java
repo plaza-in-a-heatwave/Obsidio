@@ -221,7 +221,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         ResolutionTypeLabel[] blob3 = new ResolutionTypeLabel[5];
         blob3[0] = new ResolutionTypeLabel(ResolutionTypeLabel.defaultsize,"720p", labelStyle);
-        blob3[1] = new ResolutionTypeLabel(ResolutionTypeLabel.sevenfifty,"750x700", labelStyle);
+        blob3[1] = new ResolutionTypeLabel(ResolutionTypeLabel.eighthundred,"800x600", labelStyle);
         blob3[2] = new ResolutionTypeLabel(ResolutionTypeLabel.teneighty,"1080p", labelStyle);
         blob3[3] = new ResolutionTypeLabel(ResolutionTypeLabel.fourteenforty,"1440p", labelStyle);
         blob3[4] = new ResolutionTypeLabel(ResolutionTypeLabel.fourk,"4K", labelStyle);
@@ -535,8 +535,8 @@ public class ConnectScene implements GameScene, InputProcessor {
             resolution[1] = "680";
             break;
         case 1:
-            resolution[0] = "750";
-            resolution[1] = "700";
+            resolution[0] = "800";
+            resolution[1] = "600";
             break;
         case 2:
             resolution[0] = "1800";
@@ -552,8 +552,8 @@ public class ConnectScene implements GameScene, InputProcessor {
             break;
         default:
             // safe default
-            resolution[0] = "640";
-            resolution[1] = "480";
+            resolution[0] = "800";
+            resolution[1] = "600";
             break;
         }
 

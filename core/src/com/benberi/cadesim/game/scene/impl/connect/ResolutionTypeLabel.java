@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 public class ResolutionTypeLabel extends Label {
 
-    public static final int sevenfifty = 1;
+    public static final int eighthundred = 1;
     public static final int defaultsize = 2;
     public static final int teneighty = 3;
     public static final int fourteenforty = 4;
