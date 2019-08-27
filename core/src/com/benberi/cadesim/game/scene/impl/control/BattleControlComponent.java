@@ -6,7 +6,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -205,6 +204,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     /**
+     * add to the chat buffer
+     */
+    public void addNewMessage(String sender, String message) {
+        System.out.println("[chat] " + sender + ":" + message);
+    }
+
+    /**
      * Textures
      */
     private Texture shiphand;
@@ -280,44 +286,44 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int MOVES_titleX            = MOVES_REF_X + 68;
     private int MOVES_titleY            = MOVES_REF_Y + 76;
 
-    private int MOVES_autoX             = MOVES_REF_X + 64;
+    private int MOVES_autoX             = MOVES_REF_X + 60;
     private int MOVES_autoY             = MOVES_REF_Y + 33;
 
-    private int MOVES_autoBackgroundX   = MOVES_REF_X + 81;
+    private int MOVES_autoBackgroundX   = MOVES_REF_X + 77;
     private int MOVES_autoBackgroundY   = MOVES_REF_Y + 28;
 
-    private int MOVES_autoTextX         = MOVES_REF_X + 36;
+    private int MOVES_autoTextX         = MOVES_REF_X + 29;
     private int MOVES_autoTextY         = MOVES_REF_Y + 46; // text from top edge
 
-    private int MOVES_cannonsX          = MOVES_REF_X + 54;
+    private int MOVES_cannonsX          = MOVES_REF_X + 50;
     private int MOVES_cannonsY          = MOVES_REF_Y + 3;
 
-    private int MOVES_cannonsTextX      = MOVES_REF_X + 61;
+    private int MOVES_cannonsTextX      = MOVES_REF_X + 57;
     private int MOVES_cannonsTextY      = MOVES_REF_Y - 4;  // text from top edge
 
-    private int MOVES_leftX             = MOVES_REF_X + 86;
-    private int MOVES_forwardX          = MOVES_REF_X + 116;
+    private int MOVES_leftX             = MOVES_REF_X + 82;
+    private int MOVES_forwardX          = MOVES_REF_X + 114;
     private int MOVES_rightX            = MOVES_REF_X + 146;
     private int MOVES_leftY             = MOVES_REF_Y + 0;
     private int MOVES_forwardY          = MOVES_REF_Y + 0;
     private int MOVES_rightY            = MOVES_REF_Y + 0;
 
-    private int MOVES_leftRadioX        = MOVES_REF_X + 94;
-    private int MOVES_forwardRadioX     = MOVES_REF_X + 124;
+    private int MOVES_leftRadioX        = MOVES_REF_X + 90;
+    private int MOVES_forwardRadioX     = MOVES_REF_X + 122;
     private int MOVES_rightRadioX       = MOVES_REF_X + 154;
     private int MOVES_leftRadioY        = MOVES_REF_Y + 36;
     private int MOVES_forwardRadioY     = MOVES_REF_Y + 36;
     private int MOVES_rightRadioY       = MOVES_REF_Y + 36;
 
-    private int MOVES_leftSelectX       = MOVES_REF_X + 82;
-    private int MOVES_forwardSelectX    = MOVES_REF_X + 112;
+    private int MOVES_leftSelectX       = MOVES_REF_X + 78;
+    private int MOVES_forwardSelectX    = MOVES_REF_X + 110;
     private int MOVES_rightSelectX      = MOVES_REF_X + 142;
     private int MOVES_leftSelectY       = MOVES_REF_Y - 4;
     private int MOVES_forwardSelectY    = MOVES_REF_Y - 4;
     private int MOVES_rightSelectY      = MOVES_REF_Y - 4;
 
-    private int MOVES_leftMovesTextX    = MOVES_REF_X + 94;
-    private int MOVES_forwardMovesTextX = MOVES_REF_X + 124;
+    private int MOVES_leftMovesTextX    = MOVES_REF_X + 90;
+    private int MOVES_forwardMovesTextX = MOVES_REF_X + 122;
     private int MOVES_rightMovesTextX   = MOVES_REF_X + 154;
     private int MOVES_leftMovesTextY    = MOVES_REF_Y - 4; // text from top edge
     private int MOVES_forwardMovesTextY = MOVES_REF_Y - 4; // "
@@ -418,7 +424,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     Rectangle MOVES_shape_rightRadio          = new Rectangle(MOVES_rightRadioX,       MOVES_rightRadioY,       13, 13);
 
     Rectangle MOVES_shape_placingMoves        = new Rectangle(MOVES_moveSlot3X,        MOVES_moveSlot3Y,        28, (4 * 28) + (3 * 5));
-    Rectangle MOVES_shape_pickingMoves        = new Rectangle(MOVES_cannonsX,          MOVES_cannonsY,          (4 * 28) + (3 * 2), 28);
+    Rectangle MOVES_shape_pickingMoves        = new Rectangle(MOVES_cannonsX,          MOVES_cannonsY,          (4 * 28) + (3 * 4), 28);
 
     // reference coords - GO OCEANSIDE control
     private int GOOCEANSIDE_REF_X       = 0;
@@ -436,23 +442,23 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int CHAT_REF_Y              = 0;
 
     // CHAT
-    private int CHAT_backgroundX        = CHAT_REF_X + 484;
+    private int CHAT_backgroundX        = CHAT_REF_X + 489;
     private int CHAT_backgroundY        = CHAT_REF_Y + 8;
 
-    private int CHAT_indicatorX         = CHAT_REF_X + 487;
+    private int CHAT_indicatorX         = CHAT_REF_X + 492;
     private int CHAT_indicatorY         = CHAT_REF_Y + 8;
 
-    private int CHAT_boxX               = CHAT_REF_X + 585;
+    private int CHAT_boxX               = CHAT_REF_X + 590;
     private int CHAT_boxY               = CHAT_REF_Y + 7;
 
-    private int CHAT_buttonSendX        = CHAT_REF_X + 718;
+    private int CHAT_buttonSendX        = CHAT_REF_X + 723;
     private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
 
-    private int CHAT_scrollBarUpX       = CHAT_REF_X + 776;
+    private int CHAT_scrollBarUpX       = CHAT_REF_X + 781;
     private int CHAT_scrollBarUpY       = CHAT_REF_Y + 163;
-    private int CHAT_scrollBarDownX     = CHAT_REF_X + 776;
+    private int CHAT_scrollBarDownX     = CHAT_REF_X + 781;
     private int CHAT_scrollBarDownY     = CHAT_REF_Y + 38;
-    private int CHAT_scrollBarMiddleX   = CHAT_REF_X + 776;
+    private int CHAT_scrollBarMiddleX   = CHAT_REF_X + 781;
     private int CHAT_scrollBarMiddleY   = CHAT_REF_Y + 50;
 
     // CHAT shapes
@@ -519,7 +525,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         
         FreeTypeFontGenerator messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        messageFontParameter.size = 11;
+        messageFontParameter.size = 9;
         messageFont = messageFontGenerator.generateFont(messageFontParameter);
 
         title = new Texture("assets/ui/title.png");

@@ -16,8 +16,7 @@ public class ReceiveMessagePacket extends ClientPacketExecutor {
         String sender  = p.readIntString();
         String message = p.readIntString();
 
-        // TODO handle it
-        System.out.println("[chat] " + sender + ":" + message);
+        getContext().getControlScene().getBnavComponent().addNewMessage(sender, message);
     }
 
     @Override
