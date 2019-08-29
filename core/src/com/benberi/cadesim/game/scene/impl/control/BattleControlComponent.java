@@ -17,9 +17,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.math.Vector2;
 import com.benberi.cadesim.GameContext;
@@ -207,7 +210,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * add to the chat buffer
      */
     public void addNewMessage(String sender, String message) {
-        System.out.println("[chat] " + sender + ":" + message);
+        this.displayMessage(sender + " says, \"" + message + "\".");
     }
 
     /**
@@ -275,6 +278,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private Texture chatScrollBarDown;
     private Texture chatScrollBarDownPressed;
     private Texture chatScrollBarMiddle;
+    private Texture chatScrollBarScroll;
+    
+    // references for drawing chat/scroll
+    Container<Table> chatContainer;
+    Label.LabelStyle chatLabelStyle;
+    Table chatTable;
+    float containerTopY;
+    float containerBottomY;
+    
 
     // reference coords - MOVES control
     private int MOVES_REF_X             = 0;
@@ -453,6 +465,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     private int CHAT_buttonSendX        = CHAT_REF_X + 723;
     private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
+    
+    private int CHAT_windowX            = CHAT_REF_X + 496;
+    private int CHAT_windowY            = CHAT_REF_Y + 42;
 
     private int CHAT_scrollBarUpX       = CHAT_REF_X + 781;
     private int CHAT_scrollBarUpY       = CHAT_REF_Y + 163;
@@ -460,13 +475,19 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int CHAT_scrollBarDownY     = CHAT_REF_Y + 38;
     private int CHAT_scrollBarMiddleX   = CHAT_REF_X + 781;
     private int CHAT_scrollBarMiddleY   = CHAT_REF_Y + 50;
+    
+    private int CHAT_scrollBarScrollX   = CHAT_REF_X + 781;
+    private int CHAT_scrollBarScrollY   = CHAT_REF_Y + 48;
+    
 
     // CHAT shapes
     Rectangle CHAT_shape_clickingSend   = new Rectangle(CHAT_buttonSendX, CHAT_buttonSendY, 45, 16);
     Rectangle CHAT_shape_chatBox        = new Rectangle(CHAT_boxX, CHAT_boxY, 128, 17);
     Rectangle CHAT_shape_scrollingUp    = new Rectangle(CHAT_scrollBarUpX, CHAT_scrollBarUpY, 12, 12);
     Rectangle CHAT_shape_scrollingDown  = new Rectangle(CHAT_scrollBarDownX, CHAT_scrollBarDownY, 12, 12);
-
+    Rectangle CHAT_shape_messageWindow  = new Rectangle(CHAT_windowX, CHAT_windowY, 280, 130);
+    Rectangle CHAT_shape_scrollBar = new Rectangle(CHAT_scrollBarScrollX, CHAT_scrollBarScrollY, 12, 30);
+    
     /**
      * state of buttons. true if pushed, false if not.
      */
@@ -479,16 +500,34 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * Max length for a chat message
      */
     private static final int CHAT_MESSAGE_MAX_LENGTH = 240;
+    
+    /**
+     * Max number of messages before clearing old ones
+     */
+    private static final int CHAT_MAX_NUMBER_OF_MESSAGES = 500;
+    
+    /**
+     * size of scroll increment (px)
+     */
+    private static final int CHAT_WINDOW_SCROLL_INCREMENT = 3;
+    
+    /**
+     * maximum/minimum scroll height
+     */
+    private final int CHAT_MAXIMUM_SCROLL_Y = CHAT_scrollBarScrollY + 86;
+    private final int CHAT_MINIMUM_SCROLL_Y = CHAT_scrollBarScrollY;
 
     private int manuaverSlot = 3;
 
     private boolean isBigShip;
 
-    private boolean  isDragging;     //       are we dragging
-    private MoveType startDragMove;  // what  are we dragging
-    private int      startDragSlot;  // where are we dragging from
+    private boolean  isDragging;          //       are we dragging
+    private MoveType startDragMove;       // what  are we dragging
+    private int      startDragSlot;       // where are we dragging from
     private Vector2 draggingPosition;
     private boolean executionMoves;
+    
+    private boolean  draggingScroll = false; // keeps scrollbar locked until release
 
     protected BattleControlComponent(GameContext context, ControlAreaScene owner, boolean big) {
         super(context, owner);
@@ -525,7 +564,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         
         FreeTypeFontGenerator messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        messageFontParameter.size = 9;
+        messageFontParameter.size = 11;
         messageFont = messageFontGenerator.generateFont(messageFontParameter);
 
         title = new Texture("assets/ui/title.png");
@@ -601,6 +640,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         style.font = messageFont;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
 
+        // configure chat bar
         // TODO how to change font color when selected
         //style.focusedFontColor = new Color(215f, 201f, 79f, 1);
         style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
@@ -616,16 +656,144 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatBar.setBlinkTime(0.5f);
         stage.addActor(chatBar);
         stage.setKeyboardFocus(chatBar);
+        
+        // make a container to encapsulate the table. this is what we will scroll.
+        chatContainer = new Container<Table>();
+        chatContainer.setPosition(CHAT_windowX, CHAT_windowY);
+        chatContainer.align(Align.bottomLeft);
+        chatContainer.fillX();
+        
+        // style of the chat messages
+        chatLabelStyle = new LabelStyle();
+        //chatLabelStyle.background = new Image(new Texture("assets/ui/chat_message.png")).getDrawable();
+        chatLabelStyle.font = messageFontGenerator.generateFont(messageFontParameter);
+        chatLabelStyle.fontColor = new Color();
+        chatLabelStyle.fontColor.r = 0f;
+        chatLabelStyle.fontColor.b = 0f;
+        chatLabelStyle.fontColor.g = 0f;
+        chatLabelStyle.fontColor.a = 1f;
+        
+        // create a table to maintain order of messages
+        chatTable = new Table();
+        chatTable.align(Align.bottomLeft);
+        
+        // add table to container, and add container to a new stage
+        chatContainer.setActor(chatTable);
+        stage.addActor(chatContainer);
+        
+        // update top/bottom
+        containerTopY = CHAT_windowY;
+        containerBottomY = CHAT_windowY;
+        
+        // set chat view and scroll to default positions
+        resetChatView();
 
+        // get scroll bar textures
         chatScrollBarUp = new Texture("assets/ui/scrollbar_top.png");
         chatScrollBarUpPressed = new Texture("assets/ui/scrollbar_topPressed.png");
         chatScrollBarDown = new Texture("assets/ui/scrollbar_bottom.png");
         chatScrollBarDownPressed = new Texture("assets/ui/scrollbar_bottomPressed.png");
         chatScrollBarMiddle = new Texture("assets/ui/scrollbar_center.png");
+        chatScrollBarScroll = new Texture("assets/ui/scrollbar_scroll.png");
 
         // initialise
         setDamagePercentage(70);
         setBilgePercentage(30);
+    }
+    
+    /**
+     * display a message in the chat
+     */
+    public void displayMessage(String message) {
+        if (message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
+            chatTable.row().padBottom(10);
+            Label chat1 = new Label(message, chatLabelStyle);
+            chat1.setWrap(true);
+            chatTable.add(chat1).width(CHAT_shape_messageWindow.width).align(Align.left);
+            
+            // handle chat if it has grown too big?
+            if (chatTable.getCells().size > CHAT_MAX_NUMBER_OF_MESSAGES) {
+                Cell<Actor> cell = chatTable.getCells().first();
+                System.out.println(cell);
+                cell.getActor().remove();                     // rm actor
+                chatTable.getCells().removeValue(cell, true); // rm lingering physical presence
+                chatTable.invalidate();
+            }
+            
+            // update the top and bottom positional markers of the chat window
+            containerTopY = CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height - chatTable.getHeight();
+            containerBottomY = CHAT_shape_messageWindow.y;
+            
+            updateScrollPosition();
+            
+            // jump scroll to bottom
+            resetChatView();
+        }
+    }
+    
+    /**
+     * given a change in chatbox position, update the scrollbar position
+     * note: only called when not dragging scrollbar
+     */
+    public void updateScrollPosition() {        
+        // calculate the fraction, then pos = scrollbottom + (f * (scrolltop - scrollbottom))
+        float pos = containerBottomY - chatContainer.getY();
+        float f = pos / Math.abs(containerBottomY - containerTopY);
+        
+        // set the scrollbar to 
+        CHAT_shape_scrollBar.y = CHAT_scrollBarScrollY + (int) (f * (CHAT_MAXIMUM_SCROLL_Y - CHAT_MINIMUM_SCROLL_Y));
+    }
+    
+    /**
+     * move both chatbox and scrollbar to bottom ("reset")
+     */
+    public void resetChatView() {
+        // reset scroll to bottom
+        CHAT_shape_scrollBar.y = CHAT_scrollBarScrollY;
+        
+        // reset message window to bottom
+        chatContainer.setPosition(CHAT_windowX, CHAT_windowY);
+    }
+    
+    /** 
+     * given a change in scrollbar position, update the chatbox position
+     * note: only called when dragging scrollbar
+     */
+    public void updateChatPosition() {
+        // calculate the fraction
+        float f = (float)(CHAT_shape_scrollBar.y - CHAT_MINIMUM_SCROLL_Y) / (float)(CHAT_MAXIMUM_SCROLL_Y - CHAT_MINIMUM_SCROLL_Y);
+        
+        // only move chat container if there is enough height to scroll?     
+        if (chatTable.getHeight() >= CHAT_shape_messageWindow.height)
+        {
+            chatContainer.setY(
+                CHAT_shape_messageWindow.y +
+                (int) (-1 * (f * Math.abs(containerBottomY - containerTopY + CHAT_shape_messageWindow.y)))
+            );
+        }
+    }
+    
+    /**
+     * scroll the chat in some direction.
+     */
+    public void scrollChat(boolean scrollUp) {
+        if (scrollUp && ((chatContainer.getY() + chatTable.getHeight()) <= ((CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height)))) {
+            // at the top
+        }
+        else if ((!scrollUp) && (chatContainer.getY() >= CHAT_shape_messageWindow.y))
+        {
+            // at the bottom
+        }
+        else {
+            // somewhere scrolling inbetween the top and bottom
+            chatContainer.setPosition(
+                    chatContainer.getX(),
+                    chatContainer.getY() + CHAT_WINDOW_SCROLL_INCREMENT * (scrollUp?-1:1)
+            );
+        }
+        
+        // adjust the scrollbar accordingly
+        updateScrollPosition();
     }
 
     public void setExecutingMoves(boolean flag) {
@@ -706,7 +874,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private void sendChat() {
         String message = chatBar.getText();
         if (message.length() > 0 && message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-        	context.sendPostMessagePacket(message);
+            context.sendPostMessagePacket(message);
         }
         chatBar.setCursorPosition(0);
         chatBar.setText("");
@@ -971,6 +1139,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private boolean isClickingScrollDown(float x, float y) {
         return isPointInRect(x,y,CHAT_shape_scrollingDown);
     }
+    
+    private boolean isDraggingScrollBar(float x, float y) {
+        return isPointInRect(x,y,CHAT_shape_scrollBar);
+    }
 
     private boolean isPlacingMoves(float x, float y) {
         return isPointInRect(x,y,MOVES_shape_placingMoves);
@@ -1096,6 +1268,24 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 scrollDownButtonIsDown = false;
             }
         }
+        
+        // handle if we are clicking scroll (one time only)
+        if ((!draggingScroll) && isDraggingScrollBar(x, y)) {
+            draggingScroll = true;
+        }
+
+        // handle drag of scrollbar (while down)
+        if (draggingScroll) {
+            CHAT_shape_scrollBar.y -= iy;
+            if (CHAT_shape_scrollBar.y > CHAT_MAXIMUM_SCROLL_Y) {
+                CHAT_shape_scrollBar.y = CHAT_MAXIMUM_SCROLL_Y;
+            }
+            else if (CHAT_shape_scrollBar.y < CHAT_MINIMUM_SCROLL_Y)
+            {
+                CHAT_shape_scrollBar.y = CHAT_MINIMUM_SCROLL_Y;
+            }
+            updateChatPosition();
+        }
 
         return false;
     }
@@ -1209,11 +1399,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 sendChatButtonIsDown = false;
             }
             else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
-                // TODO scroll here
                 scrollUpButtonIsDown = false;
             }
             else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
-                // TODO scroll here
                 scrollDownButtonIsDown = false;
             }
             else if (!auto){
@@ -1240,6 +1428,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                      getContext().sendGenerationTarget(targetMove);
                 }
             }
+        }
+        
+        if (draggingScroll) {
+            draggingScroll = false;
         }
         return false;
     }
@@ -1447,10 +1639,20 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch.draw(chatBackground, CHAT_backgroundX, CHAT_backgroundY);
         batch.draw(chatIndicator,  CHAT_indicatorX, CHAT_indicatorY);
         batch.draw(chatBarBackground, CHAT_boxX, CHAT_boxY);
+        batch.draw(chatScrollBarScroll, CHAT_shape_scrollBar.x, CHAT_shape_scrollBar.y);
         batch.draw(sendChatButtonIsDown?chatButtonSendPressed:chatButtonSend, CHAT_buttonSendX, CHAT_buttonSendY);
         batch.draw(scrollUpButtonIsDown?chatScrollBarUpPressed:chatScrollBarUp, CHAT_scrollBarUpX, CHAT_scrollBarUpY);
         batch.draw(scrollDownButtonIsDown?chatScrollBarDownPressed:chatScrollBarDown, CHAT_scrollBarDownX, CHAT_scrollBarDownY);
         batch.draw(chatScrollBarMiddle, CHAT_scrollBarMiddleX, CHAT_scrollBarMiddleY);
+        
+        // if we're scrolling, do the scroll
+        if (scrollUpButtonIsDown) {
+            this.scrollChat(true);
+        }
+        else if (scrollDownButtonIsDown) {
+            this.scrollChat(false);
+        }
+        
         batch.end();
     }
 
