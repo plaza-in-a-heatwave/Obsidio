@@ -494,7 +494,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     }
 
     private void performLogin() throws UnknownHostException {
-        if (name.getText().length() >= 20) {
+        if (name.getText().length() > Constants.MAX_NAME_SIZE) {
             setPopup("Display name must be shorter.");
         }
         else if (name.getText().length() <= 0) {

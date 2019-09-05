@@ -328,14 +328,17 @@ public class GameContext {
                 case LoginResponsePacket.NAME_IN_USE:
                     connectScene.setPopup("Display name already in use");
                     break;
-                    case LoginResponsePacket.BAD_SHIP:
-                        connectScene.setPopup("The selected ship either does not exist, or not allowed");
-                        break;
-                case LoginResponsePacket.SERVER_FULL:
-                    connectScene.setPopup("The server is full.");
+                case LoginResponsePacket.BAD_SHIP:
+                    connectScene.setPopup("The selected ship either does not exist, or not allowed");
                     break;
+                case LoginResponsePacket.SERVER_FULL:
+                    connectScene.setPopup("The server is full");
+                    break;
+                case LoginResponsePacket.BAD_NAME:
+                	connectScene.setPopup("That ship name is not allowed");
+                	break;
                 default:
-                    connectScene.setPopup("Unknown login failure.");
+                    connectScene.setPopup("Unknown login failure");
                     break;
             }
 
