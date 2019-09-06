@@ -85,7 +85,7 @@ public class GameInformation extends SceneComponent {
         // are we defender or attacker?
         String defenderHighlight = "";
         String attackerHighlight = "";
-        if (this.getContext().myTeam.name() == Team.GREEN.toString()) {
+        if (getContext().myTeam.name().equals(Team.GREEN.toString())) {
             defenderHighlight = "->";
         } else {
             attackerHighlight = "->";
