@@ -210,7 +210,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * add to the chat buffer
      */
     public void addNewMessage(String sender, String message) {
-        this.displayMessage(sender + " says, \"" + message + "\".");
+        this.displayMessage(sender + " says, \"" + message + ".\"");
     }
 
     /**
