@@ -2,7 +2,9 @@ package com.benberi.cadesim.game.scene.impl.connect;
 
 import java.io.*;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -52,6 +54,14 @@ public class ConnectScene implements GameScene, InputProcessor {
     private long lastConnectionAnimatinoStateChange;
 
     private BitmapFont font;
+    private BitmapFont titleFont;
+    private BitmapFont notesFont;
+    
+    // connectscene
+    private ArrayList<String> greetings = new ArrayList<String>();
+    private java.util.Random prng = new java.util.Random(System.currentTimeMillis());
+    private String chosenGreeting;
+    private String code_url = "https://github.com/plaza-in-a-heatwave/Obsidio/issues";
 
     private boolean failed;
 
@@ -113,6 +123,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     private boolean popupCloseHover;
     private boolean loginHover;
+    private boolean codeURL;
     private boolean validating;
 
     public ConnectScene(GameContext ctx) {
@@ -137,6 +148,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             e.printStackTrace();
         }
 
+        // elements font
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 18;
@@ -144,6 +156,51 @@ public class ConnectScene implements GameScene, InputProcessor {
         parameter.shadowOffsetY = 1;
         font = generator.generateFont(parameter);
         font.setColor(Color.YELLOW);
+        
+        // notes font
+        parameter.size = 11;
+        parameter.shadowOffsetX = 0;
+        parameter.shadowOffsetY = 0;
+        notesFont = generator.generateFont(parameter);
+        notesFont.setColor(Color.WHITE);
+        
+        // title font
+        FreeTypeFontGenerator generatorTitle = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Open_Sans/OpenSans-SemiBold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameterTitle = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameterTitle.size = 46;
+        parameterTitle.gamma = 0.9f;
+        titleFont = generatorTitle.generateFont(parameterTitle);
+        titleFont.setColor(Color.WHITE);
+        
+        // greetings
+        greetings.add("It simulates blockades!");
+        greetings.add("No ships were harmed, honest");
+        greetings.add("Hot Pirate On Pirate Blockading Action");
+        greetings.add("Job for Keep The Peace!");
+        greetings.add("I am a sloop, I do not move!");
+        greetings.add("Praise Cyclist!");
+        greetings.add("Home grown!");
+        greetings.add("Blub");
+        greetings.add("You'll never guess what happened next...");
+        greetings.add("Inconceivable!");
+        greetings.add("Every day I'm Simulatin'");
+        greetings.add("Matured in oak casks for 24 months");
+        greetings.add("Probably SFW");
+        greetings.add("Sea monsters are always Kraken jokes");
+        greetings.add("Without a shadow of a Trout");
+        greetings.add("Just for the Halibut");
+        greetings.add("Placing Moves, not Moving Plaice");
+        greetings.add("Went to fish frowning comp. Had to Gurnard");
+        greetings.add("Just Mullet over");
+        greetings.add("Don't tell him, Pike!");
+        greetings.add("Tales of Herring Do");
+        greetings.add("Needlefish? Get all fish!");
+        greetings.add("It's... It's... Eely good");
+        greetings.add("Bream me up, Scotty! (Living the Bream)");
+        greetings.add("Brigging Back Blockades");
+        greetings.add("micro/nano Blockade SIMs available!");
+        chosenGreeting = greetings.get(prng.nextInt(greetings.size()));
+        
         batch = new SpriteBatch();
 
         background = new Texture("assets/bg.png");
@@ -275,6 +332,16 @@ public class ConnectScene implements GameScene, InputProcessor {
         batch.begin();
         batch.draw(background, 0, 0);
         if (state == ConnectionSceneState.DEFAULT) {
+
+        	titleFont.draw(batch, "Blockade Simulator", 156, 350);
+        	notesFont.draw(batch, chosenGreeting, 587, 329);
+        	notesFont.draw(batch, "Based on the original by Benberi", 15, 50);
+        	notesFont.draw(batch, "Found a bug? Let us know!", 15, 25);
+        	
+        	if (codeURL) { notesFont.setColor(Color.SKY); }
+        	notesFont.draw(batch, code_url, 138, 25);
+            notesFont.setColor(Color.WHITE);
+        	
             font.setColor(Color.WHITE);
             font.draw(batch, "Display name:", 160, 300);
             batch.draw(nameTexture, 160, 225);
@@ -423,7 +490,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public boolean handleClick(float x, float y, int button) {
-        return false;
+    	return false;
     }
 
     @Override
@@ -475,7 +542,19 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+		if (isMouseOverCodeUrl(screenX, Gdx.graphics.getHeight() - screenY))
+		{
+	    	try {
+				java.awt.Desktop.getDesktop().browse(java.net.URI.create(code_url));
+			} catch (IOException e) {
+				// nvm, couldn't open URL
+			}
+	    	return true;
+		}
+		else
+		{
+			return false;
+		}
     }
 
     @Override
@@ -571,6 +650,11 @@ public class ConnectScene implements GameScene, InputProcessor {
         prop.load(new FileInputStream(filename));
         return prop.getProperty(key);
     }
+    
+    public boolean isMouseOverCodeUrl(float x, float y)
+    {
+    	return x >= 138 && x < 415 && y >= 10 && y < 31;
+    }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
@@ -581,7 +665,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     public boolean mouseMoved(int screenX, int screenY) {
         int width = Gdx.graphics.getWidth();
         int height = Gdx.graphics.getHeight();
-
+        
         if (popup) {
             int popupleftedge = width / 2 - 200;
             int popuprightedge = width / 2 + 200;
@@ -592,6 +676,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             popupCloseHover = screenX >= popupleftedge && screenX <= popuprightedge && screenY >= popuptopedge && screenY <= popupbottomedge;
         }
         else {
+        	codeURL = isMouseOverCodeUrl(screenX, height - screenY);
             loginHover = screenX >= 164 && screenX <= 606 && screenY >= height - 210 && screenY <= height - 170;
         }
         return false;
