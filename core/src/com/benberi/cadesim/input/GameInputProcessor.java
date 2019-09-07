@@ -85,6 +85,8 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
+    	// TODO this is garbage - but I can't pass the scroll any other way.
+        context.getControlScene().getBnavComponent().scrolled(amount);
         return false;
     }
 }

@@ -210,7 +210,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * add to the chat buffer
      */
     public void addNewMessage(String sender, String message) {
-        this.displayMessage(sender + " says, \"" + message + ".\"");
+        this.displayMessage(sender + ": \"" + message + "\"");
     }
 
     /**
@@ -495,7 +495,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private boolean sendChatButtonIsDown    = false; // initial
     private boolean scrollUpButtonIsDown    = false; // initial (confusing!)
     private boolean scrollDownButtonIsDown  = false; // initial (confusing!)
-
+    
+    private long scrollButtonDownOnTime     = 0;     // when was scroll button last pressed
+    private long scrollButtonDownRepeatTime = 0;     // scroll button last repeated at this time
     /**
      * Max length for a chat message
      */
@@ -507,9 +509,23 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private static final int CHAT_MAX_NUMBER_OF_MESSAGES = 500;
     
     /**
-     * size of scroll increment (px)
+     * size of scroll increment (px) when scrolling (mouse or button)
      */
-    private static final int CHAT_WINDOW_SCROLL_INCREMENT = 3;
+    private static final int CHAT_WINDOW_SCROLL_INCREMENT = 24;
+    
+    /**
+     * time threshold for button to start scrolling (ms)
+     * i.e. scroll button pressed once, scrolls once
+     * if held down, after <this many> millis, it starts to repeat
+     */
+    private static final int CHAT_WINDOW_BUTTON_SCROLL_TIME_THRESHOLD = 333;
+    
+    /**
+     * time threshold for button to keep repeat scrolling (ms)
+     * i.e. if scroll button is repeating (after being held down),
+     * dont scroll on every render. scroll on this interval
+     */
+    private static final int CHAT_WINDOW_BUTTON_SCROLL_REPEAT_THRESHOLD = 50;
     
     /**
      * maximum/minimum scroll height
@@ -714,14 +730,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             // handle chat if it has grown too big?
             if (chatTable.getCells().size > CHAT_MAX_NUMBER_OF_MESSAGES) {
                 Cell<Actor> cell = chatTable.getCells().first();
-                System.out.println(cell);
                 cell.getActor().remove();                     // rm actor
                 chatTable.getCells().removeValue(cell, true); // rm lingering physical presence
                 chatTable.invalidate();
             }
             
             // update the top and bottom positional markers of the chat window
-            containerTopY = CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height - chatTable.getHeight();
+            containerTopY = CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height - chatTable.getHeight()-3;
             containerBottomY = CHAT_shape_messageWindow.y;
             
             updateScrollPosition();
@@ -742,6 +757,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         
         // set the scrollbar to 
         CHAT_shape_scrollBar.y = CHAT_scrollBarScrollY + (int) (f * (CHAT_MAXIMUM_SCROLL_Y - CHAT_MINIMUM_SCROLL_Y));
+        
+        // snap the scrollbar to bounds if it's exceeded its bounds
+        if (CHAT_shape_scrollBar.y > CHAT_MAXIMUM_SCROLL_Y) {
+        	CHAT_shape_scrollBar.y = CHAT_MAXIMUM_SCROLL_Y;
+        }
+        else if (CHAT_shape_scrollBar.y < CHAT_MINIMUM_SCROLL_Y) {
+        	CHAT_shape_scrollBar.y = CHAT_MINIMUM_SCROLL_Y;
+        }
     }
     
     /**
@@ -763,13 +786,34 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         // calculate the fraction
         float f = (float)(CHAT_shape_scrollBar.y - CHAT_MINIMUM_SCROLL_Y) / (float)(CHAT_MAXIMUM_SCROLL_Y - CHAT_MINIMUM_SCROLL_Y);
         
-        // only move chat container if there is enough height to scroll?     
-        if (chatTable.getHeight() >= CHAT_shape_messageWindow.height)
+        // update the container
+        chatContainer.setY(
+            CHAT_shape_messageWindow.y +
+            (int) (-1 * (f * Math.abs(containerBottomY - containerTopY + CHAT_shape_messageWindow.y)))
+        );
+        
+        // adjust if have exceeded bounds when scrolling
+        snapChatToBounds();
+    }
+    
+    private void snapChatToBounds() {
+    	// adjust if have exceeded bounds when scrolling
+        if ((chatContainer.getY() + chatTable.getHeight()-3) <= ((CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height))) {
+            // at the top
+        	int top = ((CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height));
+        	int diffFromTop = top - (int)(chatContainer.getY() + chatTable.getHeight()-3);
+        	chatContainer.setPosition(
+        			chatContainer.getX(),
+        			chatContainer.getY() + diffFromTop
+        	);
+        }
+        else if (chatContainer.getY() >= CHAT_shape_messageWindow.y)
         {
-            chatContainer.setY(
-                CHAT_shape_messageWindow.y +
-                (int) (-1 * (f * Math.abs(containerBottomY - containerTopY + CHAT_shape_messageWindow.y)))
-            );
+            // at the bottom
+        	chatContainer.setPosition(
+    			chatContainer.getX(),
+    			CHAT_shape_messageWindow.y
+        	);
         }
     }
     
@@ -777,20 +821,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * scroll the chat in some direction.
      */
     public void scrollChat(boolean scrollUp) {
-        if (scrollUp && ((chatContainer.getY() + chatTable.getHeight()) <= ((CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height)))) {
-            // at the top
-        }
-        else if ((!scrollUp) && (chatContainer.getY() >= CHAT_shape_messageWindow.y))
-        {
-            // at the bottom
-        }
-        else {
-            // somewhere scrolling inbetween the top and bottom
-            chatContainer.setPosition(
-                    chatContainer.getX(),
-                    chatContainer.getY() + CHAT_WINDOW_SCROLL_INCREMENT * (scrollUp?-1:1)
-            );
-        }
+    	// somewhere scrolling inbetween the top and bottom
+        chatContainer.setPosition(
+            chatContainer.getX(),
+            chatContainer.getY() + (CHAT_WINDOW_SCROLL_INCREMENT) * (scrollUp?-1:1)
+        );
+        
+        // adjust if have exceeded bounds when scrolling
+        snapChatToBounds();
         
         // adjust the scrollbar accordingly
         updateScrollPosition();
@@ -857,9 +895,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
         else if ((!scrollUpButtonIsDown) && isClickingScrollUp(x,y)) {
             scrollUpButtonIsDown = true;
+            this.scrollChat(true); // just once, render scrolls the rest
+            scrollButtonDownOnTime = System.currentTimeMillis();
             return true;
         }
         else if ((!scrollDownButtonIsDown) && isClickingScrollDown(x,y)) {
+        	scrollButtonDownOnTime = System.currentTimeMillis();
+        	this.scrollChat(false); // just once, render scrolls the rest
             scrollDownButtonIsDown = true;
             return true;
         }
@@ -1646,11 +1688,24 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch.draw(chatScrollBarMiddle, CHAT_scrollBarMiddleX, CHAT_scrollBarMiddleY);
         
         // if we're scrolling, do the scroll
-        if (scrollUpButtonIsDown) {
-            this.scrollChat(true);
+        // but only if the button's been held down more than the threshold
+        long now = System.currentTimeMillis();
+        long scrollDuration = now - scrollButtonDownOnTime;
+        if (scrollUpButtonIsDown && (scrollDuration > CHAT_WINDOW_BUTTON_SCROLL_TIME_THRESHOLD)) {
+        	// if we're repeating scroll... dont repeat every render.
+        	// only repeat once every n millis
+        	if ((now - scrollButtonDownRepeatTime) > CHAT_WINDOW_BUTTON_SCROLL_REPEAT_THRESHOLD)
+        	{
+        		scrollButtonDownRepeatTime = now;
+        		this.scrollChat(true);
+        	}
         }
-        else if (scrollDownButtonIsDown) {
-            this.scrollChat(false);
+        else if (scrollDownButtonIsDown && (scrollDuration > CHAT_WINDOW_BUTTON_SCROLL_TIME_THRESHOLD)) {
+        	if ((now - scrollButtonDownRepeatTime) > CHAT_WINDOW_BUTTON_SCROLL_REPEAT_THRESHOLD)
+        	{
+        		scrollButtonDownRepeatTime = now;
+        		this.scrollChat(false);
+        	}
         }
         
         batch.end();
@@ -2009,7 +2064,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean scrolled(int amount) {
-        // TODO Auto-generated method stub
-        return false;
+    	scrollChat(amount < 0); // 
+    	return true;
     }
 }
