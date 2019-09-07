@@ -1056,6 +1056,62 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private void handleEnter(int keycode) {
         sendChat();
     }
+    
+    private void handleHome(int keycode) {
+    	// set cursor position to start of chat
+    	chatBar.setCursorPosition(0);
+    }
+    
+    private void handleEnd(int keycode) {
+    	// set cursor position to end of chat
+    	chatBar.setCursorPosition(chatBar.getText().length());
+    }
+    
+    /**
+     * handle ctrl+arrow key combination
+     * @param isLeft is the left key pressed?
+     */
+    private void handleCtrlArrow(boolean isLeft)
+    {
+    	String text = chatBar.getText();
+    	boolean found = false;
+    	if (isLeft)
+    	{
+    		// ctrl+left: set cursor to index of previous " ^[ ]"
+    		// treat all space chars the same
+    		for (int i=chatBar.getCursorPosition()-1; i>=1; i--)
+    		{
+    			if (text.charAt(i-1) == ' ' && text.charAt(i) != ' ')
+    			{
+    				chatBar.setCursorPosition(i);
+    				found = true;
+    				break;
+    			}
+    		}
+    		if (!found)
+    		{
+    			chatBar.setCursorPosition(0);
+    		}
+    	}
+    	else
+    	{    		
+    		// ctrl+right: set cursor to index of next " ^[ ]", + 1
+    		for (int i=chatBar.getCursorPosition(); i<text.length() - 1; i++)
+    		{
+    			if (text.charAt(i) == ' ' && text.charAt(i+1) != ' ')
+    			{
+    				chatBar.setCursorPosition(i+1);
+    				found = true;
+    				break;
+    			}
+    		}
+    		if (!found)
+    		{
+    			chatBar.setCursorPosition(text.length());
+    		}
+    	}
+    }
+    
     /**
      * wrapper around textfield helper methods
      * returns true if handled, false otherwise
@@ -1085,6 +1141,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     private void handleModifierChord(int keycode) {
         switch (keycode) {
+        case Input.Keys.LEFT:
+        	handleCtrlArrow(true);
+        	break;
+        case Input.Keys.RIGHT:
+        	handleCtrlArrow(false);
+        	break;
         case Input.Keys.A:
             chatBar.selectAll();
             break;
@@ -1988,7 +2050,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             return true;
         }
         else if (keycode == Input.Keys.ENTER) {
-            // enter shouldnt accelerate
+            // enter shouldn't accelerate
             stopAllAcceleration();
             handleEnter(keycode);
             return true;
@@ -1996,6 +2058,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         else if (keycode == Input.Keys.CONTROL_LEFT) {
             startModifier();
             return true;
+        }
+        else if (keycode == Input.Keys.HOME) {
+        	// home shouldn't accelerate
+        	stopAllAcceleration();
+        	handleHome(keycode);
+        	return true;
+        }
+        else if (keycode == Input.Keys.END) {
+        	// end shouldn't accelerate
+        	stopAllAcceleration();
+        	handleEnd(keycode);
+        	return true;
         }
         else
         {
