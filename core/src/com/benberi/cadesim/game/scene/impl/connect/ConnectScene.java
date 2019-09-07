@@ -196,7 +196,8 @@ public class ConnectScene implements GameScene, InputProcessor {
         greetings.add("Tales of Herring Do");
         greetings.add("Needlefish? Get all fish!");
         greetings.add("It's... It's... Eely good");
-        greetings.add("Bream me up, Scotty! (Living the Bream)");
+        greetings.add("Bream me up, Scotty!");
+        greetings.add("Living the Bream");
         greetings.add("Brigging Back Blockades");
         greetings.add("micro/nano Blockade SIMs available!");
         chosenGreeting = greetings.get(prng.nextInt(greetings.size()));
