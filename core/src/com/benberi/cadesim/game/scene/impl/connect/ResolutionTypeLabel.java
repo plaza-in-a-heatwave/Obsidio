@@ -19,7 +19,7 @@ public class ResolutionTypeLabel extends Label {
 
     @Override
     public String toString() {
-        return "Resolution: " + getText();
+        return "Res: " + getText();
     }
 
     public int getType() {

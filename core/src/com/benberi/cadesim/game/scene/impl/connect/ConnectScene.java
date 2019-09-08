@@ -101,7 +101,6 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     private Texture loginButtonHover;
 
-    private Texture shipBox;
     private Texture junk;
     private Texture wf;
     private Texture xebec;
@@ -245,17 +244,16 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         shipType = new SelectBox<>(selectBoxStyle);
         shipType.setSize(150, 44);
-        shipType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 50);
+        shipType.setPosition(640, 225);
         
         resolutionType = new SelectBox<>(selectBoxStyle);
         resolutionType.setSize(150, 44);
-        resolutionType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 100);
+        resolutionType.setPosition(640, 175);
 
         teamType = new SelectBox<>(selectBoxStyle);
         teamType.setSize(150, 44);
-        teamType.setPosition(Gdx.graphics.getWidth() - 160, Gdx.graphics.getHeight() - 150);
+        teamType.setPosition(640, 125);
 
-        shipBox = new Texture("assets/skin/ship-box.png");
         junk = new Texture("assets/skin/ships/junk.png");
         wb = new Texture("assets/skin/ships/wb.png");
         xebec = new Texture("assets/skin/ships/xebec.png");
@@ -268,10 +266,10 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         ShipTypeLabel[] blob = new ShipTypeLabel[5];
         blob[0] = new ShipTypeLabel(ShipTypeLabel.JUNK,"Junk", labelStyle);
-        blob[1] = new ShipTypeLabel(ShipTypeLabel.WB,"War Brig",labelStyle);
+        blob[1] = new ShipTypeLabel(ShipTypeLabel.WB,"WB",labelStyle);
         blob[2] = new ShipTypeLabel(ShipTypeLabel.XEBEC,"Xebec", labelStyle);
-        blob[3] = new ShipTypeLabel(ShipTypeLabel.WG,"War Galleon", labelStyle);
-        blob[4] = new ShipTypeLabel(ShipTypeLabel.WF,"War Frigate", labelStyle);
+        blob[3] = new ShipTypeLabel(ShipTypeLabel.WG,"WG", labelStyle);
+        blob[4] = new ShipTypeLabel(ShipTypeLabel.WF,"WF", labelStyle);
         
         shipType.setItems(blob);
         shipType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_ship")));
@@ -310,9 +308,15 @@ public class ConnectScene implements GameScene, InputProcessor {
 
                     if (Integer.parseInt(last_res) != resolutionType.getSelectedIndex()) {
                         String[] resolution = restypeToRes(resolutionType.getSelectedIndex());
+
+                        // save for next time
                         changeProperty("user.config", "client.width", resolution[0]);
                         changeProperty("user.config", "client.height", resolution[1]);
                         changeProperty("user.config", "client.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
+
+                        // reload for now
+                        Gdx.graphics.setWindowedMode(Integer.parseInt(resolution[0]), Integer.parseInt(resolution[1]));
+                        context.create();
                     }
 
                 } catch (IOException e) {
@@ -358,29 +362,25 @@ public class ConnectScene implements GameScene, InputProcessor {
 
 
             font.draw(batch, "Connect", 340, 196);
-
-            batch.draw(shipBox, Gdx.graphics.getWidth() - 230, Gdx.graphics.getHeight() - 50);
-            switch (shipType.getSelected().getType()) {
-                case ShipTypeLabel.JUNK:
-                    batch.draw(junk, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
-                    break;
-                case ShipTypeLabel.WB:
-                    batch.draw(wb, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
-                    break;
-                case ShipTypeLabel.XEBEC:
-                    batch.draw(xebec, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
-                    break;
-                case ShipTypeLabel.WG:
-                    batch.draw(wg, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
-                    break;
-                case ShipTypeLabel.WF:
-                    batch.draw(wf, Gdx.graphics.getWidth() - 223, Gdx.graphics.getHeight() - 50);
-                    break;
-            }
             batch.end();
 
+            // buttons need to be drawn, then ship texture is drawn over them
             stage.act();
             stage.draw();
+            
+            Texture t;
+            batch.begin();
+            switch (shipType.getSelected().getType()) {
+                case ShipTypeLabel.JUNK:  t = junk;  break;
+                case ShipTypeLabel.WB:    t = wb;    break;
+                case ShipTypeLabel.XEBEC: t = xebec; break;
+                case ShipTypeLabel.WG:    t = wg;    break;
+                case ShipTypeLabel.WF:    t = wf;    break;
+                default:                  t = wf;    break;
+            }
+            batch.draw(t, 735, 225); // draw t, whatever it may be
+            batch.end();
+
             if (popup) {
                 Gdx.gl.glEnable(GL20.GL_BLEND);
                 Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

@@ -19,7 +19,7 @@ public class ShipTypeLabel extends Label {
 
     @Override
     public String toString() {
-        return "Ship: " + getText();
+        return "" + getText();
     }
 
     public int getType() {
