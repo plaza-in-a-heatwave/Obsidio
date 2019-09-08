@@ -25,6 +25,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.math.Vector2;
+import com.benberi.cadesim.Constants;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.SceneComponent;
@@ -134,6 +135,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * TextField for Chat (with its own Stage)
      */
     private Stage stage;
+    private Stage chatContainerStage;
     private TextField chatBar;
 
     /**
@@ -210,7 +212,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * add to the chat buffer
      */
     public void addNewMessage(String sender, String message) {
-        this.displayMessage(sender + ": \"" + message + "\"");
+    	if (sender.equals(Constants.serverBroadcast))
+        {
+        	displayMessage(message, chatMessageServerBroadcast);
+        }
+    	else if (sender.equals(Constants.serverPrivate))
+    	{
+    		displayMessage(message, chatMessageServerPrivate);
+    	}
+    	else
+    	{
+    		displayMessage(sender + ": \"" + message + "\"", chatMessagePlayer);
+    	}
     }
 
     /**
@@ -246,6 +259,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private Texture controlBackground;
     private Texture goOceansideBackground;
     private Texture chatBackground;
+    private Texture chatBackgroundFrame;
     private Texture shipStatus;
     private Texture shipStatusBg;
     private TextureRegion damage;
@@ -280,9 +294,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private Texture chatScrollBarMiddle;
     private Texture chatScrollBarScroll;
     
+    private Texture chatMessagePlayer;
+    private Texture chatMessageServerBroadcast;
+    private Texture chatMessageServerPrivate;
+    
     // references for drawing chat/scroll
     Container<Table> chatContainer;
-    Label.LabelStyle chatLabelStyle;
+    Label.LabelStyle chatLabelStylePlayer;
+    Label.LabelStyle chatLabelStyleServerBroadcast;
+    Label.LabelStyle chatLabelStyleServerPrivate;
     Table chatTable;
     float containerTopY;
     float containerBottomY;
@@ -456,6 +476,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     // CHAT
     private int CHAT_backgroundX        = CHAT_REF_X + 489;
     private int CHAT_backgroundY        = CHAT_REF_Y + 8;
+    
+    private int CHAT_backgroundFrameX   = CHAT_REF_X + 489;
+    private int CHAT_backgroundFrameY   = CHAT_REF_Y + 0;
 
     private int CHAT_indicatorX         = CHAT_REF_X + 492;
     private int CHAT_indicatorY         = CHAT_REF_Y + 8;
@@ -478,6 +501,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     
     private int CHAT_scrollBarScrollX   = CHAT_REF_X + 781;
     private int CHAT_scrollBarScrollY   = CHAT_REF_Y + 48;
+    
+    FreeTypeFontGenerator messageFontGenerator;
+    FreeTypeFontGenerator.FreeTypeFontParameter messageFontParameter;
     
 
     // CHAT shapes
@@ -535,7 +561,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     private int manuaverSlot = 3;
 
-    private boolean isBigShip;
+    private boolean isBigShip = false;
 
     private boolean  isDragging;          //       are we dragging
     private MoveType startDragMove;       // what  are we dragging
@@ -578,8 +604,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         parameter.size = 12;
         font = generator.generateFont(parameter);
         
-        FreeTypeFontGenerator messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
+        messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         messageFontParameter.size = 11;
         messageFont = messageFontGenerator.generateFont(messageFontParameter);
 
@@ -646,12 +672,19 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         goOceansideBackground = new Texture("assets/ui/go_oceanside_background.png");
 
         chatBackground = new Texture("assets/ui/chat_background.png");
+        chatBackgroundFrame = new Texture("assets/ui/chat_background_frame.png");
         chatIndicator  = new Texture("assets/ui/chat_indicator.png");
         chatBarBackground = new Texture("assets/ui/chat_bar_background.png");
         chatButtonSend = new Texture("assets/ui/chat_button_send.png");
         chatButtonSendPressed = new Texture("assets/ui/chat_button_sendPressed.png");
+        
+        chatMessagePlayer = new Texture("assets/ui/chat_message_player.png");
+        chatMessageServerBroadcast = new Texture("assets/ui/chat_message_server_broadcast.png");
+        chatMessageServerPrivate = new Texture("assets/ui/chat_message_server_private.png");
+        
         // text field for chat (based off ConnectScene)
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        chatContainerStage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = messageFont;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
@@ -679,23 +712,38 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatContainer.align(Align.bottomLeft);
         chatContainer.fillX();
         
-        // style of the chat messages
-        chatLabelStyle = new LabelStyle();
-        //chatLabelStyle.background = new Image(new Texture("assets/ui/chat_message.png")).getDrawable();
-        chatLabelStyle.font = messageFontGenerator.generateFont(messageFontParameter);
-        chatLabelStyle.fontColor = new Color();
-        chatLabelStyle.fontColor.r = 0f;
-        chatLabelStyle.fontColor.b = 0f;
-        chatLabelStyle.fontColor.g = 0f;
-        chatLabelStyle.fontColor.a = 1f;
+        // style of the chat messages (backgrounds applied later)
+        chatLabelStylePlayer = new LabelStyle();
+        chatLabelStylePlayer.font = messageFontGenerator.generateFont(messageFontParameter);
+        chatLabelStylePlayer.fontColor = new Color();
+        chatLabelStylePlayer.fontColor.r = 0f;
+        chatLabelStylePlayer.fontColor.b = 0f;
+        chatLabelStylePlayer.fontColor.g = 0f;
+        chatLabelStylePlayer.fontColor.a = 1f;
+        chatLabelStyleServerBroadcast = new LabelStyle();
+        chatLabelStyleServerBroadcast.font = messageFontGenerator.generateFont(messageFontParameter);
+        chatLabelStyleServerBroadcast.fontColor = new Color();
+        chatLabelStyleServerBroadcast.fontColor.r = 0f;
+        chatLabelStyleServerBroadcast.fontColor.b = 0f;
+        chatLabelStyleServerBroadcast.fontColor.g = 0f;
+        chatLabelStyleServerBroadcast.fontColor.a = 1f;
+        chatLabelStyleServerPrivate = new LabelStyle();
+        chatLabelStyleServerPrivate.font = messageFontGenerator.generateFont(messageFontParameter);
+        chatLabelStyleServerPrivate.fontColor = new Color();
+        chatLabelStyleServerPrivate.fontColor.r = 0f;
+        chatLabelStyleServerPrivate.fontColor.b = 0f;
+        chatLabelStyleServerPrivate.fontColor.g = 0f;
+        chatLabelStyleServerPrivate.fontColor.a = 1f;
         
         // create a table to maintain order of messages
         chatTable = new Table();
         chatTable.align(Align.bottomLeft);
         
         // add table to container, and add container to a new stage
+        // separate stage added so the two are drawn in separate batches
+        // (the chat window requires significant portions to be drawn afterwards)
         chatContainer.setActor(chatTable);
-        stage.addActor(chatContainer);
+        chatContainerStage.addActor(chatContainer);
         
         // update top/bottom
         containerTopY = CHAT_windowY;
@@ -720,13 +768,42 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * display a message in the chat
      */
-    public void displayMessage(String message) {
+    public void displayMessage(String message, Texture messageTexture) {
         if (message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-            chatTable.row().padBottom(10);
-            Label chat1 = new Label(message, chatLabelStyle);
-            chat1.setWrap(true);
-            chatTable.add(chat1).width(CHAT_shape_messageWindow.width).align(Align.left);
+        	// create the data
+        	chatTable.row().padBottom(1);
+            Label chat1;
             
+            // define the background textures based on the message source
+            // is it broadcast, private, regular?
+            TextureRegion tr;
+            Label.LabelStyle ls = new LabelStyle();
+            ls.font = messageFontGenerator.generateFont(messageFontParameter);
+            ls.fontColor = new Color(0f, 0f, 0f, 1f);
+            chat1 = new Label(message, ls);
+
+            // background width will vary depending on the width of the label
+            chat1.setWrap(true);
+            if (chat1.getWidth() >= CHAT_shape_messageWindow.width)
+            {
+            	// use whole thing
+            	tr = new TextureRegion(messageTexture, 0, 0, 282, 24);
+            	chatTable.add(chat1).width(CHAT_shape_messageWindow.width).align(Align.left);
+            }
+            else
+            {
+            	// use width plus some constant (10 padding either side of inside lines)
+            	tr = new TextureRegion(messageTexture, 0, 0, (int)chat1.getWidth() + 10, 24);
+            	chatTable.add(chat1).width(chat1.getWidth() + 10).align(Align.left);
+            }
+            
+        	
+        	// set the background
+        	ls.background = new Image(tr).getDrawable();
+            
+            // reset the style with new background
+            chat1.setStyle(ls);
+            	
             // handle chat if it has grown too big?
             if (chatTable.getCells().size > CHAT_MAX_NUMBER_OF_MESSAGES) {
                 Cell<Actor> cell = chatTable.getCells().first();
@@ -864,9 +941,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     public void render() {
         renderMoveControl();
         renderGoOceanside();
+        renderChatBackground();
+        chatContainerStage.act();
+        chatContainerStage.draw();
         renderChat();
         stage.act();
         stage.draw();
+        
 
         // accelerate anything that needs it
         doAccelerate();
@@ -1737,10 +1818,16 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch.draw((goOceansideButtonIsDown)?goOceansideDown:goOceansideUp, GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY);
         batch.end();
     }
+    
+    private void renderChatBackground() {
+    	batch.begin();
+    	batch.draw(chatBackground, CHAT_backgroundX, CHAT_backgroundY);
+    	batch.end();
+    }
 
     private void renderChat() {
         batch.begin();
-        batch.draw(chatBackground, CHAT_backgroundX, CHAT_backgroundY);
+        batch.draw(chatBackgroundFrame, CHAT_backgroundFrameX, CHAT_backgroundFrameY);
         batch.draw(chatIndicator,  CHAT_indicatorX, CHAT_indicatorY);
         batch.draw(chatBarBackground, CHAT_boxX, CHAT_boxY);
         batch.draw(chatScrollBarScroll, CHAT_shape_scrollBar.x, CHAT_shape_scrollBar.y);
@@ -1791,7 +1878,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         moveHeights.add(MOVES_moveSlot2Y);
         moveHeights.add(MOVES_moveSlot3Y);
 
-        boolean isBigShip = (movesHolder instanceof BigShipHandMove[]);
         for (int i = 0; i < movesHolder.length; i++) {
             // helper variables
             HandMove move = movesHolder[i];
@@ -1807,12 +1893,18 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 batch.draw((left[0] && left[1])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotBigX, cH); // left
             }
 
-            // draw left (guns AB |__| CD - place D, then C)
+            // draw right (guns AB |__| CD - place D, then C)
             // must be in this order to create blur together
-            batch.draw((right[0] && right[1])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
-            if (isBigShip) {
-                batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
+            if (isBigShip)
+            {
+            	batch.draw((right[0] && right[1])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
+            	batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
             }
+            else
+            {
+            	batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
+            }
+            
 
             // draw moves and manauver
             if (i == manuaverSlot) {
@@ -1985,20 +2077,28 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             // count number of cannons we have set on each side
             boolean l[]  = movesHolder[i].getLeft();
             boolean r[] = movesHolder[i].getRight();
-            int left  = (l[0]?1:0) + (l[1]?1:0);
-            int right = (r[0]?1:0) + (r[1]?1:0);
+            
+            int left  = (l[0]?1:0);
+            int right = (r[0]?1:0);
+            if (isBigShip)
+            {
+            	left  += (l[1]?1:0);
+            	right += (r[1]?1:0);
+            }
 
             // calculate number of cannons we need to 'add' to cancel this
-            // (we can only add cannons until rollover, so "3-left")
+            // (we can only add cannons until rollover)
+            // so 3-left for big, 2-left for small
             // then send update n times as necessary
+            int rolloverThreshold = isBigShip?3:2;
             if (left > 0) {
-                for (int j=0; j<(3 - left); j++) {
+                for (int j=0; j<(rolloverThreshold - left); j++) {
                     getContext().sendAddCannon(0, i);
                 }
                 setCannons(0, i, 0);
             }
             if (right > 0) {
-                for (int j=0; j<(3 - right); j++) {
+                for (int j=0; j<(rolloverThreshold - right); j++) {
                     getContext().sendAddCannon(1, i);
                 }
                 setCannons(1, i, 0);

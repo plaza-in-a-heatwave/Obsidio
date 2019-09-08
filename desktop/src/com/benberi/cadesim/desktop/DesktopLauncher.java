@@ -20,7 +20,7 @@ public class DesktopLauncher {
 		config.resizable = false;
 		config.width = res[0];
 		config.height = res[1];
-		config.backgroundFPS = 5;    // bugfix high CPU
+		config.backgroundFPS = 20;    // bugfix high CPU
 		config.vSyncEnabled = false; // "
 		config.title = Constants.name + " (version " + Constants.VERSION + ")";
 		new LwjglApplication(cadesim, config);

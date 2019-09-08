@@ -11,7 +11,8 @@ public class Constants {
      * Name the server identifies itself with
      * Only the server will send chats with this name
      */
-    public static final String serverName = "Cadesim server";
+    public static final String serverBroadcast = "<cadesim_broadcast>";
+    public static final String serverPrivate   = "<cadesim_private>";
 
     /**
      * Version of client
