@@ -1,11 +1,6 @@
 package com.benberi.cadesim.game.scene.impl.control;
 
 import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -34,12 +29,6 @@ import com.benberi.cadesim.game.scene.impl.control.hand.impl.BigShipHandMove;
 import com.benberi.cadesim.game.scene.impl.control.hand.impl.SmallShipHandMove;
 
 public class BattleControlComponent extends SceneComponent<ControlAreaScene> implements InputProcessor {
-    /**
-     * for copy/paste
-     */
-    Toolkit toolkit;
-    Clipboard clipboard;
-
     /**
      * The context
      */
@@ -99,7 +88,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * Font for texts/messages
      */
     private BitmapFont font;
-    private BitmapFont messageFont;
 
     /**
      * The target move
@@ -132,98 +120,35 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     int absheight = Gdx.graphics.getHeight(); // absolute height
 
     /**
-     * TextField for Chat (with its own Stage)
+     * create a ChatBar
      */
-    private Stage stage;
-    private Stage chatContainerStage;
-    private TextField chatBar;
-
+    private ChatBar chatBar;
+    
     /**
-     * helpers for Textfield key processing
+     * Stage for the chatContainer
      */
-    private int  keyDown     = -1;  // keycode if down? (or -1 for none)
-    private int characterDown = -1; // charactercode if down? (or -1 for none)
-    private long keyDownTimeMillis = 0;  // when did key go down?
-    private boolean modifierDown = false; // ctrl or mac key
-    private boolean handledChord = false; // did we handle a modifier chord?
-    private static final int KEY_REPEAT_THRESHOLD_MILLIS = 500;
-    private void doAccelerate() {
-        if ((System.currentTimeMillis() - keyDownTimeMillis) >= KEY_REPEAT_THRESHOLD_MILLIS) {
-            if (keyDown != -1) {
-                handleAcceleratableKeys(keyDown);
-            }
-            else if (characterDown != -1) {
-                handleChar((char)characterDown);
-            }
-        }
-    }
-    private void startKeyAcceleration(int keycode) {
-        // use when a key has been pushed down once.
-        // it schedules acceleration.
-        if (!modifierDown) {
-            keyDown = keycode;
-            keyDownTimeMillis = System.currentTimeMillis();
-            characterDown = -1;
-        }
-    }
-    private void startCharacterAcceleration(char character) {
-        // use when a charater has been pushed down once.
-        // it schedules acceleration.
-        if (!modifierDown) {
-            characterDown = character;
-            keyDownTimeMillis = System.currentTimeMillis();
-            keyDown = -1;
-        }
-    }
-    private void stopAllAcceleration() {
-        // use when a key up has been detected
-        if (!modifierDown) {
-            keyDown = -1;
-            characterDown = -1;
-            keyDownTimeMillis = System.currentTimeMillis();
-        }
-    }
-    private boolean isAcceleratingCharacter(char character) {
-        if (modifierDown) {
-            return false;
-        }
-        else if (characterDown == -1) {
-            return false;
-        }
-        else {
-            return character == characterDown;
-        }
-    }
-    private void startModifier() {
-        modifierDown = true;
-        handledChord = false;
-        keyDown = -1;
-        characterDown = -1;
-        keyDownTimeMillis = System.currentTimeMillis();
-    }
-    private boolean isModifying() {
-        return modifierDown;
-    }
-    private void stopModifier() {
-        modifierDown = false;
-    }
+    private Stage chatContainerStage;
 
     /**
      * add to the chat buffer
      */
     public void addNewMessage(String sender, String message) {
-    	if (sender.equals(Constants.serverBroadcast))
-        {
-        	displayMessage(message, chatMessageServerBroadcast);
-        }
-    	else if (sender.equals(Constants.serverPrivate))
+    	if (message.length() <= CHAT_MESSAGE_MAX_LENGTH)
     	{
-    		displayMessage(message, chatMessageServerPrivate);
+    		if (sender.equals(Constants.serverBroadcast))
+            {
+            	displayMessage(message, chatMessageServerBroadcast);
+            }
+        	else if (sender.equals(Constants.serverPrivate))
+        	{
+        		displayMessage(message, chatMessageServerPrivate);
+        	}
+        	else
+        	{
+        		displayMessage(sender + ": \"" + message + "\"", chatMessagePlayer);
+        	}
     	}
-    	else
-    	{
-    		displayMessage(sender + ": \"" + message + "\"", chatMessagePlayer);
-    	}
+    	
     }
 
     /**
@@ -483,9 +408,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int CHAT_indicatorX         = CHAT_REF_X + 492;
     private int CHAT_indicatorY         = CHAT_REF_Y + 8;
 
-    private int CHAT_boxX               = CHAT_REF_X + 590;
+    private int CHAT_boxX               = CHAT_REF_X + 593;
     private int CHAT_boxY               = CHAT_REF_Y + 7;
 
+    private int CHAT_chatBarBackgroundX = CHAT_REF_X + 590;
+    private int CHAT_chatBarBackgroundY = CHAT_REF_X + 7;
+    
     private int CHAT_buttonSendX        = CHAT_REF_X + 723;
     private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
     
@@ -508,7 +436,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     // CHAT shapes
     Rectangle CHAT_shape_clickingSend   = new Rectangle(CHAT_buttonSendX, CHAT_buttonSendY, 45, 16);
-    Rectangle CHAT_shape_chatBox        = new Rectangle(CHAT_boxX, CHAT_boxY, 128, 17);
+    Rectangle CHAT_shape_chatBox        = new Rectangle(CHAT_boxX, CHAT_boxY, 122, 17);
     Rectangle CHAT_shape_scrollingUp    = new Rectangle(CHAT_scrollBarUpX, CHAT_scrollBarUpY, 12, 12);
     Rectangle CHAT_shape_scrollingDown  = new Rectangle(CHAT_scrollBarDownX, CHAT_scrollBarDownY, 12, 12);
     Rectangle CHAT_shape_messageWindow  = new Rectangle(CHAT_windowX, CHAT_windowY, 280, 130);
@@ -537,7 +465,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * size of scroll increment (px) when scrolling (mouse or button)
      */
-    private static final int CHAT_WINDOW_SCROLL_INCREMENT = 24;
+    private static final int CHAT_WINDOW_SCROLL_INCREMENT = 15;
     
     /**
      * time threshold for button to start scrolling (ms)
@@ -596,18 +524,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch = new SpriteBatch();
         shape = new ShapeRenderer();
 
-        toolkit=Toolkit.getDefaultToolkit();
-        clipboard=Toolkit.getDefaultToolkit().getSystemClipboard();
-
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 12;
         font = generator.generateFont(parameter);
-        
-        messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        messageFontParameter.size = 11;
-        messageFont = messageFontGenerator.generateFont(messageFontParameter);
 
         title = new Texture("assets/ui/title.png");
         radioOn = new Texture("assets/ui/radio-on.png");
@@ -682,29 +602,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatMessageServerBroadcast = new Texture("assets/ui/chat_message_server_broadcast.png");
         chatMessageServerPrivate = new Texture("assets/ui/chat_message_server_private.png");
         
-        // text field for chat (based off ConnectScene)
-        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        // stage for chatContainer
         chatContainerStage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        TextField.TextFieldStyle style = new TextField.TextFieldStyle();
-        style.font = messageFont;
-        style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
-
-        // configure chat bar
-        // TODO how to change font color when selected
-        //style.focusedFontColor = new Color(215f, 201f, 79f, 1);
-        style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
-        style.cursor.setMinWidth(1f);
-        style.selection = new Image(new Texture("assets/skin/battle-textfield-selection.png")).getDrawable();
-        chatBar = new TextField("", style);
-        chatBar.setSize(CHAT_shape_chatBox.width - 6, CHAT_shape_chatBox.height);
-        chatBar.setPosition(CHAT_boxX + 3, CHAT_boxY);
-        chatBar.setColor(235f, 240f, 242f, 255f);
-        chatBar.setDisabled(false);
-        chatBar.setVisible(true);
-        chatBar.setFocusTraversal(true);
-        chatBar.setBlinkTime(0.5f);
-        stage.addActor(chatBar);
-        stage.setKeyboardFocus(chatBar);
+        
+        // instantiate the ChatBar
+        chatBar = new ChatBar(context, CHAT_MESSAGE_MAX_LENGTH, CHAT_shape_chatBox);
         
         // make a container to encapsulate the table. this is what we will scroll.
         chatContainer = new Container<Table>();
@@ -713,6 +615,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatContainer.fillX();
         
         // style of the chat messages (backgrounds applied later)
+        messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
+        messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        messageFontParameter.size = 11;
         chatLabelStylePlayer = new LabelStyle();
         chatLabelStylePlayer.font = messageFontGenerator.generateFont(messageFontParameter);
         chatLabelStylePlayer.fontColor = new Color();
@@ -769,58 +674,56 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * display a message in the chat
      */
     public void displayMessage(String message, Texture messageTexture) {
-        if (message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-        	// create the data
-        	chatTable.row().padBottom(1);
-            Label chat1;
-            
-            // define the background textures based on the message source
-            // is it broadcast, private, regular?
-            TextureRegion tr;
-            Label.LabelStyle ls = new LabelStyle();
-            ls.font = messageFontGenerator.generateFont(messageFontParameter);
-            ls.fontColor = new Color(0f, 0f, 0f, 1f);
-            chat1 = new Label(message, ls);
+    	// create the data
+    	chatTable.row().padBottom(1);
+        Label chat1;
+        
+        // define the background textures based on the message source
+        // is it broadcast, private, regular?
+        TextureRegion tr;
+        Label.LabelStyle ls = new LabelStyle();
+        ls.font = messageFontGenerator.generateFont(messageFontParameter);
+        ls.fontColor = new Color(0f, 0f, 0f, 1f);
+        chat1 = new Label(message, ls);
 
-            // background width will vary depending on the width of the label
-            chat1.setWrap(true);
-            if (chat1.getWidth() >= CHAT_shape_messageWindow.width)
-            {
-            	// use whole thing
-            	tr = new TextureRegion(messageTexture, 0, 0, 282, 24);
-            	chatTable.add(chat1).width(CHAT_shape_messageWindow.width).align(Align.left);
-            }
-            else
-            {
-            	// use width plus some constant (10 padding either side of inside lines)
-            	tr = new TextureRegion(messageTexture, 0, 0, (int)chat1.getWidth() + 10, 24);
-            	chatTable.add(chat1).width(chat1.getWidth() + 10).align(Align.left);
-            }
-            
-        	
-        	// set the background
-        	ls.background = new Image(tr).getDrawable();
-            
-            // reset the style with new background
-            chat1.setStyle(ls);
-            	
-            // handle chat if it has grown too big?
-            if (chatTable.getCells().size > CHAT_MAX_NUMBER_OF_MESSAGES) {
-                Cell<Actor> cell = chatTable.getCells().first();
-                cell.getActor().remove();                     // rm actor
-                chatTable.getCells().removeValue(cell, true); // rm lingering physical presence
-                chatTable.invalidate();
-            }
-            
-            // update the top and bottom positional markers of the chat window
-            containerTopY = CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height - chatTable.getHeight()-3;
-            containerBottomY = CHAT_shape_messageWindow.y;
-            
-            updateScrollPosition();
-            
-            // jump scroll to bottom
-            resetChatView();
+        // background width will vary depending on the width of the label
+        chat1.setWrap(true);
+        if (chat1.getWidth() >= CHAT_shape_messageWindow.width)
+        {
+        	// use whole thing
+        	tr = new TextureRegion(messageTexture, 0, 0, 282, 24);
+        	chatTable.add(chat1).width(CHAT_shape_messageWindow.width).align(Align.left);
         }
+        else
+        {
+        	// use width plus some constant (10 padding either side of inside lines)
+        	tr = new TextureRegion(messageTexture, 0, 0, (int)chat1.getWidth() + 10, 24);
+        	chatTable.add(chat1).width(chat1.getWidth() + 10).align(Align.left);
+        }
+        
+    	
+    	// set the background
+    	ls.background = new Image(tr).getDrawable();
+        
+        // reset the style with new background
+        chat1.setStyle(ls);
+        	
+        // handle chat if it has grown too big?
+        if (chatTable.getCells().size > CHAT_MAX_NUMBER_OF_MESSAGES) {
+            Cell<Actor> cell = chatTable.getCells().first();
+            cell.getActor().remove();                     // rm actor
+            chatTable.getCells().removeValue(cell, true); // rm lingering physical presence
+            chatTable.invalidate();
+        }
+        
+        // update the top and bottom positional markers of the chat window
+        containerTopY = CHAT_shape_messageWindow.y + CHAT_shape_messageWindow.height - chatTable.getHeight()-3;
+        containerBottomY = CHAT_shape_messageWindow.y;
+        
+        updateScrollPosition();
+        
+        // jump scroll to bottom
+        resetChatView();
     }
     
     /**
@@ -945,12 +848,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatContainerStage.act();
         chatContainerStage.draw();
         renderChat();
-        stage.act();
-        stage.draw();
-        
-
-        // accelerate anything that needs it
-        doAccelerate();
+        chatBar.spin();
     }
 
     @Override
@@ -989,290 +887,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         else {
             return false;
         }
-    }
-
-    /**
-     * handle send message functionality, and reset TextField
-     */
-    private void sendChat() {
-        String message = chatBar.getText();
-        if (message.length() > 0 && message.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-            context.sendPostMessagePacket(message);
-        }
-        chatBar.setCursorPosition(0);
-        chatBar.setText("");
-        chatBar.clearSelection();
-    }
-
-    /**
-     * TextField key handlers
-     * I wrote my own
-     * Yeah
-     *
-     * keycodes passed as args for consistency so we only
-     * need to lookup enums once e.g. Input.Keys.LEFT
-     */
-    private void handleLeftButton(int keycode) {
-        // move cursor to left of selection, if any,
-        // and clear it
-        if (chatBar.getSelection().length() > 0) {
-            chatBar.setCursorPosition(chatBar.getSelectionStart());
-            chatBar.clearSelection();
-        }
-
-        int p = chatBar.getCursorPosition();
-        if (p > 0)
-        {
-            chatBar.setCursorPosition(p - 1);
-        }
-    }
-
-    private void handleRightButton(int keycode) {
-        // move cursor to right of selection, if any,
-        // and clear it
-        int length = chatBar.getSelection().length();
-        if (length > 0) {
-            chatBar.setCursorPosition(chatBar.getSelectionStart() + length);
-            chatBar.clearSelection();
-        }
-
-        chatBar.clearSelection();
-        int p = chatBar.getCursorPosition();
-        if (p < (chatBar.getText().length()))
-        {
-            chatBar.setCursorPosition(p + 1);
-        }
-    }
-
-    /**
-     * helper method to remove a selection
-     */
-    private void removeSelection() {
-        String selection = chatBar.getSelection();
-        int length = selection.length();
-        if (length == 0) {
-            return;
-        }
-
-        int start = chatBar.getSelectionStart();
-
-        // delete all indices not including end
-        String text = chatBar.getText();
-
-        // get the first portion, checking the range.
-        String textStart = "";
-        if (start > 0) {
-            textStart = text.substring(0, start - 1);
-        }
-
-        String newText = textStart + text.substring(start+length, text.length());
-        chatBar.setText(newText);
-        chatBar.setCursorPosition(start);
-        chatBar.clearSelection();
-    }
-
-    private void handleBackspace(int keycode) {
-        if (chatBar.getSelection().length() > 0)
-        {
-            removeSelection();
-        }
-        else
-        {
-            String text = chatBar.getText();
-            int p = chatBar.getCursorPosition();
-            if (p > 0)
-            {
-                String newText =
-                        text.substring(0, p - 1) +
-                        text.substring(p, text.length()
-                );
-                chatBar.setText(newText);
-                chatBar.setCursorPosition(p - 1);
-            }
-        }
-    }
-
-    private void handleDel(int keycode) {
-        if (chatBar.getSelection().length() > 0)
-        {
-            removeSelection();
-        }
-        else
-        {
-            String text = chatBar.getText();
-            int p = chatBar.getCursorPosition();
-            if (p < text.length())
-            {
-                String newText =
-                        text.substring(0, p) +
-                        text.substring(p + 1, text.length()
-                );
-                chatBar.setText(newText);
-                chatBar.setCursorPosition(p);
-            }
-        }
-    }
-
-    private void handleChar(char character) {
-        // optionally remove any selection first
-        if (chatBar.getSelection().length() > 0)
-        {
-            removeSelection();
-        }
-
-        // insert char at cursor position
-        String text = chatBar.getText();
-        int p = chatBar.getCursorPosition();
-        String newText =
-            text.substring(0, p) +
-            Character.toString(character) +
-            text.substring(p, text.length()
-        );
-        if (newText.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-            chatBar.setText(newText);
-            chatBar.setCursorPosition(p + 1);
-        }
-    }
-
-    private void handleEnter(int keycode) {
-        sendChat();
-    }
-    
-    private void handleHome(int keycode) {
-    	// set cursor position to start of chat
-    	chatBar.setCursorPosition(0);
-    }
-    
-    private void handleEnd(int keycode) {
-    	// set cursor position to end of chat
-    	chatBar.setCursorPosition(chatBar.getText().length());
-    }
-    
-    /**
-     * handle ctrl+arrow key combination
-     * @param isLeft is the left key pressed?
-     */
-    private void handleCtrlArrow(boolean isLeft)
-    {
-    	String text = chatBar.getText();
-    	boolean found = false;
-    	if (isLeft)
-    	{
-    		// ctrl+left: set cursor to index of previous " ^[ ]"
-    		// treat all space chars the same
-    		for (int i=chatBar.getCursorPosition()-1; i>=1; i--)
-    		{
-    			if (text.charAt(i-1) == ' ' && text.charAt(i) != ' ')
-    			{
-    				chatBar.setCursorPosition(i);
-    				found = true;
-    				break;
-    			}
-    		}
-    		if (!found)
-    		{
-    			chatBar.setCursorPosition(0);
-    		}
-    	}
-    	else
-    	{    		
-    		// ctrl+right: set cursor to index of next " ^[ ]", + 1
-    		for (int i=chatBar.getCursorPosition(); i<text.length() - 1; i++)
-    		{
-    			if (text.charAt(i) == ' ' && text.charAt(i+1) != ' ')
-    			{
-    				chatBar.setCursorPosition(i+1);
-    				found = true;
-    				break;
-    			}
-    		}
-    		if (!found)
-    		{
-    			chatBar.setCursorPosition(text.length());
-    		}
-    	}
-    }
-    
-    /**
-     * wrapper around textfield helper methods
-     * returns true if handled, false otherwise
-     */
-    private boolean handleAcceleratableKeys(int keycode) {
-        boolean handled = true; // assume we handle it
-        if (keycode == Input.Keys.LEFT) {
-            handleLeftButton(keycode);
-        }
-        else if (keycode == Input.Keys.RIGHT) {
-            handleRightButton(keycode);
-        }
-        else if (keycode == Input.Keys.BACKSPACE)
-        {
-            handleBackspace(keycode);
-        }
-        else if (keycode == Input.Keys.FORWARD_DEL) { // not del!!
-            handleDel(keycode);
-        }
-        else
-        {
-            handled = false;
-        }
-
-        return handled;
-    }
-
-    private void handleModifierChord(int keycode) {
-        switch (keycode) {
-        case Input.Keys.LEFT:
-        	handleCtrlArrow(true);
-        	break;
-        case Input.Keys.RIGHT:
-        	handleCtrlArrow(false);
-        	break;
-        case Input.Keys.A:
-            chatBar.selectAll();
-            break;
-        case Input.Keys.C:
-            StringSelection data = new StringSelection(chatBar.getSelection());
-             clipboard.setContents(data, data);
-            break;
-        case Input.Keys.V:
-            try {
-                 String pastedData = "";
-                 Transferable t = clipboard.getContents(null);
-                 if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
-                 {
-                    pastedData = (String)t.getTransferData(DataFlavor.stringFlavor);
-
-                     // optionally remove any selection first
-                     if (chatBar.getSelection().length() > 0)
-                     {
-                         removeSelection();
-                     }
-
-                     // use the pasted data
-                        String text = chatBar.getText();
-                        int p = chatBar.getCursorPosition();
-                        String newText =
-                            text.substring(0, p) +
-                            pastedData +
-                            text.substring(p, text.length()
-                        );
-                        if (newText.length() <= CHAT_MESSAGE_MAX_LENGTH) {
-                            chatBar.setText(newText);
-                            chatBar.setCursorPosition(p + 1);
-                        }
-                 }
-              } catch (Exception ex) {
-                  // do nothing
-              }
-            break;
-        default:
-            // unrecognised
-            break;
-        }
-
-        // don't handle again
-        handledChord = true;
     }
 
     /**
@@ -1580,7 +1194,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 goOceansideButtonIsDown = false;
             }
             else if (sendChatButtonIsDown && isClickingSend(x, y)) {
-                sendChat();
+                chatBar.sendChat();
                 sendChatButtonIsDown = false;
             }
             else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
@@ -1829,7 +1443,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch.begin();
         batch.draw(chatBackgroundFrame, CHAT_backgroundFrameX, CHAT_backgroundFrameY);
         batch.draw(chatIndicator,  CHAT_indicatorX, CHAT_indicatorY);
-        batch.draw(chatBarBackground, CHAT_boxX, CHAT_boxY);
+        batch.draw(chatBarBackground, CHAT_chatBarBackgroundX, CHAT_chatBarBackgroundY);
         batch.draw(chatScrollBarScroll, CHAT_shape_scrollBar.x, CHAT_shape_scrollBar.y);
         batch.draw(sendChatButtonIsDown?chatButtonSendPressed:chatButtonSend, CHAT_buttonSendX, CHAT_buttonSendY);
         batch.draw(scrollUpButtonIsDown?chatScrollBarUpPressed:chatScrollBarUp, CHAT_scrollBarUpX, CHAT_scrollBarUpY);
@@ -2145,52 +1759,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean keyDown(int keycode) {
-        if (isModifying()) {
-            handleModifierChord(keycode);
-            return true;
-        }
-        else if (keycode == Input.Keys.ENTER) {
-            // enter shouldn't accelerate
-            stopAllAcceleration();
-            handleEnter(keycode);
-            return true;
-        }
-        else if (keycode == Input.Keys.CONTROL_LEFT) {
-            startModifier();
-            return true;
-        }
-        else if (keycode == Input.Keys.HOME) {
-        	// home shouldn't accelerate
-        	stopAllAcceleration();
-        	handleHome(keycode);
-        	return true;
-        }
-        else if (keycode == Input.Keys.END) {
-        	// end shouldn't accelerate
-        	stopAllAcceleration();
-        	handleEnd(keycode);
-        	return true;
-        }
-        else
-        {
-            startKeyAcceleration(keycode);
-            return handleAcceleratableKeys(keycode);
-        }
+        return chatBar.keyDown(keycode);
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.CONTROL_LEFT)
-        {
-            stopModifier();
-        }
-        else
-        {
-            stopAllAcceleration();
-        }
-
-        // eat all teh keys
-        return true;
+        return chatBar.keyUp(keycode);
     }
 
     @Override
@@ -2198,20 +1772,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * keytyped fires on keyDown, then subsequently if key remains down.
      */
     public boolean keyTyped(char character) {
-        if (character >= 32 && character < 127)
-        {
-            if (!isAcceleratingCharacter(character))
-                // only handle once
-                {
-                    startCharacterAcceleration(character);
-                    handleChar(character); // printable ascii
-                }
-                return true;
-        }
-        else
-        {
-            return false;
-        }
+        return chatBar.keyTyped(character);
     }
 
     @Override
