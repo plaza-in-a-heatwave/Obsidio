@@ -178,6 +178,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         greetings.add("Job for Keep The Peace!");
         greetings.add("I am a sloop, I do not move!");
         greetings.add("Praise Cyclist!");
+        greetings.add("Cyclist Edition");
         greetings.add("Home grown!");
         greetings.add("Blub");
         greetings.add("You'll never guess what happened next...");
@@ -241,14 +242,13 @@ public class ConnectScene implements GameScene, InputProcessor {
         selectBoxStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
         selectBoxStyle.background.setLeftWidth(10);
 
+        resolutionType = new SelectBox<>(selectBoxStyle);
+        resolutionType.setSize(150, 44);
+        resolutionType.setPosition(640, 225);
 
         shipType = new SelectBox<>(selectBoxStyle);
         shipType.setSize(150, 44);
-        shipType.setPosition(640, 225);
-        
-        resolutionType = new SelectBox<>(selectBoxStyle);
-        resolutionType.setSize(150, 44);
-        resolutionType.setPosition(640, 175);
+        shipType.setPosition(640, 175);
 
         teamType = new SelectBox<>(selectBoxStyle);
         teamType.setSize(150, 44);
@@ -266,38 +266,21 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         ShipTypeLabel[] blob = new ShipTypeLabel[5];
         blob[0] = new ShipTypeLabel(ShipTypeLabel.JUNK,"Junk", labelStyle);
-        blob[1] = new ShipTypeLabel(ShipTypeLabel.WB,"WB",labelStyle);
+        blob[1] = new ShipTypeLabel(ShipTypeLabel.WB,"War Brig",labelStyle);
         blob[2] = new ShipTypeLabel(ShipTypeLabel.XEBEC,"Xebec", labelStyle);
-        blob[3] = new ShipTypeLabel(ShipTypeLabel.WG,"WG", labelStyle);
-        blob[4] = new ShipTypeLabel(ShipTypeLabel.WF,"WF", labelStyle);
+        blob[3] = new ShipTypeLabel(ShipTypeLabel.WG,"War Galleon", labelStyle);
+        blob[4] = new ShipTypeLabel(ShipTypeLabel.WF,"War Frig", labelStyle);
         
         shipType.setItems(blob);
         shipType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_ship")));
 
-        ResolutionTypeLabel[] blob3 = new ResolutionTypeLabel[5];
-        blob3[0] = new ResolutionTypeLabel(ResolutionTypeLabel.defaultsize,"720p", labelStyle);
-        blob3[1] = new ResolutionTypeLabel(ResolutionTypeLabel.eighthundred,"800x600", labelStyle);
-        blob3[2] = new ResolutionTypeLabel(ResolutionTypeLabel.teneighty,"1080p", labelStyle);
-        blob3[3] = new ResolutionTypeLabel(ResolutionTypeLabel.fourteenforty,"1440p", labelStyle);
-        blob3[4] = new ResolutionTypeLabel(ResolutionTypeLabel.fourk,"4K", labelStyle);
-
-        // TODO (src: https://www.rapidtables.com/web/dev/screen-resolution-statistics.html)
-        // TODO so we should support: (v == have)
-        // can have 11 max
-        // 800x600   // v
-        // 1024x768
-        // 1280x800
-        // 1280x1024
-        // 1366x768
-        // 1440x900
-        // 1600x900
-        // 1680x1050
-        // 1920x1080
-        // 2500x1400 // v
-        // 3600x2000 // v
-        
+        ResolutionTypeLabel[] blob3 = new ResolutionTypeLabel[ResolutionTypeLabel.RES_LIST.length];
+        for (int i=0; i<ResolutionTypeLabel.RES_LIST.length; i++)
+        {
+        	blob3[i] = new ResolutionTypeLabel(i, ResolutionTypeLabel.RES_LIST[i], labelStyle);
+        }
         resolutionType.setItems(blob3);
-        resolutionType.setSelectedIndex(Integer.parseInt(prop.getProperty("client.last_resolution")));;
+        resolutionType.setSelectedIndex(Integer.parseInt(prop.getProperty("client.last_resolution")));
 
         
         TeamTypeLabel[] blob2 = new TeamTypeLabel[2];
@@ -322,7 +305,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                     String last_res = getProperty("user.config", "client.last_resolution");
 
                     if (Integer.parseInt(last_res) != resolutionType.getSelectedIndex()) {
-                        String[] resolution = restypeToRes(resolutionType.getSelectedIndex());
+                        String[] resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
 
                         // save for next time
                         changeProperty("user.config", "client.width", resolution[0]);
@@ -393,7 +376,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                 case ShipTypeLabel.WF:    t = wf;    break;
                 default:                  t = wf;    break;
             }
-            batch.draw(t, 735, 225); // draw t, whatever it may be
+            batch.draw(t, 735, 175); // draw t, whatever it may be
             batch.end();
 
             if (popup) {
@@ -471,13 +454,6 @@ public class ConnectScene implements GameScene, InputProcessor {
             }
             batch.end();
         }
-
-
-        batch.begin();
-            font.setColor(Color.YELLOW);
-            font.draw(batch, Constants.name + " (version " + Constants.VERSION + ")", 15, Gdx.graphics.getHeight() - 20);
-            batch.end();
-
     }
 
 
@@ -604,7 +580,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         else {
             // Save current choices for next time
             try {
-                String[] resolution = restypeToRes(resolutionType.getSelectedIndex());
+                String[] resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
                 changeProperty("user.config", "user.username", name.getText());
                 changeProperty("user.config", "user.last_address", address.getText());
                 changeProperty("user.config", "client.width", resolution[0]);
@@ -619,39 +595,6 @@ public class ConnectScene implements GameScene, InputProcessor {
             setState(ConnectionSceneState.CONNECTING);
             context.connect(name.getText(), address.getText(), shipType.getSelected().getType(), teamType.getSelected().getType());
         }
-    }
-
-    String[] restypeToRes(int restype) {
-        String[] resolution = new String[2];
-        switch (restype) {
-        case 0:
-            resolution[0] = "1240";
-            resolution[1] = "680";
-            break;
-        case 1:
-            resolution[0] = "800";
-            resolution[1] = "600";
-            break;
-        case 2:
-            resolution[0] = "1800";
-            resolution[1] = "1000";
-            break;
-        case 3:
-            resolution[0] = "2500";
-            resolution[1] = "1400";
-            break;
-        case 4:
-            resolution[0] = "3600";
-            resolution[1] = "2000";
-            break;
-        default:
-            // safe default
-            resolution[0] = "800";
-            resolution[1] = "600";
-            break;
-        }
-
-        return resolution;
     }
 
     public static void changeProperty(String filename, String key, String value) throws IOException {
