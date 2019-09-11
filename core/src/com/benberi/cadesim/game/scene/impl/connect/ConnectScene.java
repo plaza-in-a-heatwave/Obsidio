@@ -280,6 +280,21 @@ public class ConnectScene implements GameScene, InputProcessor {
         blob3[2] = new ResolutionTypeLabel(ResolutionTypeLabel.teneighty,"1080p", labelStyle);
         blob3[3] = new ResolutionTypeLabel(ResolutionTypeLabel.fourteenforty,"1440p", labelStyle);
         blob3[4] = new ResolutionTypeLabel(ResolutionTypeLabel.fourk,"4K", labelStyle);
+
+        // TODO (src: https://www.rapidtables.com/web/dev/screen-resolution-statistics.html)
+        // TODO so we should support: (v == have)
+        // can have 11 max
+        // 800x600   // v
+        // 1024x768
+        // 1280x800
+        // 1280x1024
+        // 1366x768
+        // 1440x900
+        // 1600x900
+        // 1680x1050
+        // 1920x1080
+        // 2500x1400 // v
+        // 3600x2000 // v
         
         resolutionType.setItems(blob3);
         resolutionType.setSelectedIndex(Integer.parseInt(prop.getProperty("client.last_resolution")));;
