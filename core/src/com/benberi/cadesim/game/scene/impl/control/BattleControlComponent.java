@@ -182,7 +182,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private TextureRegion emptyCannonLeft;
     private TextureRegion emptyCannonRight;
     private Texture controlBackground;
-    private Texture goOceansideBackground;
+    private Texture disengageBackground;
     private Texture chatBackground;
     private Texture chatBackgroundFrame;
     private Texture shipStatus;
@@ -204,8 +204,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private Texture cannonSelection;
     private Texture cannonSelectionEmpty;
 
-    private Texture goOceansideUp;
-    private Texture goOceansideDown;
+    private Texture disengageUp;
+    private Texture disengageDown;
 
     private Texture chatIndicator;
     private Texture chatBarBackground;
@@ -383,16 +383,16 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     Rectangle MOVES_shape_placingMoves        = new Rectangle(MOVES_moveSlot3X,        MOVES_moveSlot3Y,        28, (4 * 28) + (3 * 5));
     Rectangle MOVES_shape_pickingMoves        = new Rectangle(MOVES_cannonsX,          MOVES_cannonsY,          (4 * 28) + (3 * 4), 28);
 
-    // reference coords - GO OCEANSIDE control
-    private int GOOCEANSIDE_REF_X       = 0;
-    private int GOOCEANSIDE_REF_Y       = 0;
-    private int GOOCEANSIDE_backgroundX = GOOCEANSIDE_REF_X + 5+336+5;
-    private int GOOCEANSIDE_backgroundY = GOOCEANSIDE_REF_Y + 8;
-    private int GOOCEANSIDE_buttonX     = GOOCEANSIDE_REF_X + 5+336+5 + 19;
-    private int GOOCEANSIDE_buttonY     = GOOCEANSIDE_REF_Y + 8 + 24;
+    // reference coords - DISENGAGE control
+    private int DISENGAGE_REF_X       = 0;
+    private int DISENGAGE_REF_Y       = 0;
+    private int DISENGAGE_backgroundX = DISENGAGE_REF_X + 5+336+5;
+    private int DISENGAGE_backgroundY = DISENGAGE_REF_Y + 8;
+    private int DISENGAGE_buttonX     = DISENGAGE_REF_X + 5+336+5 + 30;
+    private int DISENGAGE_buttonY     = DISENGAGE_REF_Y + 8 + 24;
 
-    // GOOCEANSIDE shapes
-    Rectangle GOOCEANSIDE_shape_clickingDisengage   = new Rectangle(GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY, 98, 16);
+    // DISENGAGE shapes
+    Rectangle DISENGAGE_shape_clickingDisengage   = new Rectangle(DISENGAGE_buttonX, DISENGAGE_buttonY, 77, 16);
 
     // reference coords - CHAT control
     private int CHAT_REF_X              = 0;
@@ -445,7 +445,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * state of buttons. true if pushed, false if not.
      */
-    private boolean goOceansideButtonIsDown = false; // initial
+    private boolean disengageButtonIsDown = false; // initial
     private boolean sendChatButtonIsDown    = false; // initial
     private boolean scrollUpButtonIsDown    = false; // initial (confusing!)
     private boolean scrollDownButtonIsDown  = false; // initial (confusing!)
@@ -587,9 +587,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         moveTargetSelForce = new TextureRegion(moveGetTargetTexture, 0, 0, 36, 36);
         moveTargetSelAuto = new TextureRegion(moveGetTargetTexture, 36, 0, 36, 36);
 
-        goOceansideUp = new Texture("assets/ui/go_oceanside.png");
-        goOceansideDown = new Texture("assets/ui/go_oceansidePressed.png");
-        goOceansideBackground = new Texture("assets/ui/go_oceanside_background.png");
+        disengageUp = new Texture("assets/ui/disengage.png");
+        disengageDown = new Texture("assets/ui/disengagePressed.png");
+        disengageBackground = new Texture("assets/ui/center_background.png");
 
         chatBackground = new Texture("assets/ui/chat_background.png");
         chatBackgroundFrame = new Texture("assets/ui/chat_background_frame.png");
@@ -843,7 +843,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     @Override
     public void render() {
         renderMoveControl();
-        renderGoOceanside();
+        renderDisengage();
         renderChatBackground();
         chatContainerStage.act();
         chatContainerStage.draw();
@@ -864,8 +864,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleClick(float x, float y, int button) {
-        if ((!goOceansideButtonIsDown) && isClickingDisengage(x,y)) {
-            goOceansideButtonIsDown = true;
+        if ((!disengageButtonIsDown) && isClickingDisengage(x,y)) {
+            disengageButtonIsDown = true;
             return true;
         }
         else if ((!sendChatButtonIsDown) && isClickingSend(x,y)) {
@@ -924,7 +924,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     private boolean isClickingDisengage(float x, float y) {
-        return isPointInRect(x,y,GOOCEANSIDE_shape_clickingDisengage);
+        return isPointInRect(x,y,DISENGAGE_shape_clickingDisengage);
     }
 
     private boolean isClickingSend(float x, float y) {
@@ -1038,9 +1038,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
         // if we drag off disengage,
         // deactivate it with no penalty to the user.
-        if (goOceansideButtonIsDown) {
+        if (disengageButtonIsDown) {
             if (!isClickingDisengage(x, y)) {
-                goOceansideButtonIsDown = false;
+                disengageButtonIsDown = false;
             }
         }
 
@@ -1189,9 +1189,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 }
                 getContext().sendToggleAuto(auto);
             }
-            else if (goOceansideButtonIsDown && isClickingDisengage(x, y)) {
-                getContext().sendOceansideRequestPacket();
-                goOceansideButtonIsDown = false;
+            else if (disengageButtonIsDown && isClickingDisengage(x, y)) {
+                getContext().sendDisengageRequestPacket();
+                disengageButtonIsDown = false;
             }
             else if (sendChatButtonIsDown && isClickingSend(x, y)) {
                 chatBar.sendChat();
@@ -1426,10 +1426,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * background for disengage button / pirates aboard
      */
-    private void renderGoOceanside() {
+    private void renderDisengage() {
         batch.begin();
-        batch.draw(goOceansideBackground, GOOCEANSIDE_backgroundX, GOOCEANSIDE_backgroundY);
-        batch.draw((goOceansideButtonIsDown)?goOceansideDown:goOceansideUp, GOOCEANSIDE_buttonX, GOOCEANSIDE_buttonY);
+        batch.draw(disengageBackground, DISENGAGE_backgroundX, DISENGAGE_backgroundY);
+        batch.draw((disengageButtonIsDown)?disengageDown:disengageUp, DISENGAGE_buttonX, DISENGAGE_buttonY);
         batch.end();
     }
     
@@ -1668,8 +1668,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
         // fix stuck buttons if they were clicked across a turn
         // with no penalty to the user
-        if (goOceansideButtonIsDown) {
-            goOceansideButtonIsDown = false;
+        if (disengageButtonIsDown) {
+            disengageButtonIsDown = false;
         }
         if (sendChatButtonIsDown) {
             sendChatButtonIsDown = false;

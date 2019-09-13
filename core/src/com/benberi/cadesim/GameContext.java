@@ -404,7 +404,7 @@ public class GameContext {
         sendPacket(packet);
     }
     
-    public void sendOceansideRequestPacket() {
+    public void sendDisengageRequestPacket() {
     	OceansideRequestPacket packet = new OceansideRequestPacket();
     	sendPacket(packet);
     }
