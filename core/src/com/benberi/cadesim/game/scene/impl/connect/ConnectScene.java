@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -112,9 +111,6 @@ public class ConnectScene implements GameScene, InputProcessor {
      */
     private boolean popup;
 
-    private boolean loggingIn;
-
-
     /**
      * The popup message
      */
@@ -123,7 +119,6 @@ public class ConnectScene implements GameScene, InputProcessor {
     private boolean popupCloseHover;
     private boolean loginHover;
     private boolean codeURL;
-    private boolean validating;
 
     public ConnectScene(GameContext ctx) {
         this.context = ctx;
@@ -284,8 +279,8 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         
         TeamTypeLabel[] blob2 = new TeamTypeLabel[2];
-        blob2[0] = new TeamTypeLabel("Green", labelStyle);
-        blob2[1] = new TeamTypeLabel("Red" ,labelStyle);
+        blob2[0] = new TeamTypeLabel("Defender", labelStyle, TeamTypeLabel.DEFENDER);
+        blob2[1] = new TeamTypeLabel("Attacker", labelStyle, TeamTypeLabel.ATTACKER);
         
         teamType.setItems(blob2);
 
@@ -647,13 +642,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     }
 
     public void loginFailed() {
-        loggingIn = false;
         setPopup("Could not connect to server.");
-    }
-
-    public void setValidating(boolean validating) {
-        this.validating = validating;
-        this.loggingIn = validating;
     }
 
     public void setState(ConnectionSceneState state) {

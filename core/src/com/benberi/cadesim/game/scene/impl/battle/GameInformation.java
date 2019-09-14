@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.cade.Team;
@@ -19,22 +20,33 @@ public class GameInformation extends SceneComponent {
     private SpriteBatch batch;
 
     private Texture panel;
+    private Texture contenders;
+    private TextureRegion defenderThem;
+    private TextureRegion defenderUs;
+    private TextureRegion attackerThem;
+    private TextureRegion attackerUs;
 
     /**
      * Font for texts
      */
-    private BitmapFont fontTeam;
-    private BitmapFont fontPoints;
+    private BitmapFont fontTeamAttacker;
+    private BitmapFont fontTeamDefender;
+    private BitmapFont fontPointsAttacker;
+    private BitmapFont fontPointsDefender;
     private BitmapFont timeFont;
 
-    private int teamOneScore;
-    private int teamTwoScore;
+    private int defenderPoints;
+    private int attackerPoints;
 
     private int time;
     
-    private String defender = "Defender";
-    private String attacker = "Attacker";
+    // default strings - will be overwritten
+    private String defender = "Attacker";
+    private String attacker = "Defender";
     private String longestTeam = attacker;
+    
+    // are we defender or attacker?
+    boolean areDefender;
 
     GameInformation(GameContext context, GameScene owner) {
         super(context, owner);
@@ -44,20 +56,27 @@ public class GameInformation extends SceneComponent {
     public void create() {
         this.batch = new SpriteBatch();
         this.panel = new Texture("assets/ui/info.png");
+        this.contenders = new Texture("assets/cade/contender_icons.png");
+        this.defenderThem = new TextureRegion(contenders, 0, 0, 13, 18);
+        this.defenderUs = new TextureRegion(contenders, 13, 0, 13, 18);
+        this.attackerThem = new TextureRegion(contenders, 26, 0, 13, 18);
+        this.attackerUs = new TextureRegion(contenders, 39, 0, 13, 18);
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 14;
         parameter.shadowColor = new Color(0, 0, 0, 0.8f);
         parameter.shadowOffsetY = 1;
-        fontTeam = generator.generateFont(parameter);
-
+        fontTeamAttacker = generator.generateFont(parameter);
+        fontTeamDefender = generator.generateFont(parameter);
+        
         generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 13;
         parameter.shadowColor = new Color(0, 0, 0, 0.6f);
         parameter.shadowOffsetY = 1;
-        fontPoints = generator.generateFont(parameter);
+        fontPointsAttacker = generator.generateFont(parameter);
+        fontPointsDefender = generator.generateFont(parameter);
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/BreeSerif-Regular.ttf"));
         parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -67,6 +86,21 @@ public class GameInformation extends SceneComponent {
         parameter.shadowOffsetY = 2;
 
         timeFont = generator.generateFont(parameter);
+        areDefender = getContext().myTeam.name().equals(Team.DEFENDER.toString());
+        if (areDefender) {
+        	fontTeamDefender.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
+        	fontTeamAttacker.setColor(new Color(203 / 255f, 42 / 255f, 25 / 255f, 1));
+        	
+        	fontPointsDefender.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
+        	fontPointsAttacker.setColor(new Color(203 / 255f, 42 / 255f, 25 / 255f, 1));
+        }
+        else {
+        	fontTeamDefender.setColor(new Color(146 / 255f, 236 / 255f, 30 / 255f, 1));
+        	fontTeamAttacker.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
+
+        	fontPointsDefender.setColor(new Color(146 / 255f, 236 / 255f, 30 / 255f, 1));
+        	fontPointsAttacker.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
+        }
     }
 
     public void setTime(int time) {
@@ -82,33 +116,24 @@ public class GameInformation extends SceneComponent {
     public void render() {
         int xPlacement = 60 + (longestTeam.length() * 6);
 
-        // are we defender or attacker?
-        String defenderHighlight = "";
-        String attackerHighlight = "";
-        if (getContext().myTeam.name().equals(Team.GREEN.toString())) {
-            defenderHighlight = "->";
-        } else {
-            attackerHighlight = "->";
-        }
-
         Gdx.gl.glViewport(0,200, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
         batch.draw(panel, 5, 5);
-        fontTeam.setColor(new Color(146 / 255f, 236 / 255f, 30 / 255f, 1));
-        fontTeam.draw(batch, defenderHighlight, 18,120 );
-        fontTeam.draw(batch, this.defender + ":", 38,120 );
-        fontPoints.draw(batch, Integer.toString(teamOneScore), xPlacement,118 );
+        
+        // draw defender
+        fontTeamDefender.draw(batch, defender + ":", 38,120 );
+        fontPointsDefender.draw(batch, Integer.toString(defenderPoints), xPlacement,118 );
+        batch.draw(areDefender?defenderUs:defenderThem, 18, 105);
+        
+        // draw attacker
+        fontTeamAttacker.draw(batch, attacker + ":", 38,97 );
+        fontPointsAttacker.draw(batch, Integer.toString(attackerPoints), xPlacement,95 );
+        batch.draw(areDefender?attackerThem:attackerUs, 18, 82);
 
-        fontTeam.setColor(new Color(162 / 255f, 7 / 255f, 7 / 255f, 1));
-        fontTeam.draw(batch, attackerHighlight, 18,97 );
-        fontTeam.draw(batch, this.attacker + ":", 38,97 );
-        fontPoints.draw(batch, Integer.toString(teamTwoScore), xPlacement,95 );
-
+        // draw time
         int minutes = time / 60;
         int seconds = time % 60;
-
         timeFont.setColor(new Color(1, 230 / 255f, 59 / 255f, 1));
-
         timeFont.draw(batch, (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds), 62,50 );
 
         batch.end();
@@ -116,8 +141,8 @@ public class GameInformation extends SceneComponent {
 
     @Override
     public void dispose() {
-        teamOneScore = 0;
-        teamTwoScore = 0;
+        defenderPoints = 0;
+        attackerPoints = 0;
         time = 0;
     }
 
@@ -136,9 +161,9 @@ public class GameInformation extends SceneComponent {
         return false;
     }
 
-    public void setPoints(int greenPoints, int redPoints) {
-        this.teamOneScore = greenPoints;
-        this.teamTwoScore = redPoints;
+    public void setPoints(int defenderPoints, int attackerPoints) {
+        this.defenderPoints = defenderPoints;
+        this.attackerPoints = attackerPoints;
     }
 
     public int getTime() {

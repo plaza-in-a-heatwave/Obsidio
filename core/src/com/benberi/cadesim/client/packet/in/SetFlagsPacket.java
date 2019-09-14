@@ -16,8 +16,8 @@ public class SetFlagsPacket extends ClientPacketExecutor {
     public void execute(Packet p) {
         getContext().getBattleScene().getMap().getFlags().clear();
 
-        int greenPoints = p.readInt();
-        int redPoints = p.readInt();
+        int defenderPoints = p.readInt();
+        int attackerPoints = p.readInt();
 
         int size = p.readByte();
 
@@ -36,7 +36,7 @@ public class SetFlagsPacket extends ClientPacketExecutor {
             getContext().getBattleScene().getMap().getFlags().add(flag);
         }
         if(getContext().getBattleScene().getInformation().getTime() > 0) {
-        	getContext().getBattleScene().getInformation().setPoints(greenPoints, redPoints);
+        	getContext().getBattleScene().getInformation().setPoints(defenderPoints, attackerPoints);
         }
     }
 

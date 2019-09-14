@@ -64,7 +64,7 @@ public class FlagSymbol extends TextureRegion {
         }
         else {
             switch (team) {
-                case RED:
+                case ATTACKER:
                     switch (size) {
                         case 1:
                             setRegion(60, 0, 10, 13);
@@ -77,7 +77,7 @@ public class FlagSymbol extends TextureRegion {
                             break;
                     }
                     break;
-                case GREEN:
+                case DEFENDER:
                     switch (size) {
                         case 1:
                             setRegion(30, 0, 10, 13);

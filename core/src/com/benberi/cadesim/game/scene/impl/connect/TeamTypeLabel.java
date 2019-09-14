@@ -3,19 +3,23 @@ package com.benberi.cadesim.game.scene.impl.connect;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 public class TeamTypeLabel extends Label {
-    public TeamTypeLabel( CharSequence text, LabelStyle style) {
+	
+	public static final int ATTACKER = 0;
+    public static final int DEFENDER = 1;
+    
+    private int type;
+
+    public TeamTypeLabel( CharSequence text, LabelStyle style, int type) {
         super(text, style);
+        this.type = type;
     }
 
     @Override
     public String toString() {
-        return "Team: " + getText();
+        return "" + getText();
     }
 
     public int getType() {
-        if (getText().toString().equalsIgnoreCase("green")) {
-            return 1;
-        }
-        return 0;
+        return type;
     }
 }

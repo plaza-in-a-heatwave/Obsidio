@@ -94,7 +94,7 @@ public class Flag extends GameObject {
             return;
         }
         switch (controllerTeam) {
-            case GREEN:
+            case DEFENDER:
                 switch (size) {
                     case 1:
                         getRegion().setRegion(50, 0, flagWidth, flagHeight);
@@ -107,7 +107,7 @@ public class Flag extends GameObject {
                         break;
                 }
                 break;
-            case RED:
+            case ATTACKER:
                 switch (size) {
                     case 1:
                         getRegion().setRegion(100, 0, flagWidth, flagHeight);

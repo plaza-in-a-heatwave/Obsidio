@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 
 public enum Team {
 
-    GREEN(1, new Color(0.29803921568f, 0.77647058823f, 0.22352941176f, 1f)),
-    RED(0, new Color(0.81568627451f, 0.18039215686f, 0.20392156862f, 1f));
+    DEFENDER(1, new Color(0.29803921568f, 0.77647058823f, 0.22352941176f, 1f)),
+    ATTACKER(0, new Color(0.81568627451f, 0.18039215686f, 0.20392156862f, 1f));
 
     private int team;
     private Color color;
@@ -31,9 +31,9 @@ public enum Team {
         switch (team) {
             case 1:
             default:
-                return GREEN;
+                return DEFENDER;
             case 0:
-                return RED;
+                return ATTACKER;
         }
     }
 }
