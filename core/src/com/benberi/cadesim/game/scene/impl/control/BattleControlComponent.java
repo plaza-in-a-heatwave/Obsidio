@@ -418,7 +418,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int CHAT_buttonSendY        = CHAT_REF_Y + 7;
     
     private int CHAT_windowX            = CHAT_REF_X + 496;
-    private int CHAT_windowY            = CHAT_REF_Y + 42;
+    private int CHAT_windowY            = CHAT_REF_Y + 39;//42;
 
     private int CHAT_scrollBarUpX       = CHAT_REF_X + 781;
     private int CHAT_scrollBarUpY       = CHAT_REF_Y + 163;
@@ -802,21 +802,25 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * scroll the chat in some direction.
      */
     public void scrollChat(boolean scrollUp) {
-    	// somewhere scrolling inbetween the top and bottom
-        chatContainer.setPosition(
-            chatContainer.getX(),
-            chatContainer.getY() + (CHAT_WINDOW_SCROLL_INCREMENT) * (scrollUp?-1:1)
-        );
-        
-        // adjust if have exceeded bounds when scrolling
-        snapChatToBounds();
-        
-        // adjust the scrollbar accordingly
-        updateScrollPosition();
+    	// dont update if we're not higher than a full chunk of text yet
+        if (chatTable.getHeight() > CHAT_shape_messageWindow.height)
+        {
+        	// somewhere scrolling inbetween the top and bottom
+            chatContainer.setPosition(
+                chatContainer.getX(),
+                chatContainer.getY() + (CHAT_WINDOW_SCROLL_INCREMENT) * (scrollUp?-1:1)
+            );
+            
+            // adjust if have exceeded bounds when scrolling
+            snapChatToBounds();
+            
+            // adjust the scrollbar accordingly
+            updateScrollPosition();
+        }
     }
 
     public void setExecutingMoves(boolean flag) {
-        this.executionMoves = flag;
+        executionMoves = flag;
     }
 
     public HandMove createMove() {
@@ -876,13 +880,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
         else if ((!scrollUpButtonIsDown) && isClickingScrollUp(x,y)) {
             scrollUpButtonIsDown = true;
-            this.scrollChat(true); // just once, render scrolls the rest
+            scrollChat(true); // just once, render scrolls the rest
             scrollButtonDownOnTime = System.currentTimeMillis();
             return true;
         }
         else if ((!scrollDownButtonIsDown) && isClickingScrollDown(x,y)) {
         	scrollButtonDownOnTime = System.currentTimeMillis();
-        	this.scrollChat(false); // just once, render scrolls the rest
+        	scrollChat(false); // just once, render scrolls the rest
             scrollDownButtonIsDown = true;
             return true;
         }
@@ -1090,7 +1094,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
         // handle drag of scrollbar (while down)
         if (draggingScroll) {
-            CHAT_shape_scrollBar.y -= iy;
+        	CHAT_shape_scrollBar.y -= iy;
             if (CHAT_shape_scrollBar.y > CHAT_MAXIMUM_SCROLL_Y) {
                 CHAT_shape_scrollBar.y = CHAT_MAXIMUM_SCROLL_Y;
             }
@@ -1098,7 +1102,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             {
                 CHAT_shape_scrollBar.y = CHAT_MINIMUM_SCROLL_Y;
             }
-            updateChatPosition();
+        	
+        	// dont update chat table if we're not higher than a full chunk of text yet
+            if (chatTable.getHeight() > CHAT_shape_messageWindow.height)
+            {
+	            updateChatPosition();
+            }
         }
 
         return false;
@@ -1374,7 +1383,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         if (d > 100) {
             d = 100;
         }
-        this.damageAmount = d;
+        damageAmount = d;
     }
 
     /**
@@ -1385,7 +1394,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         if (b > 100) {
             b = 100;
         }
-        this.bilgeAmount = b;
+        bilgeAmount = b;
     }
 
     public void setMoveSelAutomatic(boolean auto) {
@@ -1399,9 +1408,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * @param right     The amount of right movements
      */
     public void setMoves(int left, int forward, int right) {
-        this.leftMoves = left;
-        this.forwardMoves = forward;
-        this.rightMoves = right;
+        leftMoves = left;
+        forwardMoves = forward;
+        rightMoves = right;
     }
 
     /**
@@ -1409,14 +1418,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * @param cannonballs The number of available cannonballs for use
      */
     public void setLoadedCannonballs(int cannonballs) {
-        this.cannons = cannonballs;
+        cannons = cannonballs;
     }
 
     private void renderMoveControl() {
         batch.begin();
 
         // The yellow BG for tokens and moves and hourglass
-        batch.draw(controlBackground, this.MOVES_backgroundX, this.MOVES_backgroundY);
+        batch.draw(controlBackground, MOVES_backgroundX, MOVES_backgroundY);
 
         drawMoveHolder();
         drawShipStatus();
@@ -1475,14 +1484,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         	if ((now - scrollButtonDownRepeatTime) > CHAT_WINDOW_BUTTON_SCROLL_REPEAT_THRESHOLD)
         	{
         		scrollButtonDownRepeatTime = now;
-        		this.scrollChat(true);
+        		scrollChat(true);
         	}
         }
         else if (scrollDownButtonIsDown && (scrollDuration > CHAT_WINDOW_BUTTON_SCROLL_TIME_THRESHOLD)) {
         	if ((now - scrollButtonDownRepeatTime) > CHAT_WINDOW_BUTTON_SCROLL_REPEAT_THRESHOLD)
         	{
         		scrollButtonDownRepeatTime = now;
-        		this.scrollChat(false);
+        		scrollChat(false);
         	}
         }
         
@@ -1752,7 +1761,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     public void setMoveSealTarget(MoveType moveSealTarget) {
-        this.targetMove = moveSealTarget;
+        targetMove = moveSealTarget;
     }
 
     public void setMovePlaces(byte[] moves, byte[] left, byte[] right) {
