@@ -494,6 +494,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private boolean  isDragging;          //       are we dragging
     private MoveType startDragMove;       // what  are we dragging
     private int      startDragSlot;       // where are we dragging from
+    private int      clickedDragSlot;     // drag slot when it was clicked
     private Vector2 draggingPosition;
     private boolean executionMoves;
     
@@ -864,6 +865,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleClick(float x, float y, int button) {
+    	startDragSlot = getSlotForPosition(x, y);
         if ((!disengageButtonIsDown) && isClickingDisengage(x,y)) {
             disengageButtonIsDown = true;
             return true;
@@ -953,7 +955,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     private int getSlotForPosition(float x, float y) {
-        // TODO enumerate these properly
         if (isPlacingMoves(x,y)) {
             if (isPointInRect(x,y,MOVES_shape_moveSlot0)) {
                 return 0;
@@ -978,7 +979,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             else if (isPointInRect(x,y,MOVES_shape_rightToken)) {
                 return 6;
             }
-            else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0)) {
+        }
+        else if (isPlacingLeftCannons(x,y)) {
+        	if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0)) {
                 return 7;
             }
             else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1)) {
@@ -990,7 +993,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3)) {
                 return 10;
             }
-            else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0)) {
+        }
+        else if (isPlacingRightCannons(x,y))
+        {
+        	if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0)) {
                 return 11;
             }
             else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1)) {
@@ -1000,7 +1006,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 return 13;
             }
             else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3)) {
-
+            	return 14;
             }
         }
 
@@ -1011,7 +1017,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     @Override
     public boolean handleDrag(float x, float y, float ix, float iy) {
         if (!isDragging) {
-            startDragSlot = getSlotForPosition(x, y);
             if (startDragSlot != -1) { // cant start dragging from an invalid region
                 switch (startDragSlot) {
                 case 4:
@@ -1024,6 +1029,16 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                         isDragging = true;
                     }
                     break;
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                	// not dragging - these are cannon slots
+                	break;
                 default:
                     startDragMove  = movesHolder[startDragSlot].getMove();
                     isDragging = true;
@@ -1130,7 +1145,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             if (executionMoves) {
                 return false;
             }
-            if (isPlacingMoves(x, y)) {
+            if ((startDragSlot >=0) && (startDragSlot <=3) && isPlacingMoves(x, y)) {
                 int slot = getSlotForPosition(x,y);
                 switch (slot) {
                 case 0:
@@ -1145,37 +1160,37 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             }
             else if (isPlacingLeftCannons(x, y)) {
 
-                if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot0))
+                if ((startDragSlot == 7) && isPointInRect(x,y,MOVES_shape_cannonLeftSlot0))
                 {
                     getContext().sendAddCannon(0,0);
                 }
-                else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot1))
+                else if ((startDragSlot == 8) && isPointInRect(x,y,MOVES_shape_cannonLeftSlot1))
                 {
                     getContext().sendAddCannon(0,1);
                 }
-                else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot2))
+                else if ((startDragSlot == 9) && isPointInRect(x,y,MOVES_shape_cannonLeftSlot2))
                 {
                     getContext().sendAddCannon(0,2);
                 }
-                else if (isPointInRect(x,y,MOVES_shape_cannonLeftSlot3))
+                else if ((startDragSlot == 10) && isPointInRect(x,y,MOVES_shape_cannonLeftSlot3))
                 {
                     getContext().sendAddCannon(0,3);
                 }
             }
             else if (isPlacingRightCannons(x, y)) {
-                if (isPointInRect(x,y,MOVES_shape_cannonRightSlot0))
+                if ((startDragSlot == 11) && isPointInRect(x,y,MOVES_shape_cannonRightSlot0))
                 {
                     getContext().sendAddCannon(1,0);
                 }
-                else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot1))
+                else if ((startDragSlot == 12) && isPointInRect(x,y,MOVES_shape_cannonRightSlot1))
                 {
                     getContext().sendAddCannon(1,1);
                 }
-                else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot2))
+                else if ((startDragSlot == 13) && isPointInRect(x,y,MOVES_shape_cannonRightSlot2))
                 {
                     getContext().sendAddCannon(1,2);
                 }
-                else if (isPointInRect(x,y,MOVES_shape_cannonRightSlot3))
+                else if ((startDragSlot == 14) && isPointInRect(x,y,MOVES_shape_cannonRightSlot3))
                 {
                     getContext().sendAddCannon(1,3);
                 }
