@@ -1118,12 +1118,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         if (isDragging) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
-            if (endDragSlot == -1) { // dragged from nothing
+            if (endDragSlot == -1) { // dragged to nothing
 
                 if (startDragSlot <= 3) {
                     getContext().sendSelectMoveSlot(startDragSlot, MoveType.NONE);
                 }
-            } else { // dragged from something
+            } else { // dragged to something
                 if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
                     manuaverSlot = endDragSlot;
                     getContext().sendManuaverSlotChanged(manuaverSlot);
@@ -1141,12 +1141,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                     // update
                     getContext().sendSelectMoveSlot(startDragSlot, movesHolder[endDragSlot].getMove());
                     getContext().sendSelectMoveSlot(endDragSlot, movesHolder[startDragSlot].getMove());
-                } else if (startDragSlot > 3 && endDragSlot <= 3) { // moving from available to placed; replace
+                } else if (startDragSlot > 3 && startDragSlot <= 6 && endDragSlot <= 3) { // moving from available to placed; replace
                     // if there's anything there already, replace it, apart from a manuaver slot
                     if (manuaverSlot != endDragSlot) {
                         getContext().sendSelectMoveSlot(endDragSlot, MoveType.forId(startDragSlot-3));
                     }
+                } else if (startDragSlot <= 3) { // started on something, but dragged it to something unhandled
+                    getContext().sendSelectMoveSlot(startDragSlot, MoveType.NONE);
                 }
+                
             }
 
             draggingPosition = null;
