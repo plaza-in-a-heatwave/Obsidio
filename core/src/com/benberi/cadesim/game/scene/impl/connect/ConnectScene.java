@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.xml.stream.events.Characters;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -43,11 +45,6 @@ public class ConnectScene implements GameScene, InputProcessor {
      */
     private ShapeRenderer renderer;
 
-    /**
-     * Background texture
-     */
-    private Texture background;
-
     private int connectAnimationState = 0;
 
     private long lastConnectionAnimatinoStateChange;
@@ -69,56 +66,31 @@ public class ConnectScene implements GameScene, InputProcessor {
      */
     private Stage stage;
 
-    /**
-     * The username textfield
-     */
     private TextField name;
-
-    /**
-     * The address textfield
-     */
     private TextField address;
+    private TextField code;
 
-    /**
-     * Username textfield texture
-     */
-    private Texture nameTexture;
-
-    private SelectBox<ShipTypeLabel> shipType;
-    private SelectBox<ResolutionTypeLabel> resolutionType;
-    private SelectBox<TeamTypeLabel> teamType;
-
-    /**
-     * The address textfield texture
-     */
-    private Texture addressTexture;
-
-    /**
-     * The login button texture
-     */
+    private Texture background;
+    private Texture textfieldTexture;
     private Texture loginButton;
-
     private Texture loginButtonHover;
-
     private Texture junk;
     private Texture wf;
     private Texture xebec;
     private Texture wg;
     private Texture wb;
 
-    /**
-     * If a popup is open
-     */
+    private SelectBox<ShipTypeLabel> shipType;
+    private SelectBox<ResolutionTypeLabel> resolutionType;
+    private SelectBox<TeamTypeLabel> teamType;
+
     private boolean popup;
-
-    /**
-     * The popup message
-     */
     private String popupMessage;
-
     private boolean popupCloseHover;
     private boolean loginHover;
     private boolean codeURL;
+    
+    private final int MAIN_GROUP_OFFSET_Y = 20;
 
     public ConnectScene(GameContext ctx) {
         this.context = ctx;
@@ -176,6 +148,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         greetings.add("Cyclist Edition");
         greetings.add("Home grown!");
         greetings.add("Blub");
+        greetings.add("You sunk my battleship!");
         greetings.add("You'll never guess what happened next...");
         greetings.add("Inconceivable!");
         greetings.add("Every day I'm Simulatin'");
@@ -193,15 +166,13 @@ public class ConnectScene implements GameScene, InputProcessor {
         greetings.add("It's... It's... Eely good");
         greetings.add("Bream me up, Scotty!");
         greetings.add("Living the Bream");
-        greetings.add("Brigging Back Blockades");
         greetings.add("micro/nano Blockade SIMs available!");
         chosenGreeting = greetings.get(prng.nextInt(greetings.size()));
         
         batch = new SpriteBatch();
 
         background = new Texture("assets/bg.png");
-        nameTexture = new Texture("assets/skin/textfield-name.png");
-        addressTexture = new Texture("assets/skin/textfield-address.png");
+        textfieldTexture = new Texture("assets/skin/textfield.png");
         loginButton = new Texture("assets/skin/login.png");
         loginButtonHover = new Texture("assets/skin/login-hover.png");
 
@@ -218,12 +189,18 @@ public class ConnectScene implements GameScene, InputProcessor {
         style.selection = new Image(new Texture("assets/skin/textfield-selection.png")).getDrawable();
 
         name = new TextField( prop.getProperty("user.username"), style);
-        name.setSize(160, 49);
-        name.setPosition(170, 225);
+        name.setSize(120, 49);
+        name.setPosition(170, MAIN_GROUP_OFFSET_Y + 325);
 
         address = new TextField( prop.getProperty("user.last_address"), style);
-        address.setSize(225, 49);
-        address.setPosition(370, 225);
+        address.setSize(120, 49);
+        address.setPosition(326, MAIN_GROUP_OFFSET_Y + 325);
+        
+        code = new TextField("", style);
+        code.setPasswordCharacter('*');
+        code.setPasswordMode(true);
+        code.setSize(120, 49);
+        code.setPosition(482, MAIN_GROUP_OFFSET_Y + 325);
 
         SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
         selectBoxStyle.background = new Image(new Texture("assets/skin/selectbg.png")).getDrawable();
@@ -237,17 +214,19 @@ public class ConnectScene implements GameScene, InputProcessor {
         selectBoxStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
         selectBoxStyle.background.setLeftWidth(10);
 
-        resolutionType = new SelectBox<>(selectBoxStyle);
-        resolutionType.setSize(150, 44);
-        resolutionType.setPosition(640, 225);
-
-        shipType = new SelectBox<>(selectBoxStyle);
-        shipType.setSize(150, 44);
-        shipType.setPosition(640, 175);
-
         teamType = new SelectBox<>(selectBoxStyle);
         teamType.setSize(150, 44);
         teamType.setPosition(640, 125);
+        
+        resolutionType = new SelectBox<>(selectBoxStyle);
+        resolutionType.setSize(150, 44);
+        resolutionType.setPosition(640, 75);
+
+        shipType = new SelectBox<>(selectBoxStyle);
+        shipType.setSize(150, 44);
+        shipType.setPosition(640, 25);
+
+        
 
         junk = new Texture("assets/skin/ships/junk.png");
         wb = new Texture("assets/skin/ships/wb.png");
@@ -286,7 +265,8 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         stage.addActor(name);
         stage.addActor(address);
-        stage.addActor(address);
+        //stage.addActor(address);
+        stage.addActor(code);
         stage.addActor(shipType);
         stage.addActor(resolutionType);
         stage.addActor(teamType);
@@ -331,8 +311,8 @@ public class ConnectScene implements GameScene, InputProcessor {
         batch.draw(background, 0, 0);
         if (state == ConnectionSceneState.DEFAULT) {
 
-        	titleFont.draw(batch, "Blockade Simulator", 156, 350);
-        	notesFont.draw(batch, chosenGreeting, 587, 329);
+        	titleFont.draw(batch, "Blockade Simulator", 156, MAIN_GROUP_OFFSET_Y + 450);
+        	notesFont.draw(batch, chosenGreeting,       587, MAIN_GROUP_OFFSET_Y + 429);
         	notesFont.draw(batch, "Based on the original by Benberi", 15, 50);
         	notesFont.draw(batch, "Found a bug? Let us know!", 15, 25);
         	
@@ -341,20 +321,17 @@ public class ConnectScene implements GameScene, InputProcessor {
             notesFont.setColor(Color.WHITE);
         	
             font.setColor(Color.WHITE);
-            font.draw(batch, "Display name:", 160, 300);
-            batch.draw(nameTexture, 160, 225);
-            font.draw(batch, "IP Address:", 360, 300);
-            batch.draw(addressTexture, 360, 225);
+            font.draw(batch, "Display name:",   160, MAIN_GROUP_OFFSET_Y + 400);
+            font.draw(batch, "Server address:", 316, MAIN_GROUP_OFFSET_Y + 400);
+            font.draw(batch, "Server code:",    472, MAIN_GROUP_OFFSET_Y + 400);
+	        batch.draw(textfieldTexture, 160, MAIN_GROUP_OFFSET_Y + 325, 140, 49);
+	        batch.draw(textfieldTexture, 316, MAIN_GROUP_OFFSET_Y + 325, 140, 49);
+	        batch.draw(textfieldTexture, 472, MAIN_GROUP_OFFSET_Y + 325, 140, 49);
+            font.draw(batch, "Settings:", 640, 195);
 
-            if (!loginHover) {
-                batch.draw(loginButton, 165, 170);
-            } else {
-                batch.draw(loginButtonHover, 165, 170);
-            }
+            batch.draw(loginHover?loginButton:loginButtonHover, 165, MAIN_GROUP_OFFSET_Y + 270);
             font.setColor(new Color(0.1f, 0.1f, 0.1f, 1));
-
-
-            font.draw(batch, "Connect", 340, 196);
+            font.draw(batch, "Connect", 340, MAIN_GROUP_OFFSET_Y + 296);
             batch.end();
 
             // buttons need to be drawn, then ship texture is drawn over them
@@ -371,7 +348,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                 case ShipTypeLabel.WF:    t = wf;    break;
                 default:                  t = wf;    break;
             }
-            batch.draw(t, 735, 175); // draw t, whatever it may be
+            batch.draw(t, 735, 25); // draw t, whatever it may be
             batch.end();
 
             if (popup) {
@@ -561,16 +538,20 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     private void performLogin() throws UnknownHostException {
         if (name.getText().length() > Constants.MAX_NAME_SIZE) {
-            setPopup("Display name must be shorter.");
+            setPopup("Display name must be less than " + Constants.MAX_NAME_SIZE + " letters.");
+        }
+        else if (code.getText().length() > Constants.MAX_CODE_SIZE)
+        {
+        	setPopup("Server code must be less than " + Constants.MAX_CODE_SIZE + " letters.");
         }
         else if (name.getText().length() <= 0) {
-            setPopup("Please enter a display name");
+            setPopup("Please enter a display name.");
         }
         else if (address.getText().length() <= 0) {
-            setPopup("Please enter an IP Address");
+            setPopup("Please enter an IP Address.");
         }
         else if (!RandomUtils.validIP(address.getText()) && !RandomUtils.validUrl(address.getText())) {
-            setPopup("Please enter a valid IP Address or url");
+            setPopup("Please enter a valid IP Address or URL.");
         }
         else {
             // Save current choices for next time
@@ -588,7 +569,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             }
 
             setState(ConnectionSceneState.CONNECTING);
-            context.connect(name.getText(), address.getText(), shipType.getSelected().getType(), teamType.getSelected().getType());
+            context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getType(), teamType.getSelected().getType());
         }
     }
 
@@ -631,7 +612,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         }
         else {
         	codeURL = isMouseOverCodeUrl(screenX, height - screenY);
-            loginHover = screenX >= 164 && screenX <= 606 && screenY >= height - 210 && screenY <= height - 170;
+            loginHover = screenX >= 164 && screenX <= 606 && screenY >= height - (MAIN_GROUP_OFFSET_Y + 310) && screenY <= height - (MAIN_GROUP_OFFSET_Y + 270);
         }
         return false;
     }

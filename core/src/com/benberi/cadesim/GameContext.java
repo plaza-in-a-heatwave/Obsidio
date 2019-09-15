@@ -249,9 +249,10 @@ public class GameContext {
      * Sends a login packet to the server with the given display name
      * @param display   The display name
      */
-    public void sendLoginPacket(String display, int ship, int team) {
+    public void sendLoginPacket(String code, String display, int ship, int team) {
         LoginPacket packet = new LoginPacket();
         packet.setVersion(Constants.PROTOCOL_VERSION);
+        packet.setCode(code);
         packet.setName(display);
         packet.setShip(ship);
         packet.setTeam(team);
@@ -279,7 +280,7 @@ public class GameContext {
      * @param ip            The IP Address to connect
      * @throws UnknownHostException 
      */
-    public void connect(final String displayName, String ip, int ship, int team) throws UnknownHostException {
+    public void connect(final String displayName, String ip, String code, int ship, int team) throws UnknownHostException {
     	haveServerResponse = false; // reset for next connect
     	if(!RandomUtils.validIP(ip) && RandomUtils.validUrl(ip)) {
     		try {
@@ -294,7 +295,7 @@ public class GameContext {
             public void onSuccess(Channel channel) {
                 serverChannel = channel; // initialize the server channel
                 connectScene.setState(ConnectionSceneState.CREATING_PROFILE);
-                sendLoginPacket(displayName, ship, team); // send login packet
+                sendLoginPacket(code, displayName, ship, team); // send login packet
                 myVessel = displayName;
                 myTeam = Team.forId(team);
             }
