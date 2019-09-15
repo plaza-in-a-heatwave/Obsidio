@@ -35,9 +35,7 @@ public class SetFlagsPacket extends ClientPacketExecutor {
             flag.updateTextureRegion();
             getContext().getBattleScene().getMap().getFlags().add(flag);
         }
-        if(getContext().getBattleScene().getInformation().getTime() > 0) {
-        	getContext().getBattleScene().getInformation().setPoints(defenderPoints, attackerPoints);
-        }
+        getContext().getBattleScene().getInformation().setPoints(defenderPoints, attackerPoints);
     }
 
     @Override
