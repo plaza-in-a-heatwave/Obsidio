@@ -580,7 +580,7 @@ public abstract class Vessel extends Entity {
     }
 
     public void setMoveDelay() {
-        this.moveDelay = 70;
+        this.moveDelay = 30;
     }
 
 
@@ -626,7 +626,7 @@ public abstract class Vessel extends Entity {
         bumpVector = null;
         bumpReached = false;
         isMoving = false;
-        moveDelay = 40;
+        setMoveDelay();
     }
 
     public void setTeam(Team team) {
