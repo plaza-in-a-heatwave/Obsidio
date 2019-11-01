@@ -1,20 +1,16 @@
 package com.benberi.cadesim.game.scene.impl.connect;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 public class ShipTypeLabel extends Label {
+    private Texture type;
+    private Integer index;
 
-	public static final int WB = 2;
-    public static final int WF = 3;
-	public static final int XEBEC = 4;
-	public static final int JUNK = 5;
-    public static final int WG = 6;
-
-    private int type;
-
-    public ShipTypeLabel(int type, CharSequence text, LabelStyle style) {
+    public ShipTypeLabel(Texture type, Integer index, CharSequence text, LabelStyle style) {
         super(text, style);
         this.type = type;
+        this.index = index;
     }
 
     @Override
@@ -22,7 +18,11 @@ public class ShipTypeLabel extends Label {
         return "" + getText();
     }
 
-    public int getType() {
+    public Texture getType() {
         return type;
     }
+
+	public int getIndex() {
+		return index;
+	}
 }

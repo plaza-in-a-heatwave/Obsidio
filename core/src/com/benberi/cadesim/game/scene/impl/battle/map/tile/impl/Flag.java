@@ -16,7 +16,6 @@ public class Flag extends GameObject {
     public static final int NONE = 2;
     public static final int WAR = 3;
 
-    private int type;
     private int size = 1;
     private boolean atWar;
     private Team controllerTeam;

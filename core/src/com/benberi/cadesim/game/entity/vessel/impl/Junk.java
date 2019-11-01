@@ -11,6 +11,7 @@ import com.benberi.cadesim.game.entity.vessel.VesselMoveType;
 import com.benberi.cadesim.util.PackedObjectOrientation;
 
 public class Junk extends Vessel {
+	public static final String VESSELNAME = "junk";
 
     public Junk(GameContext context, String name, int x, int y) {
         super(context, name, x, y);
@@ -20,25 +21,21 @@ public class Junk extends Vessel {
     public void create() {
         try {
             setDefaultTexture();
-            this.shootSmoke = new TextureRegion(getContext().getTextures().getMisc("explode_big"));
+            this.shootSmoke = new TextureRegion(getContext().getTextures().getMisc("explode_large"));
             shootSmoke.setRegion(0,0,40, 30);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    @Override
-    public int getMaxCannons() {
-        return 0;
-    }
 
     @Override
     public float getInfluenceRadius() {
-        return 3f;
+        return 2f;
     }
 
     @Override
     public CannonBall createCannon(GameContext ctx, Vessel source, Vector2 target) {
-        return new LargeCannonball(ctx, source, target, getContext().getTextures().getMisc("large_splash"),
+        return new LargeCannonball(ctx, source, target, getContext().getTextures().getMisc("splash_large"),
                 getContext().getTextures().getMisc("hit"));
     }
 
@@ -46,12 +43,17 @@ public class Junk extends Vessel {
     public VesselMoveType getMoveType() {
         return VesselMoveType.THREE_MOVES;
     }
+    
+    @Override
+    public boolean isDoubleShot() {
+    	return false;
+    }
 
     @Override
     public void setDefaultTexture() {
         this.setTexture(getVesselTexture("junk"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("assets/vessel/junk/properties.json").readString(),
+                Gdx.files.internal("assets/vessel/junk/sail.json").readString(),
                 PackedObjectOrientation.class));
     }
 
@@ -59,7 +61,7 @@ public class Junk extends Vessel {
     public void setSinkingTexture() {
         this.setTexture(getVesselTexture("junk_sinking"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("assets/vessel/junk/sinking.json").readString(),
+                Gdx.files.internal("assets/vessel/junk/sink.json").readString(),
                 PackedObjectOrientation.class));
     }
 }

@@ -5,8 +5,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import javax.xml.stream.events.Characters;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -28,6 +26,7 @@ import com.benberi.cadesim.Constants;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.scene.GameScene;
 import com.benberi.cadesim.util.RandomUtils;
+import com.benberi.cadesim.game.entity.vessel.Vessel;
 
 public class ConnectScene implements GameScene, InputProcessor {
 
@@ -74,11 +73,22 @@ public class ConnectScene implements GameScene, InputProcessor {
     private Texture textfieldTexture;
     private Texture loginButton;
     private Texture loginButtonHover;
+
+    private Texture baghlah;
+    private Texture blackship;
+    private Texture dhow;
+    private Texture fanchuan;
+    private Texture grandfrig;
     private Texture junk;
-    private Texture wf;
+    private Texture lgsloop;
+    private Texture longship;
+    private Texture merchbrig;
+    private Texture merchgal;
+    private Texture smsloop;
+    private Texture warbrig;
+    private Texture warfrig;
+    private Texture wargal;
     private Texture xebec;
-    private Texture wg;
-    private Texture wb;
 
     private SelectBox<ShipTypeLabel> shipType;
     private SelectBox<ResolutionTypeLabel> resolutionType;
@@ -226,27 +236,48 @@ public class ConnectScene implements GameScene, InputProcessor {
         shipType.setSize(150, 44);
         shipType.setPosition(640, 25);
 
-        
-
+        baghlah = new Texture("assets/skin/ships/baghlah.png");
+        blackship = new Texture("assets/skin/ships/blackship.png");
+        dhow = new Texture("assets/skin/ships/dhow.png");
+        fanchuan = new Texture("assets/skin/ships/fanchuan.png");
+        grandfrig = new Texture("assets/skin/ships/grandfrig.png");
         junk = new Texture("assets/skin/ships/junk.png");
-        wb = new Texture("assets/skin/ships/wb.png");
+        lgsloop = new Texture("assets/skin/ships/lgsloop.png");
+        longship = new Texture("assets/skin/ships/longship.png");
+        merchbrig = new Texture("assets/skin/ships/merchbrig.png");
+        merchgal = new Texture("assets/skin/ships/merchgal.png");
+        smsloop = new Texture("assets/skin/ships/smsloop.png");
+        warbrig = new Texture("assets/skin/ships/warbrig.png");
+        warfrig = new Texture("assets/skin/ships/warfrig.png");
+        wargal = new Texture("assets/skin/ships/wargal.png");
         xebec = new Texture("assets/skin/ships/xebec.png");
-        wg = new Texture("assets/skin/ships/wg.png");
-        wf = new Texture("assets/skin/ships/wf.png");
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
         labelStyle.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
 
-        ShipTypeLabel[] blob = new ShipTypeLabel[5];
-        blob[0] = new ShipTypeLabel(ShipTypeLabel.JUNK,"Junk", labelStyle);
-        blob[1] = new ShipTypeLabel(ShipTypeLabel.WB,"War Brig",labelStyle);
-        blob[2] = new ShipTypeLabel(ShipTypeLabel.XEBEC,"Xebec", labelStyle);
-        blob[3] = new ShipTypeLabel(ShipTypeLabel.WG,"War Galleon", labelStyle);
-        blob[4] = new ShipTypeLabel(ShipTypeLabel.WF,"War Frig", labelStyle);
-        
+        int numLabels = Vessel.VESSEL_TYPES.size() - (Constants.ENABLE_CHOOSE_BLACKSHIP?0:1);
+        ShipTypeLabel[] blob = new ShipTypeLabel[numLabels];
+        blob[0]  = new ShipTypeLabel(smsloop,   Vessel.getIdFromName("smsloop"),   "Sloop",       labelStyle); 
+        blob[1]  = new ShipTypeLabel(lgsloop,   Vessel.getIdFromName("lgsloop"),   "Cutter",      labelStyle); 
+        blob[2]  = new ShipTypeLabel(dhow,      Vessel.getIdFromName("dhow"),      "Dhow",        labelStyle); 
+        blob[3]  = new ShipTypeLabel(fanchuan,  Vessel.getIdFromName("fanchuan"),  "Fanchuan",    labelStyle); 
+        blob[4]  = new ShipTypeLabel(longship,  Vessel.getIdFromName("longship"),  "Longship",    labelStyle); 
+        blob[5]  = new ShipTypeLabel(junk,      Vessel.getIdFromName("junk"),      "Junk",        labelStyle); 
+        blob[6]  = new ShipTypeLabel(baghlah,   Vessel.getIdFromName("baghlah"),   "Baghlah",     labelStyle); 
+        blob[7]  = new ShipTypeLabel(merchbrig, Vessel.getIdFromName("merchbrig"), "MB",          labelStyle); 
+        blob[8]  = new ShipTypeLabel(warbrig,   Vessel.getIdFromName("warbrig"),   "War Brig",    labelStyle); 
+        blob[9]  = new ShipTypeLabel(xebec,     Vessel.getIdFromName("xebec"),     "Xebec",       labelStyle); 
+        blob[10] = new ShipTypeLabel(merchgal,  Vessel.getIdFromName("merchgal"),  "MG",          labelStyle); 
+        blob[11] = new ShipTypeLabel(warfrig,   Vessel.getIdFromName("warfrig"),   "War Frig",    labelStyle); 
+        blob[12] = new ShipTypeLabel(wargal,    Vessel.getIdFromName("wargal"),    "War Galleon", labelStyle); 
+        blob[13] = new ShipTypeLabel(grandfrig, Vessel.getIdFromName("grandfrig"), "Grand Frig",  labelStyle);
+        if (Constants.ENABLE_CHOOSE_BLACKSHIP)
+        {
+        	blob[numLabels-1] = new ShipTypeLabel(blackship, Vessel.getIdFromName("blackship"), "Black Ship",  labelStyle);
+        }
+
         shipType.setItems(blob);
-        shipType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_ship")));
 
         ResolutionTypeLabel[] blob3 = new ResolutionTypeLabel[ResolutionTypeLabel.RES_LIST.length];
         for (int i=0; i<ResolutionTypeLabel.RES_LIST.length; i++)
@@ -254,18 +285,40 @@ public class ConnectScene implements GameScene, InputProcessor {
         	blob3[i] = new ResolutionTypeLabel(i, ResolutionTypeLabel.RES_LIST[i], labelStyle);
         }
         resolutionType.setItems(blob3);
-        resolutionType.setSelectedIndex(Integer.parseInt(prop.getProperty("client.last_resolution")));
 
-        
         TeamTypeLabel[] blob2 = new TeamTypeLabel[2];
         blob2[0] = new TeamTypeLabel("Defender", labelStyle, TeamTypeLabel.DEFENDER);
         blob2[1] = new TeamTypeLabel("Attacker", labelStyle, TeamTypeLabel.ATTACKER);
         
         teamType.setItems(blob2);
+        
+        // set previous values/defaults from config file
+        try 
+        {
+        	shipType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_ship")));
+        }
+        catch(IndexOutOfBoundsException e) {
+        	shipType.setSelectedIndex(Vessel.getIdFromName("warfrig"));
+        }
+        try 
+        {
+        	resolutionType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_resolution")));
+        }
+        catch(IndexOutOfBoundsException e) {
+        	resolutionType.setSelectedIndex(0);
+        }
+        
+        try
+        {
+        	teamType.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_team")));
+        }
+        catch(IndexOutOfBoundsException e)
+        {
+        	teamType.setSelectedIndex(0);
+        }
 
         stage.addActor(name);
         stage.addActor(address);
-        //stage.addActor(address);
         stage.addActor(code);
         stage.addActor(shipType);
         stage.addActor(resolutionType);
@@ -277,16 +330,17 @@ public class ConnectScene implements GameScene, InputProcessor {
             public void changed(ChangeEvent event, Actor actor) {
                 // if graphics state not what it was, reload graphics
                 try {
-                    String last_res = getProperty("user.config", "client.last_resolution");
+                    String last_res = getProperty("user.config", "user.last_resolution");
 
                     if (Integer.parseInt(last_res) != resolutionType.getSelectedIndex()) {
                         String[] resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
 
                         // save for next time
-                        changeProperty("user.config", "client.width", resolution[0]);
-                        changeProperty("user.config", "client.height", resolution[1]);
-                        changeProperty("user.config", "client.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
-
+                        changeProperty("user.config", "user.width", resolution[0]);
+                        changeProperty("user.config", "user.height", resolution[1]);
+                        changeProperty("user.config", "user.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
+                        changeProperty("user.config", "user.last_team", Integer.toString(teamType.getSelectedIndex()));
+                        
                         // reload for now
                         Gdx.graphics.setWindowedMode(Integer.parseInt(resolution[0]), Integer.parseInt(resolution[1]));
                         context.create();
@@ -341,14 +395,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             
             Texture t;
             batch.begin();
-            switch (shipType.getSelected().getType()) {
-                case ShipTypeLabel.JUNK:  t = junk;  break;
-                case ShipTypeLabel.WB:    t = wb;    break;
-                case ShipTypeLabel.XEBEC: t = xebec; break;
-                case ShipTypeLabel.WG:    t = wg;    break;
-                case ShipTypeLabel.WF:    t = wf;    break;
-                default:                  t = wf;    break;
-            }
+            t = shipType.getSelected().getType();
             batch.draw(t, 735, 25); // draw t, whatever it may be
             batch.end();
 
@@ -560,17 +607,17 @@ public class ConnectScene implements GameScene, InputProcessor {
                 String[] resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
                 changeProperty("user.config", "user.username", name.getText());
                 changeProperty("user.config", "user.last_address", address.getText());
-                changeProperty("user.config", "client.width", resolution[0]);
-                changeProperty("user.config", "client.height", resolution[1]);
+                changeProperty("user.config", "user.width", resolution[0]);
+                changeProperty("user.config", "user.height", resolution[1]);
                 changeProperty("user.config", "user.last_ship", Integer.toString(shipType.getSelectedIndex()));
-                changeProperty("user.config", "client.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
-                
+                changeProperty("user.config", "user.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
+                changeProperty("user.config", "user.last_team", Integer.toString(teamType.getSelectedIndex()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             setState(ConnectionSceneState.CONNECTING);
-            context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getType(), teamType.getSelected().getType());
+            context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getIndex(), teamType.getSelected().getType());
         }
     }
 

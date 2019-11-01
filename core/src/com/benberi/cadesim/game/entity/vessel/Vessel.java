@@ -5,20 +5,40 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.reflect.Method;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.entity.Entity;
 import com.benberi.cadesim.game.entity.projectile.CannonBall;
+import com.benberi.cadesim.game.entity.vessel.Vessel;
+import com.benberi.cadesim.game.entity.vessel.impl.Baghlah;
+import com.benberi.cadesim.game.entity.vessel.impl.Blackship;
+import com.benberi.cadesim.game.entity.vessel.impl.Dhow;
+import com.benberi.cadesim.game.entity.vessel.impl.Fanchuan;
+import com.benberi.cadesim.game.entity.vessel.impl.Grandfrig;
+import com.benberi.cadesim.game.entity.vessel.impl.Junk;
+import com.benberi.cadesim.game.entity.vessel.impl.Lgsloop;
+import com.benberi.cadesim.game.entity.vessel.impl.Longship;
+import com.benberi.cadesim.game.entity.vessel.impl.Merchbrig;
+import com.benberi.cadesim.game.entity.vessel.impl.Merchgal;
+import com.benberi.cadesim.game.entity.vessel.impl.Smsloop;
+import com.benberi.cadesim.game.entity.vessel.impl.Warbrig;
+import com.benberi.cadesim.game.entity.vessel.impl.Warfrig;
+import com.benberi.cadesim.game.entity.vessel.impl.Wargal;
+import com.benberi.cadesim.game.entity.vessel.impl.Xebec;
 import com.benberi.cadesim.game.entity.vessel.move.MoveAnimationStructure;
 import com.benberi.cadesim.game.entity.vessel.move.MovePhase;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
-import com.benberi.cadesim.game.entity.vessel.move.VesselMoveTurn;
 import com.benberi.cadesim.game.scene.TextureCollection;
 import com.benberi.cadesim.game.scene.impl.battle.map.GameObject;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.BigRock;
 import com.benberi.cadesim.util.OrientationLocation;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -64,11 +84,6 @@ public abstract class Vessel extends Entity {
     private MoveAnimationStructure structure = new MoveAnimationStructure();
 
     /**
-     * The current turn
-     */
-    private VesselMoveTurn turn;
-
-    /**
      * The team
      */
     private Team team;
@@ -111,7 +126,6 @@ public abstract class Vessel extends Entity {
         super(context);
         this.name = name;
         this.setPosition(x, y);
-        turn = new VesselMoveTurn();
     }
 
     public void setBumpReached(boolean bump) {
@@ -491,16 +505,12 @@ public abstract class Vessel extends Entity {
         return new Vector2(getX(), getY());
     }
 
-    /**
-     * Maximum amount of cannons
-     */
-    public abstract int getMaxCannons();
-
     public abstract float getInfluenceRadius();
 
     public abstract CannonBall createCannon(GameContext ctx, Vessel source, Vector2 target);
 
-    public abstract VesselMoveType getMoveType();
+    public abstract VesselMoveType getMoveType(); // 4 moves or 3?
+    public abstract boolean isDoubleShot();       // 2 shots or 1?
 
     public abstract void setDefaultTexture();
     public abstract void setSinkingTexture();
@@ -648,4 +658,110 @@ public abstract class Vessel extends Entity {
     public void tickScoreMovement() {
         this.scoreDisplayMovement--;
     }
+    
+    public static Vessel createVesselByType(GameContext context, String name, int x, int y, int type) {
+        try
+        {
+        	Class shiptype = (VESSEL_TYPES.get(type));
+            Constructor<?> c = shiptype.getConstructor(GameContext.class, String.class, int.class, int.class);
+            return (Vessel)c.newInstance(context, name, x, y);
+        }
+        catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e)
+        {
+        	System.out.println("in createVesselByType(" + type + "), caught " + e.getClass());
+        	return null;
+        }
+    }
+    
+    /**
+     * map integer IDs to classes
+     */
+    public static final HashMap<Integer, Class<? extends Vessel>> VESSEL_TYPES = new HashMap<Integer, Class<? extends Vessel>>() {{
+    	put(0, Smsloop.class);
+    	put(1, Lgsloop.class);
+    	put(2, Dhow.class);
+    	put(3, Fanchuan.class);
+    	put(4, Longship.class);
+    	put(5, Junk.class);
+    	put(6, Baghlah.class);
+    	put(7, Merchbrig.class);
+    	put(8, Warbrig.class);
+    	put(9, Xebec.class);
+    	put(10, Merchgal.class);
+    	put(11, Warfrig.class);
+    	put(12, Wargal.class);
+    	put(13, Grandfrig.class);
+    	put(14, Blackship.class);
+    }};
+    
+    /**
+     * @param name the name to search
+     * @return id, or -1 if not found
+     */
+    public static int getIdFromName(String name) {
+    	for (int i : VESSEL_TYPES.keySet())
+    	{
+    		try
+    		{
+    			Class shiptype_field = VESSEL_TYPES.get(i);
+    			Field vesselname_field = shiptype_field.getField("VESSELNAME");
+    			String value = (String)vesselname_field.get(shiptype_field);
+        		if (value.equals(name))
+        		{
+        			return i;
+        		}
+    		}
+    		catch(NoSuchFieldException | IllegalAccessException e)
+    		{
+    			System.out.println("in getIdFromName(" + name + "), caught " + e.getMessage());
+    			return -1;
+    		}
+    		
+    	}
+    	return -1;
+    }
+    
+//    public static Class getClassFromPlayerName(String name) {
+//    	for (int i : VESSEL_TYPES.keySet())
+//    	{
+//    		try
+//    		{
+//    			Class shiptype_class = VESSEL_TYPES.get(i);
+//    			java.lang.reflect.Method vesselname_method = shiptype_class.getMethod("getName", new Class[] {});
+//    			System.out.println("found vesselname method: " + vesselname_method);
+//    			String ret = (String)vesselname_method.invoke(null, new Object[] {});
+//        		if (ret.equals(name))
+//        		{
+//        			return shiptype_class;
+//        		}
+//    		}
+//    		catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e)
+//    		{
+//    			System.out.println("in getClassFromPlayerName(" + name + "), caught " + e.getMessage());
+//    			return null;
+//    		}
+//    		
+//    	}
+//    	return null;
+//    }
+    
+    /**
+     * @param id the id to search
+     * @return name, or null if not found
+     */
+    public static String getNameFromId(int id) {
+		try
+		{
+			Class shiptype_field = VESSEL_TYPES.get(id);
+			Field vesselname_field = shiptype_field.getField("VESSELNAME");
+			return (String)vesselname_field.get(shiptype_field);
+		}
+		catch(NoSuchFieldException | IllegalAccessException e)
+		{
+			System.out.println("in getNameFromId(" + id + "), caught " + e.getMessage());
+			return null;
+		}
+    }
+    
+    
 }

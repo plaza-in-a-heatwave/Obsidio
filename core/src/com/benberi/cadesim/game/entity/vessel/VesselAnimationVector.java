@@ -3,14 +3,6 @@ package com.benberi.cadesim.game.entity.vessel;
 import com.badlogic.gdx.math.Vector2;
 
 public class VesselAnimationVector {
-
-
-    /**
-     * Last animation update time in milliseconds
-     */
-    private long lastAnimationUpdate;
-
-
     /**
      * The current step on curve
      */
