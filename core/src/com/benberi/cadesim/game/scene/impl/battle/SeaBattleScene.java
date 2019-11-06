@@ -552,28 +552,43 @@ public class SeaBattleScene implements GameScene {
             batch.end();
             
             // render move bar
-            int BAR_HEIGHT_ABOVE_SHIP = 5; // px
+            int BAR_HEIGHT_ABOVE_SHIP = 15; // px
+            int BAR_HEIGHT = 7;
             renderer.begin(ShapeRenderer.ShapeType.Line);
             float x = getIsometricX(vessel.getX(), vessel.getY(), vessel);
             float y = getIsometricY(vessel.getX(), vessel.getY(), vessel);
 
-            int width = vessel.getMoveType().getBarWidth();
+            int width = vessel.getMoveType().getBarWidth() + 1;
             renderer.setColor(Color.BLACK);
-            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, width, 7);
+
+            // draw move bar bounding box
+            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, width, BAR_HEIGHT);
+
+            // draw white move fill
             renderer.end();
             renderer.begin(ShapeRenderer.ShapeType.Filled);
             renderer.setColor(Color.WHITE);
 
-            int w = (width - 1) / 3;
-            int fill = vessel.getNumberOfMoves() > 3 ? 3 : vessel.getNumberOfMoves();
+            int fill = vessel.getNumberOfMoves(); // number to fill
+            int w; // width of each fill
+            if (vessel.getMoveType() == VesselMoveType.FOUR_MOVES)
+            {
+                w = (width) / 4;
+            }
+            else
+            {
+                fill = fill > 3? 3:fill; // cap at 3 if large ship
+                w = (width) / 3;
+            }
+            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, fill * w, BAR_HEIGHT - 1);
 
-            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, fill * w, 6);
-            renderer.setColor(Color.RED);
+            // draw red fill extension if large ship
             if (vessel.getMoveType() == VesselMoveType.THREE_MOVES && vessel.getNumberOfMoves() > 3) {
-                renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2) + (width - 1) - 2, y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, 10, 6);
+                renderer.setColor(Color.RED);
+                renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2) + (3*w), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, w, BAR_HEIGHT - 1);
             }
             renderer.end();
-            
+
             // draw ship name and flags
             if (vessel.getName().equalsIgnoreCase(context.myVessel) || vessel.getTeam().getID() == context.myTeam.getID()) {
                 font.setColor(Vessel.DEFAULT_BORDER_COLOR);
@@ -581,12 +596,12 @@ public class SeaBattleScene implements GameScene {
             else {
                 font.setColor(vessel.getTeam().getColor());
             }
-            
+
             // name
-            int NAME_HEIGHT_ABOVE_SHIP = BAR_HEIGHT_ABOVE_SHIP + (int)font.getCapHeight() + 10; // px
+            int NAME_HEIGHT_ABOVE_SHIP = BAR_HEIGHT_ABOVE_SHIP + BAR_HEIGHT + (int)font.getCapHeight() + 10; // px
             batch.begin();
             GlyphLayout layout = new GlyphLayout(font, vessel.getName());
-            font.draw(batch, vessel.getName(), x + (vessel.getRegionWidth() / 2) - (layout.width / 2), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP + NAME_HEIGHT_ABOVE_SHIP);
+            font.draw(batch, vessel.getName(), x + (vessel.getRegionWidth() / 2) - (layout.width / 2), y + vessel.getRegionHeight() + NAME_HEIGHT_ABOVE_SHIP);
 
             // flags
             int FLAG_HEIGHT_ABOVE_SHIP = 10 + NAME_HEIGHT_ABOVE_SHIP;
