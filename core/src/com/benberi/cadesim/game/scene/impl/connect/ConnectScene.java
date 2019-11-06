@@ -56,7 +56,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     private ArrayList<String> greetings = new ArrayList<String>();
     private java.util.Random prng = new java.util.Random(System.currentTimeMillis());
     private String chosenGreeting;
-    private String code_url = "https://github.com/plaza-in-a-heatwave/Obsidio/issues";
+    private String code_url = "https://github.com/plaza-in-a-heatwave/Obsidio-Server/issues";
 
     private boolean failed;
 
@@ -636,7 +636,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     
     public boolean isMouseOverCodeUrl(float x, float y)
     {
-    	return x >= 138 && x < 415 && y >= 10 && y < 31;
+    	return x >= 138 && y >= 10 && x < 447 && y < 31;
     }
 
     @Override

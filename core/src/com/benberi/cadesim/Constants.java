@@ -36,5 +36,5 @@ public class Constants {
     /**
      * whether or not players can choose the black ship. A debugging option.
      */
-    public static final boolean ENABLE_CHOOSE_BLACKSHIP = true;
+    public static final boolean ENABLE_CHOOSE_BLACKSHIP = false;
 }
