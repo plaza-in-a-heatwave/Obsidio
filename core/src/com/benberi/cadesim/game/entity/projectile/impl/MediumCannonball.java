@@ -9,6 +9,6 @@ import com.benberi.cadesim.game.entity.vessel.Vessel;
 public class MediumCannonball extends CannonBall {
 
     public MediumCannonball(GameContext context, Vessel source, Vector2 target, Texture splash, Texture hit) {
-        super(source, target, context.getTextures().getMisc("medium_ball"), splash, hit);
+        super(source, target, context.getTextures().getMisc("cannonball_medium"), splash, hit);
     }
 }

@@ -2,7 +2,6 @@ package com.benberi.cadesim;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.benberi.cadesim.client.ClientConnectionCallback;
 import com.benberi.cadesim.client.ClientConnectionTask;
 import com.benberi.cadesim.client.codec.util.Packet;
@@ -12,6 +11,7 @@ import com.benberi.cadesim.client.packet.in.LoginResponsePacket;
 import com.benberi.cadesim.client.packet.out.*;
 import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.entity.EntityManager;
+import com.benberi.cadesim.game.entity.vessel.Vessel;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectScene;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
@@ -93,6 +93,8 @@ public class GameContext {
     private EntityManager entities;
 
     public String myVessel;
+    
+    public int myVesselType;
 
     /**
      * List of scenes
@@ -297,6 +299,7 @@ public class GameContext {
                 connectScene.setState(ConnectionSceneState.CREATING_PROFILE);
                 sendLoginPacket(code, displayName, ship, team); // send login packet
                 myVessel = displayName;
+                myVesselType = ship;
                 myTeam = Team.forId(team);
             }
 
@@ -330,7 +333,7 @@ public class GameContext {
                     connectScene.setPopup("Display name already in use");
                     break;
                 case LoginResponsePacket.BAD_SHIP:
-                    connectScene.setPopup("The selected ship either does not exist, or not allowed");
+                    connectScene.setPopup("The selected ship is not allowed");
                     break;
                 case LoginResponsePacket.SERVER_FULL:
                     connectScene.setPopup("The server is full");

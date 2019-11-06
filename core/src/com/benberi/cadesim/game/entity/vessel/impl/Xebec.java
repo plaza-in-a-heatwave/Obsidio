@@ -11,6 +11,7 @@ import com.benberi.cadesim.game.entity.vessel.VesselMoveType;
 import com.benberi.cadesim.util.PackedObjectOrientation;
 
 public class Xebec extends Vessel {
+	public static final String VESSELNAME = "xebec";
 
     public Xebec(GameContext context, String name, int x, int y) {
         super(context, name, x, y);
@@ -20,25 +21,21 @@ public class Xebec extends Vessel {
     public void create() {
         try {
             setDefaultTexture();
-            this.shootSmoke = new TextureRegion(getContext().getTextures().getMisc("explode_big"));
+            this.shootSmoke = new TextureRegion(getContext().getTextures().getMisc("explode_large"));
             shootSmoke.setRegion(0,0,40, 30);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    @Override
-    public int getMaxCannons() {
-        return 0;
-    }
 
     @Override
     public float getInfluenceRadius() {
-        return 4f;
+        return 3f;
     }
 
     @Override
     public CannonBall createCannon(GameContext ctx, Vessel source, Vector2 target) {
-        return new MediumCannonball(ctx, source, target, getContext().getTextures().getMisc("large_splash"),
+        return new MediumCannonball(ctx, source, target, getContext().getTextures().getMisc("splash_large"),
                 getContext().getTextures().getMisc("hit"));
     }
 
@@ -46,12 +43,17 @@ public class Xebec extends Vessel {
     public VesselMoveType getMoveType() {
         return VesselMoveType.THREE_MOVES;
     }
+    
+    @Override
+    public boolean isDoubleShot() {
+    	return true;
+    }
 
     @Override
     public void setDefaultTexture() {
         this.setTexture(getVesselTexture("xebec"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("assets/vessel/xebec/properties.json").readString(),
+                Gdx.files.internal("assets/vessel/xebec/sail.json").readString(),
                 PackedObjectOrientation.class));
     }
 
@@ -59,7 +61,7 @@ public class Xebec extends Vessel {
     public void setSinkingTexture() {
         this.setTexture(getVesselTexture("xebec_sinking"));
         this.setOrientationPack(getContext().getTools().getGson().fromJson(
-                Gdx.files.internal("assets/vessel/xebec/sinking.json").readString(),
+                Gdx.files.internal("assets/vessel/xebec/sink.json").readString(),
                 PackedObjectOrientation.class));
     }
 }

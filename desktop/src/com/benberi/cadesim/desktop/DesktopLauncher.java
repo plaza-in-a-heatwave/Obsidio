@@ -20,7 +20,7 @@ public class DesktopLauncher {
 		config.resizable = false;
 		config.width = res[0];
 		config.height = res[1];
-		config.backgroundFPS = 20;    // bugfix high CPU
+		//config.backgroundFPS = 20;    // bugfix high CPU
 		config.vSyncEnabled = false; // "
 		config.title = Constants.name + " (version " + Constants.VERSION + ")";
 		new LwjglApplication(cadesim, config);
@@ -42,8 +42,8 @@ public class DesktopLauncher {
 		    e.printStackTrace();
 		}
 	    int[] resolution = new int[2];
-		resolution[0] = Integer.parseInt(prop.getProperty("client.width"));
-		resolution[1] = Integer.parseInt(prop.getProperty("client.height"));
+		resolution[0] = Integer.parseInt(prop.getProperty("user.width"));
+		resolution[1] = Integer.parseInt(prop.getProperty("user.height"));
 		return resolution;
 	}
 }

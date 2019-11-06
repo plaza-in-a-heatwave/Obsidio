@@ -42,7 +42,7 @@ public class BlockadeMap {
     /**
      * The rocks layer
      */
-    private BlockadeMapLayer<GameObject> rocks = new BlockadeMapLayer();
+    private BlockadeMapLayer<GameObject> rocks = new BlockadeMapLayer<GameObject>();
 
     /**
      * Flags layer

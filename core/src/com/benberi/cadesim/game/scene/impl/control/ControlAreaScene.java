@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.benberi.cadesim.GameContext;
+import com.benberi.cadesim.game.entity.vessel.Vessel;
+import com.benberi.cadesim.game.entity.vessel.VesselMoveType;
 import com.benberi.cadesim.game.scene.GameScene;
 
 public class ControlAreaScene implements GameScene {
@@ -11,8 +13,6 @@ public class ControlAreaScene implements GameScene {
     private GameContext context;
     
     public static int shipId = 0;
-    
-    private boolean bigShip = true;
 
     private BattleControlComponent control;
     private ShapeRenderer shapeRenderer;
@@ -24,11 +24,16 @@ public class ControlAreaScene implements GameScene {
     @Override
     public void create()
     {
-    	if(shipId == 5) {
-    		bigShip = false;
-    	}
+    	// make a temporary vessel to checkout properties
+    	// TODO make these properties static instead
+    	Vessel v = Vessel.createVesselByType(context, null, 0, 0, context.myVesselType);
         shapeRenderer = new ShapeRenderer();
-        this.control = new BattleControlComponent(context, this, bigShip);
+        this.control = new BattleControlComponent(
+        	context,
+        	this,
+        	v.getMoveType() != VesselMoveType.FOUR_MOVES, // is it a big ship
+        	v.isDoubleShot()                              // single or double shot
+        );
         control.create();
     }
 

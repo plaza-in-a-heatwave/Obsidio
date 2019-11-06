@@ -70,16 +70,38 @@ public class TextureCollection {
      * Creates vessel textures
      */
     private void createVessels() {
-        vessels.put("warfrigate", new Texture("assets/vessel/wf/spritesheet.png"));
-        vessels.put("xebec", new Texture("assets/vessel/xebec/spritesheet.png"));
-        vessels.put("warbrig", new Texture("assets/vessel/wb/spritesheet.png"));
-        vessels.put("junk", new Texture("assets/vessel/junk/spritesheet.png"));
-        vessels.put("wargalleon", new Texture("assets/vessel/wg/spritesheet.png"));
-        vessels.put("warfrigate_sinking", new Texture("assets/vessel/wf/sinking2.png"));
-        vessels.put("xebec_sinking", new Texture("assets/vessel/xebec/sinking.png"));
-        vessels.put("warbrig_sinking", new Texture("assets/vessel/wb/sinking.png"));
-        vessels.put("junk_sinking", new Texture("assets/vessel/junk/sinking.png"));
-        vessels.put("wargalleon_sinking", new Texture("assets/vessel/wg/sinking.png"));
+    	// sail textures
+    	vessels.put("baghlah", new Texture("assets/vessel/baghlah/sail.png"));
+    	vessels.put("blackship", new Texture("assets/vessel/blackship/sail.png"));
+    	vessels.put("dhow", new Texture("assets/vessel/dhow/sail.png"));
+    	vessels.put("fanchuan", new Texture("assets/vessel/fanchuan/sail.png"));
+    	vessels.put("grandfrig", new Texture("assets/vessel/grandfrig/sail.png"));
+    	vessels.put("junk", new Texture("assets/vessel/junk/sail.png"));
+    	vessels.put("lgsloop", new Texture("assets/vessel/lgsloop/sail.png"));
+    	vessels.put("longship", new Texture("assets/vessel/longship/sail.png"));
+    	vessels.put("merchbrig", new Texture("assets/vessel/merchbrig/sail.png"));
+    	vessels.put("merchgal", new Texture("assets/vessel/merchgal/sail.png"));
+    	vessels.put("smsloop", new Texture("assets/vessel/smsloop/sail.png"));
+    	vessels.put("warbrig", new Texture("assets/vessel/warbrig/sail.png"));
+    	vessels.put("warfrig", new Texture("assets/vessel/warfrig/sail.png"));
+    	vessels.put("wargal", new Texture("assets/vessel/wargal/sail.png"));
+    	vessels.put("xebec", new Texture("assets/vessel/xebec/sail.png"));
+
+    	// sink textures (the Black Ship doesn't sink!)
+    	vessels.put("baghlah_sinking", new Texture("assets/vessel/baghlah/sink.png"));
+    	vessels.put("dhow_sinking", new Texture("assets/vessel/dhow/sink.png"));
+    	vessels.put("fanchuan_sinking", new Texture("assets/vessel/fanchuan/sink.png"));
+    	vessels.put("grandfrig_sinking", new Texture("assets/vessel/grandfrig/sink.png"));
+    	vessels.put("junk_sinking", new Texture("assets/vessel/junk/sink.png"));
+    	vessels.put("lgsloop_sinking", new Texture("assets/vessel/lgsloop/sink.png"));
+    	vessels.put("longship_sinking", new Texture("assets/vessel/longship/sink.png"));
+    	vessels.put("merchbrig_sinking", new Texture("assets/vessel/merchbrig/sink.png"));
+    	vessels.put("merchgal_sinking", new Texture("assets/vessel/merchgal/sink.png"));
+    	vessels.put("smsloop_sinking", new Texture("assets/vessel/smsloop/sink.png"));
+    	vessels.put("warbrig_sinking", new Texture("assets/vessel/warbrig/sink.png"));
+    	vessels.put("warfrig_sinking", new Texture("assets/vessel/warfrig/sink.png"));
+    	vessels.put("wargal_sinking", new Texture("assets/vessel/wargal/sink.png"));
+    	vessels.put("xebec_sinking", new Texture("assets/vessel/xebec/sink.png"));
     }
 
     /**
@@ -91,12 +113,14 @@ public class TextureCollection {
     }
 
     private void createMisc() {
-        misc.put("large_ball", new Texture("assets/projectile/cannonball_large.png"));
-        misc.put("medium_ball", new Texture("assets/projectile/cannonball.png"));
-        misc.put("large_splash", new Texture("assets/effects/splash_big.png"));
-        misc.put("small_splash", new Texture("assets/effects/splash_sm.png"));
-        misc.put("explode_big", new Texture("assets/effects/explode_big.png"));
-        misc.put("explode_medium", new Texture("assets/effects/explode_med.png"));
+        misc.put("cannonball_large", new Texture("assets/projectile/cannonball_large.png"));
+        misc.put("cannonball_medium", new Texture("assets/projectile/cannonball_medium.png"));
+        misc.put("cannonball_small", new Texture("assets/projectile/cannonball_small.png"));
+        misc.put("splash_large", new Texture("assets/effects/splash_large.png"));
+        misc.put("splash_small", new Texture("assets/effects/splash_small.png"));
+        misc.put("explode_large", new Texture("assets/effects/explode_large.png"));
+        misc.put("explode_medium", new Texture("assets/effects/explode_medium.png"));
+        misc.put("explode_small"  , new Texture("assets/effects/explode_small.png"));
         misc.put("hit", new Texture("assets/effects/hit.png"));
     }
 

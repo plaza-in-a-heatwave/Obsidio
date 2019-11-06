@@ -487,31 +487,32 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private final int CHAT_MAXIMUM_SCROLL_Y = CHAT_scrollBarScrollY + 86;
     private final int CHAT_MINIMUM_SCROLL_Y = CHAT_scrollBarScrollY;
 
-    private int manuaverSlot = 3;
+    private int manuaverSlot = 3;         // initial value; no effect if !isBigShip
 
-    private boolean isBigShip = false;
+    private boolean isBigShip = false;    // big == 3 moves, not big == 4 moves
+    private boolean isDoubleShot = false; // has 2 cannons per side
 
     private boolean  isDragging;          //       are we dragging
     private MoveType startDragMove;       // what  are we dragging
     private int      startDragSlot;       // where are we dragging from
-    private int      clickedDragSlot;     // drag slot when it was clicked
     private Vector2 draggingPosition;
     private boolean executionMoves;
     
     private boolean  draggingScroll = false; // keeps scrollbar locked until release
 
-    protected BattleControlComponent(GameContext context, ControlAreaScene owner, boolean big) {
+    protected BattleControlComponent(GameContext context, ControlAreaScene owner, boolean big, boolean doubleShot) {
         super(context, owner);
-        if (big) {
+        isDoubleShot = doubleShot;
+        isBigShip    = big;
+        if (isDoubleShot) {
             movesHolder = new BigShipHandMove[4];
-            isBigShip = true;
         }
         else {
             movesHolder = new SmallShipHandMove[4];
         }
 
         for (int i = 0; i < movesHolder.length; i++) {
-            movesHolder[i] = createMove();
+            movesHolder[i] = createMove(isDoubleShot);
         }
 
         radioButtons = new boolean[3];
@@ -667,8 +668,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatScrollBarScroll = new Texture("assets/ui/scrollbar_scroll.png");
 
         // initialise
-        setDamagePercentage(70);
-        setBilgePercentage(30);
+        setDamagePercentage(0);
+        setBilgePercentage(0);
     }
     
     /**
@@ -823,8 +824,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         executionMoves = flag;
     }
 
-    public HandMove createMove() {
-        if (isBigShip) {
+    public HandMove createMove(boolean doubleShot) {
+        if (doubleShot) {
             return new BigShipHandMove();
         }
         return new SmallShipHandMove();
@@ -863,7 +864,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         enableRadio(1);
 
         auto = true;
-        manuaverSlot = 3;
+        if (isBigShip) { manuaverSlot = 3; }
     }
 
 
@@ -1124,12 +1125,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                     getContext().sendSelectMoveSlot(startDragSlot, MoveType.NONE);
                 }
             } else { // dragged to something
-                if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
-                    manuaverSlot = endDragSlot;
-                    getContext().sendManuaverSlotChanged(manuaverSlot);
-                } else if ((manuaverSlot == endDragSlot) && startDragSlot <= 3) { // cant drag new piece onto manuaver
-                    manuaverSlot = startDragSlot;
-                    getContext().sendManuaverSlotChanged(manuaverSlot);
+                if (isBigShip) { // only big ships have manuavers
+	            	if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
+	                    manuaverSlot = endDragSlot;
+	                    getContext().sendManuaverSlotChanged(manuaverSlot);
+	                } else if ((manuaverSlot == endDragSlot) && startDragSlot <= 3) { // cant drag new piece onto manuaver
+	                    manuaverSlot = startDragSlot;
+	                    getContext().sendManuaverSlotChanged(manuaverSlot);
+	                }
                 }
 
                 if (startDragSlot <= 3 && endDragSlot <= 3) { // drag from place to place; swap
@@ -1143,7 +1146,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                     getContext().sendSelectMoveSlot(endDragSlot, movesHolder[startDragSlot].getMove());
                 } else if (startDragSlot > 3 && startDragSlot <= 6 && endDragSlot <= 3) { // moving from available to placed; replace
                     // if there's anything there already, replace it, apart from a manuaver slot
-                    if (manuaverSlot != endDragSlot) {
+                    if ((!isBigShip) || (manuaverSlot != endDragSlot)) {
                         getContext().sendSelectMoveSlot(endDragSlot, MoveType.forId(startDragSlot-3));
                     }
                 } else if (startDragSlot <= 3) { // started on something, but dragged it to something unhandled
@@ -1263,7 +1266,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     private void handleMovePlace(int position, int button) {
-        if (position == manuaverSlot) {
+        if (isBigShip && (position == manuaverSlot)) {
             return;
         }
         if (isDragging) {
@@ -1437,13 +1440,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         TextureRegion t = manuaverTexture; // initial, prevent crashes
         batch.draw(title, MOVES_titleX, MOVES_titleY);
         if (isDragging && startDragSlot != -1) {
-            if (startDragSlot == manuaverSlot) {
+            if (isBigShip && (startDragSlot == manuaverSlot)) {
                 t = manuaverTexture;
             } else {
                 t = getTextureForMove(startDragMove);
             }
 
-            if ((startDragMove != MoveType.NONE) || (startDragSlot == manuaverSlot)) {
+            if ((startDragMove != MoveType.NONE) || (isBigShip && (startDragSlot == manuaverSlot))) {
                 batch.draw(t, draggingPosition.x - t.getRegionWidth() / 2, Gdx.graphics.getHeight() - draggingPosition.y - t.getRegionHeight() / 2);
             }
         }
@@ -1530,13 +1533,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             // draw left (guns AB |__| CD - place A, then B)
             // must be in this order to create blur together
             batch.draw((left[0])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotSmallX, cH); // left
-            if (isBigShip) {
+            if (isDoubleShot) {
                 batch.draw((left[0] && left[1])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotBigX, cH); // left
             }
 
             // draw right (guns AB |__| CD - place D, then C)
             // must be in this order to create blur together
-            if (isBigShip)
+            if (isDoubleShot)
             {
             	batch.draw((right[0] && right[1])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
             	batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
@@ -1548,7 +1551,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             
 
             // draw moves and manauver
-            if (i == manuaverSlot) {
+            if (isBigShip && (i == manuaverSlot)) {
                 batch.draw(manuaverTexture, MOVES_moveSlotX, mH);
             }
             else
@@ -1690,8 +1693,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             // fix stuck moves that might appear after a turn completes
             getContext().sendSelectMoveSlot(i, MoveType.NONE);
         }
-        manuaverSlot = 3;
-        getContext().sendManuaverSlotChanged(3);
+        
+        if (isBigShip) {
+	        manuaverSlot = 3;
+	        getContext().sendManuaverSlotChanged(3);
+        }
 
         // fix stuck buttons if they were clicked across a turn
         // with no penalty to the user
@@ -1721,7 +1727,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             
             int left  = (l[0]?1:0);
             int right = (r[0]?1:0);
-            if (isBigShip)
+            if (isDoubleShot)
             {
             	left  += (l[1]?1:0);
             	right += (r[1]?1:0);
@@ -1731,7 +1737,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             // (we can only add cannons until rollover)
             // so 3-left for big, 2-left for small
             // then send update n times as necessary
-            int rolloverThreshold = isBigShip?3:2;
+            int rolloverThreshold = isDoubleShot?3:2;
             if (left > 0) {
                 for (int j=0; j<(rolloverThreshold - left); j++) {
                     getContext().sendAddCannon(0, i);
@@ -1814,13 +1820,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        // TODO Auto-generated method stub
         return false;
     }
 

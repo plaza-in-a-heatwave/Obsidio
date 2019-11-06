@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -41,11 +40,6 @@ public class SeaBattleScene implements GameScene {
      * The sprite batch renderer
      */
     private SpriteBatch batch;
-
-    /**
-     * The battle map
-     */
-    private SeaMap map;
 
     /**
      * The camera view of the scene
@@ -102,7 +96,6 @@ public class SeaBattleScene implements GameScene {
     private int vesselsCountWithCurrentPhase = 0;
     private int vesselsCountNonSinking = 0;
     private boolean turnFinished;
-    private Vector3 mousePosititon;
 
     public SeaBattleScene(GameContext context) {
         this.context = context;
@@ -120,9 +113,9 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public void create() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Pixel-Miners.otf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 8;
+        parameter.size = 10;
         parameter.spaceX = 0;
         parameter.shadowColor = new Color(0, 0, 0, 0.5f);
         parameter.borderColor = Color.BLACK;
@@ -417,8 +410,6 @@ public class SeaBattleScene implements GameScene {
         information.update();
     }
 
-    private boolean drawn;
-
     @Override
     public void render() {
         batch.setProjectionMatrix(camera.combined);
@@ -503,10 +494,10 @@ public class SeaBattleScene implements GameScene {
                     if (v.x>= xxx && v.x <= xxx + vessel.getRegionWidth() && v.y >= yyy && v.y <= yyy + vessel.getRegionHeight()) {
 
                         batch.end();
-                        // The vessel radius (diameter / 2)
-                        float radious = vessel.getInfluenceRadius();
+
+                        // get diameter, divide by sqrt(2): our diameter matches |_ (geometric), but we want \ (isometric).
+                        float diameter = (vessel.getInfluenceRadius() * 2) / 1.4142f;
                         renderer.begin(ShapeRenderer.ShapeType.Line);
-                        //renderer.circle(vessel.getX(), vessel.getY(), radious * GameTile.TILE_HEIGHT);
 
                         Gdx.gl.glEnable(GL20.GL_BLEND);
                         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -516,8 +507,8 @@ public class SeaBattleScene implements GameScene {
 
                         renderer.setColor(color);
                         for (int i = 0; i < 5; i++) {
-                            int width = (int) (radious * GameTile.TILE_WIDTH) + i;
-                            int height = (int) (radious * GameTile.TILE_HEIGHT) + i;
+                            float width = (diameter * GameTile.TILE_WIDTH) + i;
+                            float height = (diameter * GameTile.TILE_HEIGHT) + i;
                             renderer.ellipse(xx - width / 2 + vessel.getRegionWidth() / 2, yy - height / 2 + vessel.getRegionHeight() / 2, width, height);
                         }
                         renderer.end();
@@ -528,14 +519,6 @@ public class SeaBattleScene implements GameScene {
                 }
             }
         }
-
-//        public float getIsometricX(float x, float y, TextureRegion region) {
-//            return (x * GameTile.TILE_WIDTH / 2) - (y * GameTile.TILE_WIDTH / 2) - (region.getRegionWidth() / 2);
-//        }
-//
-//        public float getIsometricY(float x, float y, TextureRegion region) {
-//            return (x * GameTile.TILE_HEIGHT / 2) + (y * GameTile.TILE_HEIGHT / 2) - (region.getRegionHeight() / 2);
-//        }
 
         for (Vessel vessel : context.getEntities().listVesselEntities()) {
             // render cannon balls
@@ -569,31 +552,44 @@ public class SeaBattleScene implements GameScene {
             batch.end();
             
             // render move bar
+            int BAR_HEIGHT_ABOVE_SHIP = 15; // px
+            int BAR_HEIGHT = 7;
             renderer.begin(ShapeRenderer.ShapeType.Line);
             float x = getIsometricX(vessel.getX(), vessel.getY(), vessel);
             float y = getIsometricY(vessel.getX(), vessel.getY(), vessel);
 
-            int width = vessel.getMoveType().getBarWidth();
+            int width = vessel.getMoveType().getBarWidth() + 1;
             renderer.setColor(Color.BLACK);
-            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), Math.round(y + vessel.getRegionHeight() * 1.35f), width, 7);
+
+            // draw move bar bounding box
+            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, width, BAR_HEIGHT);
+
+            // draw white move fill
             renderer.end();
             renderer.begin(ShapeRenderer.ShapeType.Filled);
             renderer.setColor(Color.WHITE);
 
-            int w = (width - 1) / 3;
-            int fill = vessel.getNumberOfMoves() > 3 ? 3 : vessel.getNumberOfMoves();
+            int fill = vessel.getNumberOfMoves(); // number to fill
+            int w; // width of each fill
+            if (vessel.getMoveType() == VesselMoveType.FOUR_MOVES)
+            {
+                w = (width) / 4;
+            }
+            else
+            {
+                fill = fill > 3? 3:fill; // cap at 3 if large ship
+                w = (width) / 3;
+            }
+            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, fill * w, BAR_HEIGHT - 1);
 
-            renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2), Math.round(y + vessel.getRegionHeight() * 1.35f) + 1, fill * w, 6);
-            renderer.setColor(Color.RED);
+            // draw red fill extension if large ship
             if (vessel.getMoveType() == VesselMoveType.THREE_MOVES && vessel.getNumberOfMoves() > 3) {
-                renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2) + (width - 1) - 2, Math.round(y + vessel.getRegionHeight() * 1.35f) + 1, 10, 6);
+                renderer.setColor(Color.RED);
+                renderer.rect(x + (vessel.getRegionWidth() / 2) - (width / 2) + (3*w), y + vessel.getRegionHeight() + BAR_HEIGHT_ABOVE_SHIP, w, BAR_HEIGHT - 1);
             }
             renderer.end();
 
-            // draw flags above vessel
-            batch.begin();
-            GlyphLayout layout = new GlyphLayout(font, vessel.getName());
-
+            // draw ship name and flags
             if (vessel.getName().equalsIgnoreCase(context.myVessel) || vessel.getTeam().getID() == context.myTeam.getID()) {
                 font.setColor(Vessel.DEFAULT_BORDER_COLOR);
             }
@@ -601,10 +597,20 @@ public class SeaBattleScene implements GameScene {
                 font.setColor(vessel.getTeam().getColor());
             }
 
-            font.draw(batch, vessel.getName(), x + (vessel.getRegionWidth() / 2) - (layout.width / 2), y + vessel.getRegionHeight() * 1.7f);
+            // name
+            int NAME_HEIGHT_ABOVE_SHIP = BAR_HEIGHT_ABOVE_SHIP + BAR_HEIGHT + (int)font.getCapHeight() + 10; // px
+            batch.begin();
+            GlyphLayout layout = new GlyphLayout(font, vessel.getName());
+            font.draw(batch, vessel.getName(), x + (vessel.getRegionWidth() / 2) - (layout.width / 2), y + vessel.getRegionHeight() + NAME_HEIGHT_ABOVE_SHIP);
 
-            float startX = x;
-            float flagsY = y + vessel.getRegionHeight() * 1.8f;
+            // flags
+            int FLAG_HEIGHT_ABOVE_SHIP = 10 + NAME_HEIGHT_ABOVE_SHIP;
+
+            int symbwidth   = 10; // width of symbol
+            int symbspacing = 3;  // space between symbols
+            int numsymbols  = vessel.getFlags().size();
+            float startX = x + (vessel.getRegionWidth() / 2) - ((numsymbols * symbwidth) / 2) - (((numsymbols-1) * symbspacing) / 2);
+            float flagsY = y + vessel.getRegionHeight() + FLAG_HEIGHT_ABOVE_SHIP;
 
             int points = 0;
             for (FlagSymbol symbol : vessel.getFlags()) {
@@ -675,7 +681,6 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public boolean handleMouseMove(float x, float y) {
-        this.mousePosititon = new Vector3(x, y, 0);
         return false;
     }
 
@@ -704,9 +709,6 @@ public class SeaBattleScene implements GameScene {
 
 
     private void renderSeaBattle() {
-
-        int count = 0;
-
         // The map tiles
        // GameTile[][] tiles = map.getTiles();
 
@@ -721,7 +723,6 @@ public class SeaBattleScene implements GameScene {
                 int y = (i * GameTile.TILE_HEIGHT / 2) + (j * GameTile.TILE_HEIGHT / 2) - region.getRegionHeight() / 2;
 
                 if (canDraw(x, y, GameTile.TILE_WIDTH, GameTile.TILE_HEIGHT)) {
-                    count++;
                     batch.draw(region, x, y);
                     if (winds[i][j] != null) {
                         region = winds[i][j].getRegion();
