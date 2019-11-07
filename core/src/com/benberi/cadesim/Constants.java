@@ -17,12 +17,8 @@ public class Constants {
     /**
      * Version of client
      */
-    public static final String VERSION = "1.9.7";
-
-    /**
-     * The protocol version to allow connections to (must match server)
-     */
-    public static final int PROTOCOL_VERSION = 9; // internal use only
+    public static final String VERSION = "1.9.8";
+    public static final int PROTOCOL_VERSION = 10; // MUST match server
 
 	public static final int MAX_NAME_SIZE = 19;   // name of player
 	
