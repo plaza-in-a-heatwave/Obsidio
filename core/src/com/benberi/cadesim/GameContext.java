@@ -273,6 +273,17 @@ public class GameContext {
         packet.setMove(move.getId());
         sendPacket(packet);
     }
+    
+    /**
+     * sends a move swap packet
+     * basically sending 2x sendSelectMoveSlot at once to avoid spamming with packets.
+     */
+    public void sendSwapMovesPacket(int slot1, int slot2)
+    {
+        SwapMovesPacket packet = new SwapMovesPacket();
+        packet.set(slot1, slot2);
+        sendPacket(packet);
+    }
 
 
     /**

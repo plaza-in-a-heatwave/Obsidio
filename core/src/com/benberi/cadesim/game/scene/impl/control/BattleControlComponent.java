@@ -1124,26 +1124,37 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 if (startDragSlot <= 3) {
                     getContext().sendSelectMoveSlot(startDragSlot, MoveType.NONE);
                 }
-            } else { // dragged to something
-                if (isBigShip) { // only big ships have manuavers
-	            	if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
-	                    manuaverSlot = endDragSlot;
-	                    getContext().sendManuaverSlotChanged(manuaverSlot);
-	                } else if ((manuaverSlot == endDragSlot) && startDragSlot <= 3) { // cant drag new piece onto manuaver
-	                    manuaverSlot = startDragSlot;
-	                    getContext().sendManuaverSlotChanged(manuaverSlot);
-	                }
-                }
-
+            }
+            else if (startDragSlot == endDragSlot)
+            {
+                // no-op, can't drag to self
+            }
+            else if (
+                    (startDragSlot <= 3) &&
+                    (movesHolder[startDragSlot].getMove() == MoveType.NONE) &&
+                    manuaverSlot != startDragSlot)
+            {
+                // no-op, can't drag a None token to anything
+            }
+            else
+            {
                 if (startDragSlot <= 3 && endDragSlot <= 3) { // drag from place to place; swap
-                    // swap
-                    int tmpSlot = startDragSlot;
-                    startDragSlot = endDragSlot;
-                    endDragSlot = tmpSlot;
+                    // update move swap - manuaver slot is "None"
+                    getContext().sendSwapMovesPacket(
+                        endDragSlot,
+                        startDragSlot
+                    );
 
-                    // update
-                    getContext().sendSelectMoveSlot(startDragSlot, movesHolder[endDragSlot].getMove());
-                    getContext().sendSelectMoveSlot(endDragSlot, movesHolder[startDragSlot].getMove());
+                    // update manuaver location
+                    if (isBigShip) {
+                        if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
+                            manuaverSlot = endDragSlot;
+                            getContext().sendManuaverSlotChanged(manuaverSlot);
+                        } else if ((manuaverSlot == endDragSlot) && startDragSlot <= 3) { // cant drag new piece onto manuaver
+                            manuaverSlot = startDragSlot;
+                            getContext().sendManuaverSlotChanged(manuaverSlot);
+                        }
+                    }
                 } else if (startDragSlot > 3 && startDragSlot <= 6 && endDragSlot <= 3) { // moving from available to placed; replace
                     // if there's anything there already, replace it, apart from a manuaver slot
                     if ((!isBigShip) || (manuaverSlot != endDragSlot)) {
