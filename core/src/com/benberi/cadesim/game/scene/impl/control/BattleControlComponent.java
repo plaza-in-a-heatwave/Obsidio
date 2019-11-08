@@ -1668,19 +1668,21 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             int cH = cannonHeights.get(i);
             int mH =   moveHeights.get(i);
 
-            // draw left (guns AB |__| CD - place A, then B)
-            // must be in this order to create blur together
+            // rendering: draw left (guns AB |__| CD - place A, then B)
+            // (must be in this order to create blur together)
+            // clicking: when clicked they must appear in order B, A
             batch.draw((left[0])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotSmallX, cH); // left
             if (isDoubleShot) {
                 batch.draw((left[0] && left[1])?cannonLeft:emptyCannonLeft, MOVES_cannonLeftSlotBigX, cH); // left
             }
 
-            // draw right (guns AB |__| CD - place D, then C)
-            // must be in this order to create blur together
+            // rendering: draw right (guns AB |__| CD - place D, then C)
+            // (must be in this order to create blur together)
+            // clicking: when clicked they must appear in order C, D
             if (isDoubleShot)
             {
-            	batch.draw((right[0] && right[1])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
-            	batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
+                batch.draw((right[0])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotSmallX, cH); // right
+                batch.draw((right[0] && right[1])?cannonRight:emptyCannonRight, MOVES_cannonRightSlotBigX, cH); // right
             }
             else
             {
