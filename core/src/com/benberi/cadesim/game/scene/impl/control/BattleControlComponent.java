@@ -37,17 +37,17 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * Left moves
      */
-    private int leftMoves = 2;
+    private int leftMoves;
 
     /**
      * Right moves
      */
-    private int rightMoves = 2;
+    private int rightMoves;
 
     /**
      * Forward moves
      */
-    private int forwardMoves = 4;
+    private int forwardMoves;
 
     /**
      * The available shoots
@@ -143,7 +143,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * The target move
      */
-    private MoveType targetMove = MoveType.RIGHT;
+    private MoveType targetMove;
 
     /**
      * The damage of the vessel
