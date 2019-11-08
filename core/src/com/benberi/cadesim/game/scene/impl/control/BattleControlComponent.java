@@ -521,7 +521,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * size of scroll increment (px) when scrolling (mouse or button)
      */
-    private static final int CHAT_WINDOW_SCROLL_INCREMENT = 15;
+    private static final int CHAT_WINDOW_BOTTOM_PAD       = 3;
+    private static final int CHAT_WINDOW_SCROLL_INCREMENT = 14 + CHAT_WINDOW_BOTTOM_PAD;
     
     /**
      * time threshold for button to start scrolling (ms)
@@ -734,7 +735,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      */
     public void displayMessage(String message, Texture messageTexture) {
     	// create the data
-    	chatTable.row().padBottom(1);
+        chatTable.row().padBottom(CHAT_WINDOW_BOTTOM_PAD);
         Label chat1;
         
         // define the background textures based on the message source
