@@ -72,6 +72,9 @@ public class ControlAreaScene implements GameScene {
 
     @Override
     public boolean handleMouseMove(float x, float y) {
+        if (control.handleMouseMove(x, y)) {
+            return true;
+        }
         return false;
     }
 

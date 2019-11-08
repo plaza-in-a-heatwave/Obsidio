@@ -42,12 +42,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * Right moves
      */
-    private int rightMoves = 4;
+    private int rightMoves = 2;
 
     /**
      * Forward moves
      */
-    private int forwardMoves;
+    private int forwardMoves = 4;
 
     /**
      * The available shoots
@@ -72,6 +72,57 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 radioButtons[i] = false;
             }
         }
+    }
+
+    private final int TOOLTIP_SHOW_THRESHOLD = 500; // delay before showing tooltip
+    private int leftMovesByTurn[]    = { 0, 0, 0, 0, 0 }; // moves added from right to left
+    private int forwardMovesByTurn[] = { 0, 0, 0, 0, 0 }; // "
+    private int rightMovesByTurn[]   = { 0, 0, 0, 0, 0 }; // "
+    private int selectedTooltip = -1; // -1 if invalid; >=0 if valid; index to arrays above
+    private long selectedTooltipTime = System.currentTimeMillis(); // time it's been selected
+
+    /**
+     * helper method to activate/deactivate tooltip depending on mouse position
+     * @param x screenx
+     * @param y screeny
+     */
+    private void handleTooltipActivation(float x, float y)
+    {
+        // if mouse is over tokens, we want to show a tooltip
+        int slot = getSlotForPosition(x, y);
+        int oldSelectedTooltip = selectedTooltip;
+        selectedTooltip = (slot == 4 || slot == 5 || slot == 6)?(slot - 4):-1;
+        if (selectedTooltip != -1 && oldSelectedTooltip != selectedTooltip)
+        {
+            selectedTooltipTime = System.currentTimeMillis();
+        }
+    }
+
+    /**
+     * helper method to update moves received this turn
+     */
+    public void updateMovesThisTurn(int lefts, int forwards, int rights)
+    {
+        leftMovesByTurn[4]    += lefts;
+        forwardMovesByTurn[4] += forwards;
+        rightMovesByTurn[4]   += rights;
+    }
+
+    /**
+     * helper method to handle move history update after turn ends
+     */
+    public void handleMovesAtEndOfTurn()
+    {
+        for (int i=0; i<4; i++) // leftshift elements 0,1,2,3 by 1 place
+        {
+            leftMovesByTurn[i]    = leftMovesByTurn[i+1];
+            forwardMovesByTurn[i] = forwardMovesByTurn[i+1];
+            rightMovesByTurn[i]   = rightMovesByTurn[i+1];
+        }
+        // clear for next round
+        leftMovesByTurn[4] = 0;
+        forwardMovesByTurn[4] = 0;
+        rightMovesByTurn[4] = 0;
     }
 
     /**
@@ -157,6 +208,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private Texture shiphand;
     private Texture moves;
     private Texture emptyMoves;
+    private Texture tooltipBackground;
     private TextureRegion leftMoveTexture;
     private TextureRegion rightMoveTexture;
     private TextureRegion forwardMoveTexture;
@@ -232,6 +284,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     float containerTopY;
     float containerBottomY;
     
+    private int TOOLTIP_BACKGROUND_X_OFFSET = 0; // from one of the token piece
+    private int TOOLTIP_BACKGROUND_Y_OFFSET = -32; // "
+    private int TOOLTIP_TEXT_X_OFFSET       = TOOLTIP_BACKGROUND_X_OFFSET + 4; // from background
+    private int TOOLTIP_TEXT_Y_OFFSET       = TOOLTIP_BACKGROUND_X_OFFSET - 19; // "
 
     // reference coords - MOVES control
     private int MOVES_REF_X             = 0;
@@ -552,6 +608,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         cannonSlots = new Texture("assets/ui/cannonslots.png");
         moves = new Texture("assets/ui/move.png");
         emptyMoves = new Texture("assets/ui/move_empty.png");
+        tooltipBackground = new Texture("assets/ui/tooltip_background.png");
         shiphand = new Texture("assets/ui/shiphand.png");
         hourGlass = new Texture("assets/ui/hourglass.png");
         controlBackground = new Texture("assets/ui/moves-background.png");
@@ -1056,6 +1113,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             draggingPosition = new Vector2(x, y);
         }
 
+        // if we drag off a token select piece,
+        // deactivate the tooltip
+        if (selectedTooltip != -1)
+        {
+            selectedTooltip = -1;
+        }
+
         // if we drag off disengage,
         // deactivate it with no penalty to the user.
         if (disengageButtonIsDown) {
@@ -1269,10 +1333,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 }
             }
         }
-        
+
+        // undo any scroll drag effect
         if (draggingScroll) {
             draggingScroll = false;
         }
+
+        // activate or deactivate tooltips depending on where mouse is
+        handleTooltipActivation(x,y);
+
         return false;
     }
 
@@ -1461,6 +1530,63 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 batch.draw(t, draggingPosition.x - t.getRegionWidth() / 2, Gdx.graphics.getHeight() - draggingPosition.y - t.getRegionHeight() / 2);
             }
         }
+
+        // show tooltips if can
+        if (selectedTooltip != -1 && ((System.currentTimeMillis() - selectedTooltipTime)) >= TOOLTIP_SHOW_THRESHOLD)
+        {
+            int[] tooltip;
+            int tokenOffsetX;
+            int tokenOffsetY;
+            switch (selectedTooltip)
+            {
+            case 0:
+                tooltip      = leftMovesByTurn;
+                tokenOffsetX = MOVES_leftSelectX;
+                tokenOffsetY = MOVES_leftSelectY;
+                break;
+            case 1:
+                tooltip = forwardMovesByTurn;
+                tokenOffsetX = MOVES_forwardSelectX;
+                tokenOffsetY = MOVES_forwardSelectY;
+                break;
+            case 2:
+                tooltip =  rightMovesByTurn;
+                tokenOffsetX = MOVES_rightSelectX;
+                tokenOffsetY = MOVES_rightSelectY;
+                break;
+            default:
+                tooltip =  forwardMovesByTurn;
+                tokenOffsetX = MOVES_forwardSelectX;
+                tokenOffsetY = MOVES_forwardSelectY;
+                break;
+                // error case but safe default
+            }
+
+            String tooltipText =
+                tooltip[0] + ", " +
+                tooltip[1] + ", " +
+                tooltip[2] + ", " +
+                tooltip[3] + ", " +
+                tooltip[4];
+
+            // draw
+            batch.draw(
+                    tooltipBackground,
+                    TOOLTIP_BACKGROUND_X_OFFSET + tokenOffsetX,
+                    TOOLTIP_BACKGROUND_Y_OFFSET + tokenOffsetY
+            );
+            font.draw(
+                    batch,
+                    tooltipText,
+                    TOOLTIP_TEXT_X_OFFSET + tokenOffsetX,
+                    TOOLTIP_TEXT_Y_OFFSET + tokenOffsetY
+            );
+        }
+        else
+        {
+            // no-op
+        }
+
         batch.end();
     }
 
@@ -1843,5 +1969,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     public boolean scrolled(int amount) {
     	scrollChat(amount < 0); // 
     	return true;
+    }
+
+    @Override
+    public boolean handleMouseMove(float x, float y) {
+        handleTooltipActivation(x, y);
+        return false;
     }
 }

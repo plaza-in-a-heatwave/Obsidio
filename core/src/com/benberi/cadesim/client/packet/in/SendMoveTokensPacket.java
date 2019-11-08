@@ -15,9 +15,13 @@ public class SendMoveTokensPacket extends ClientPacketExecutor {
         int left = p.readByte();
         int forward = p.readByte();
         int right = p.readByte();
+        int leftNew = p.readByte();
+        int forwardNew = p.readByte();
+        int rightNew = p.readByte();
         int cannons = p.readByte();
 
         getContext().getControlScene().getBnavComponent().setMoves(left, forward, right);
+        getContext().getControlScene().getBnavComponent().updateMovesThisTurn(leftNew, forwardNew, rightNew);
         getContext().getControlScene().getBnavComponent().setLoadedCannonballs(cannons);
     }
 

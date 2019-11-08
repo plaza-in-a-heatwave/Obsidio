@@ -180,4 +180,9 @@ public class GameInformation extends SceneComponent {
             this.longestTeam = attacker;
         }
     }
+
+    @Override
+    public boolean handleMouseMove(float x, float y) {
+        return false;
+    }
 }

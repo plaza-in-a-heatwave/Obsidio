@@ -35,4 +35,5 @@ public abstract class SceneComponent<T extends GameScene> {
     public abstract boolean handleClick(float x, float y, int button);
     public abstract boolean handleDrag(float screenX, float screenY, float x, float y);
     public abstract boolean handleRelease(float x, float y, int button);
+    public abstract boolean handleMouseMove(float x, float y);
 }
