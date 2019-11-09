@@ -403,10 +403,6 @@ public class SeaBattleScene implements GameScene {
                 context.notifyFinishTurn();
                 turnFinished = false;
 
-                // do some post-turn cleanup to prevent guns glitching
-                // at end of turn
-                context.getControlScene().getBnavComponent().resetCannons();
-
                 // and post-process tooltips
                 context.getControlScene().getBnavComponent().handleMovesAtEndOfTurn();
             }

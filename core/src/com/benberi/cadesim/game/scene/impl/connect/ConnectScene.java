@@ -32,7 +32,9 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     private GameContext context;
 
+    // the connect state
     private ConnectionSceneState state = ConnectionSceneState.DEFAULT;
+    private long loginAttemptTimestampMillis; // initialised when used
 
     /**
      * Batch for opening screen
@@ -450,16 +452,16 @@ public class ConnectScene implements GameScene, InputProcessor {
             }
 
                 font.setColor(Color.YELLOW);
-                String text = "";
+                String text = "(" + ((System.currentTimeMillis() - loginAttemptTimestampMillis)) + "ms) ";
 
-                if (state == ConnectionSceneState.CREATING_PROFILE) {
-                    text = "Creating profile";
+                if (state == ConnectionSceneState.CONNECTING) {
+                    text += "Connecting, please wait";
                 }
-                else if (state == ConnectionSceneState.CONNECTING) {
-                    text = "Connecting, please wait";
+                else if (state == ConnectionSceneState.CREATING_PROFILE) {
+                    text += "Connected - creating profile";
                 }
                 else if (state == ConnectionSceneState.CREATING_MAP) {
-                    text = "Waiting for board map update";
+                    text += "Connected - waiting for board map update";
                 }
 
                 GlyphLayout layout = new GlyphLayout(font, text);
@@ -585,6 +587,8 @@ public class ConnectScene implements GameScene, InputProcessor {
     }
 
     private void performLogin() throws UnknownHostException {
+        loginAttemptTimestampMillis = System.currentTimeMillis();
+
         if (name.getText().length() > Constants.MAX_NAME_SIZE) {
             setPopup("Display name must be less than " + Constants.MAX_NAME_SIZE + " letters.");
         }

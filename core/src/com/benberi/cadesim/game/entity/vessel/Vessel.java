@@ -590,7 +590,7 @@ public abstract class Vessel extends Entity {
     }
 
     public void setMoveDelay() {
-        this.moveDelay = 30;
+        this.moveDelay = 10;
     }
 
 

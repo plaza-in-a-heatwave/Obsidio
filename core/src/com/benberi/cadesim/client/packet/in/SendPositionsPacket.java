@@ -27,9 +27,6 @@ public class SendPositionsPacket extends ClientPacketExecutor {
                 vessel.setSinking(false);
             }
         }
-
-        getContext().getControlScene().getBnavComponent().setExecutingMoves(false);
-        getContext().getControlScene().getBnavComponent().resetMoves();
     }
 
     @Override

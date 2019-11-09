@@ -878,10 +878,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
     }
 
-    public void setExecutingMoves(boolean flag) {
-        executionMoves = flag;
-    }
-
     public HandMove createMove(boolean doubleShot) {
         if (doubleShot) {
             return new BigShipHandMove();
@@ -917,7 +913,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public void dispose() {
-        resetMoves();
         targetMove = MoveType.FORWARD;
         enableRadio(1);
 
@@ -1233,9 +1228,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
             draggingPosition = null;
         } else {
-            if (executionMoves) {
-                return false;
-            }
             if ((startDragSlot >=0) && (startDragSlot <=3) && isPlacingMoves(x, y)) {
                 int slot = getSlotForPosition(x,y);
                 switch (slot) {
@@ -1857,6 +1849,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     /**
      * sets cannons both on server and on client
+     * --not currently used but maybe useful in future--
      */
     public void resetCannons()
     {
