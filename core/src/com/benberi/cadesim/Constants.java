@@ -17,8 +17,8 @@ public class Constants {
     /**
      * Version of client
      */
-    public static final String VERSION = "1.9.8";
-    public static final int PROTOCOL_VERSION = 11; // MUST match server
+    public static final String VERSION = "1.9.9";
+    public static final int PROTOCOL_VERSION = 12; // MUST match server
 
 	public static final int MAX_NAME_SIZE = 19;   // name of player
 
@@ -27,7 +27,7 @@ public class Constants {
     /**
      * The default port the simulator is using
      */
-    public static int PROTOCOL_PORT = 4666;
+    public static int PROTOCOL_PORT = 4970;
 
     /**
      * whether or not players can choose the black ship. A debugging option.
