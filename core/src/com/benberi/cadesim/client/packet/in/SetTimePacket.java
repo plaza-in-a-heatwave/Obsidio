@@ -12,19 +12,24 @@ public class SetTimePacket extends ClientPacketExecutor {
 
     @Override
     public void execute(Packet p) {
-        int gameTime     = p.readInt();
-        int turnTime     = p.readInt();
-        int turnDuration = p.readInt();
-        int roundDuration = p.readInt();
+        int gameTime       = p.readInt();
+        int turnTime       = p.readInt();
+        int timeUntilBreak = p.readInt();
+        int breakTime      = p.readInt();
+        int turnDuration   = p.readInt();
+        int roundDuration  = p.readInt();
 
         // current positions within timeframes
         getContext().getControlScene().getBnavComponent().setTime(turnTime);
         getContext().getBattleScene().getInformation().setTime(gameTime);
 
+        // breaks
+        getContext().getBattleScene().getInformation().setTimeUntilBreak(timeUntilBreak);
+        getContext().getBattleScene().getInformation().setBreakTime(breakTime);
+
         // durations
         getContext().setTurnDuration(turnDuration);
         getContext().setRoundDuration(roundDuration);
-
     }
 
     @Override

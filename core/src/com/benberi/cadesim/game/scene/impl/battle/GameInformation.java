@@ -34,11 +34,14 @@ public class GameInformation extends SceneComponent {
     private BitmapFont fontPointsAttacker;
     private BitmapFont fontPointsDefender;
     private BitmapFont timeFont;
+    private BitmapFont breakInfoFont;
 
     private int defenderPoints;
     private int attackerPoints;
 
     private int time;
+    private int timeUntilBreak = -1; // defaults
+    private int breakTime      = -1; // "
     
     // default strings - will be overwritten
     private String defender = "Attacker";
@@ -84,13 +87,22 @@ public class GameInformation extends SceneComponent {
 
         parameter.shadowColor = new Color(0, 0, 0, 0.3f);
         parameter.shadowOffsetY = 2;
-
         timeFont = generator.generateFont(parameter);
-        areDefender = getContext().myTeam.name().equals(Team.DEFENDER.toString());
-        if (areDefender) {
+        timeFont.setColor(new Color(1, 230 / 255f, 59 / 255f, 1));
+
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
+        parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 13;
+
+        parameter.shadowColor = new Color(0, 0, 0, 0.3f);
+        parameter.shadowOffsetY = 2;
+        breakInfoFont = generator.generateFont(parameter);
+        breakInfoFont.setColor(new Color(1, 230 / 255f, 59 / 255f, 1));
+
+        if (getContext().myTeam.name().equals(Team.DEFENDER.toString())) {
         	fontTeamDefender.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
         	fontTeamAttacker.setColor(new Color(203 / 255f, 42 / 255f, 25 / 255f, 1));
-        	
+
         	fontPointsDefender.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
         	fontPointsAttacker.setColor(new Color(203 / 255f, 42 / 255f, 25 / 255f, 1));
         }
@@ -107,6 +119,14 @@ public class GameInformation extends SceneComponent {
         this.time = time;
     }
 
+    public void setTimeUntilBreak(int value) {
+        timeUntilBreak = value;
+    }
+
+    public void setBreakTime(int value) {
+        breakTime = value;
+    }
+
     @Override
     public void update() {
 
@@ -119,22 +139,73 @@ public class GameInformation extends SceneComponent {
         Gdx.gl.glViewport(0,200, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
         batch.draw(panel, 5, 5);
-        
+
         // draw defender
         fontTeamDefender.draw(batch, defender + ":", 38,120 );
         fontPointsDefender.draw(batch, Integer.toString(defenderPoints), xPlacement,118 );
         batch.draw(areDefender?defenderUs:defenderThem, 18, 105);
-        
+
         // draw attacker
         fontTeamAttacker.draw(batch, attacker + ":", 38,97 );
         fontPointsAttacker.draw(batch, Integer.toString(attackerPoints), xPlacement,95 );
         batch.draw(areDefender?attackerThem:attackerUs, 18, 82);
 
-        // draw time
-        int minutes = time / 60;
-        int seconds = time % 60;
-        timeFont.setColor(new Color(1, 230 / 255f, 59 / 255f, 1));
-        timeFont.draw(batch, (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds), 62,50 );
+        if (timeUntilBreak == 0 && breakTime >= 0)
+        {
+            // draw break
+            int minutes = breakTime / 60;
+            int seconds = breakTime % 60;
+            timeFont.draw(
+                batch,
+                (minutes < 10 ? "0" + minutes : minutes) +
+                    ":" +
+                    (seconds < 10 ? "0" + seconds : seconds),
+                62,
+                50
+            );
+
+            // draw current break info
+            breakInfoFont.draw(
+                batch,
+                "Break",
+                62,
+                65
+            );
+        }
+        else
+        {
+            // draw time
+            int minutes = time / 60;
+            int seconds = time % 60;
+            timeFont.draw(
+                batch,
+                (minutes < 10 ? "0" + minutes : minutes) +
+                    ":" +
+                    (seconds < 10 ? "0" + seconds : seconds),
+                62,
+                50
+            );
+
+            // draw next break info
+            if (timeUntilBreak >= 0)
+            {
+                int breakMinutes = timeUntilBreak / 60;
+                int breakSeconds = timeUntilBreak % 60;
+                breakInfoFont.draw(
+                    batch,
+                    "Break in " +
+                        (breakMinutes < 10 ? "0" + breakMinutes : breakMinutes) +
+                        ":" +
+                        (breakSeconds < 10 ? "0" + breakSeconds: breakSeconds),
+                    62,
+                    65
+                );
+            }
+            else
+            {
+                // no-op. there are no breaks
+            }
+        }
 
         batch.end();
     }
