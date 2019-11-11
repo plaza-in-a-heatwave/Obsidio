@@ -47,7 +47,7 @@ public class GameInformation extends SceneComponent {
     private String defender = "Attacker";
     private String attacker = "Defender";
     private String longestTeam = attacker;
-    
+
     // are we defender or attacker?
     boolean areDefender;
 
@@ -99,7 +99,9 @@ public class GameInformation extends SceneComponent {
         breakInfoFont = generator.generateFont(parameter);
         breakInfoFont.setColor(new Color(1, 230 / 255f, 59 / 255f, 1));
 
-        if (getContext().myTeam.name().equals(Team.DEFENDER.toString())) {
+        areDefender = getContext().myTeam.name().equals(Team.DEFENDER.toString());
+
+        if (areDefender) {
         	fontTeamDefender.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
         	fontTeamAttacker.setColor(new Color(203 / 255f, 42 / 255f, 25 / 255f, 1));
 
@@ -125,6 +127,10 @@ public class GameInformation extends SceneComponent {
 
     public void setBreakTime(int value) {
         breakTime = value;
+    }
+    
+    public boolean getIsBreak() {
+        return timeUntilBreak == 0 && breakTime >= 0;
     }
 
     @Override

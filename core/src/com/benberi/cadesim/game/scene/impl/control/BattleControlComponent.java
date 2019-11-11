@@ -553,7 +553,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private MoveType startDragMove;       // what  are we dragging
     private int      startDragSlot;       // where are we dragging from
     private Vector2 draggingPosition;
-    private boolean executionMoves;
     
     private boolean  draggingScroll = false; // keeps scrollbar locked until release
 
@@ -1074,7 +1073,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleDrag(float x, float y, float ix, float iy) {
-        if (!isDragging) {
+        boolean isBreak = context.getBattleScene().getInformation().getIsBreak();
+        if (!isDragging && !isBreak) {
             if (startDragSlot != -1) { // cant start dragging from an invalid region
                 switch (startDragSlot) {
                 case 4:
@@ -1176,7 +1176,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleRelease(float x, float y, int button) {
-        if (isDragging) {
+        boolean isBreak = context.getBattleScene().getInformation().getIsBreak();
+        if (isDragging && (!isBreak)) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
             if (endDragSlot == -1) { // dragged to nothing
@@ -1228,7 +1229,24 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
             draggingPosition = null;
         } else {
-            if ((startDragSlot >=0) && (startDragSlot <=3) && isPlacingMoves(x, y)) {
+            if (disengageButtonIsDown && isClickingDisengage(x, y)) {
+                getContext().sendDisengageRequestPacket();
+                disengageButtonIsDown = false;
+            }
+            else if (sendChatButtonIsDown && isClickingSend(x, y)) {
+                chatBar.sendChat();
+                sendChatButtonIsDown = false;
+            }
+            else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
+                scrollUpButtonIsDown = false;
+            }
+            else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
+                scrollDownButtonIsDown = false;
+            }
+            else if (isBreak) {
+                // pass - cant set moves on break
+            }
+            else if ((startDragSlot >=0) && (startDragSlot <=3) && isPlacingMoves(x, y)) {
                 int slot = getSlotForPosition(x,y);
                 switch (slot) {
                 case 0:
@@ -1286,20 +1304,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                     auto = true;
                 }
                 getContext().sendToggleAuto(auto);
-            }
-            else if (disengageButtonIsDown && isClickingDisengage(x, y)) {
-                getContext().sendDisengageRequestPacket();
-                disengageButtonIsDown = false;
-            }
-            else if (sendChatButtonIsDown && isClickingSend(x, y)) {
-                chatBar.sendChat();
-                sendChatButtonIsDown = false;
-            }
-            else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
-                scrollUpButtonIsDown = false;
-            }
-            else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
-                scrollDownButtonIsDown = false;
             }
             else if (!auto){
                 // can either click on the radio button or the move
