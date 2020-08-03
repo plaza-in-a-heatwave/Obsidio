@@ -28,7 +28,7 @@ public class Constants {
      * The default port the simulator is using
      */
     public static int PROTOCOL_PORT = 4970;
-
+    public static int SERVER_CODE = 1783;
     /**
      * whether or not players can choose the black ship. A debugging option.
      */
