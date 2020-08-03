@@ -108,6 +108,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         rightMovesByTurn[4]   += rights;
     }
 
+    public void resetMovesPerTurn() {
+        // set all equal to 0
+        for (int i=0; i<5; i++) {
+        leftMovesByTurn[i]    = 0;
+        forwardMovesByTurn[i] = 0;
+            rightMovesByTurn[i]   = 0;
+        }
+    }
+
     /**
      * helper method to handle move history update after turn ends
      */
@@ -915,8 +924,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         targetMove = MoveType.FORWARD;
         enableRadio(1);
 
-        auto = true;
-        if (isBigShip) { manuaverSlot = 3; }
+        auto=true;
+        resetMoves();        // reset the moves placed
+        resetMovesPerTurn(); // reset the tooltip counts to zero
+        this.updateMovesThisTurn(leftMoves, forwardMoves, rightMoves ); // set tooltip most recent to current moves available
     }
 
 
@@ -1480,10 +1491,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         bilgeAmount = b;
     }
 
-    public void setMoveSelAutomatic(boolean auto) {
-        this.auto = auto;
-    }
-
     /**
      * Sets the available moves to use
      * @param left      The amount of left movements
@@ -1830,6 +1837,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             getContext().sendSelectMoveSlot(i, MoveType.NONE);
         }
         
+        // reset generated moves
+        resetMovesPerTurn();
+
+        // reset slider
         if (isBigShip) {
 	        manuaverSlot = 3;
 	        getContext().sendManuaverSlotChanged(3);
