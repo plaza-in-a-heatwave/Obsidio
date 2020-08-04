@@ -26,6 +26,7 @@ import com.benberi.cadesim.game.scene.impl.battle.map.tile.GameTile;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Cell;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Whirlpool;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Wind;
+import com.benberi.cadesim.game.scene.impl.control.BattleControlComponent;
 
 import java.util.Iterator;
 
@@ -391,20 +392,22 @@ public class SeaBattleScene implements GameScene {
         }
 
         if (turnFinished) {
-            boolean found = false;
+            boolean waitForSink = false;
             for (Vessel v : context.getEntities().listVesselEntities()) {
                 if (!v.isSinkingAnimationFinished()) {
-                    found = true;
+                    waitForSink = true;
                     break;
                 }
             }
 
-            if (!found) {
+            if (!waitForSink) {
                 context.notifyFinishTurn();
                 turnFinished = false;
 
-                // and post-process tooltips
-                context.getControlScene().getBnavComponent().handleMovesAtEndOfTurn();
+                BattleControlComponent b = context.getControlScene().getBnavComponent();
+                b.updateMoveHistoryAfterTurn();  // post-process tooltips
+                b.resetPlacedMovesAfterTurn();   // reset moves post-turn
+                b.setLockedDuringAnimate(false); // unlock control
             }
         }
         information.update();
@@ -750,6 +753,9 @@ public class SeaBattleScene implements GameScene {
             vessel.setMovePhase(null);
         }
         recountVessels();
+
+        // lock the control until turn is over
+        context.getControlScene().getBnavComponent().setLockedDuringAnimate(true);
     }
 
     public BlockadeMap getMap() {

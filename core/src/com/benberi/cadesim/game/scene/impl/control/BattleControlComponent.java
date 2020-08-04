@@ -74,6 +74,15 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
     }
 
+    // should we lock our controls during animation phase?
+    private boolean lockedDuringAnimate = false;
+    public void setLockedDuringAnimate(boolean value) {
+        lockedDuringAnimate = value;
+    }
+    public boolean isLockedDuringAnimate() {
+        return lockedDuringAnimate;
+    }
+
     private final int TOOLTIP_SHOW_THRESHOLD = 500; // delay before showing tooltip
     private int leftMovesByTurn[]    = { 0, 0, 0, 0, 0 }; // moves added from right to left
     private int forwardMovesByTurn[] = { 0, 0, 0, 0, 0 }; // "
@@ -101,14 +110,14 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * helper method to update moves received this turn
      */
-    public void updateMovesThisTurn(int lefts, int forwards, int rights)
+    public void updateMoveHistoryWithNewMoves(int lefts, int forwards, int rights)
     {
         leftMovesByTurn[4]    += lefts;
         forwardMovesByTurn[4] += forwards;
         rightMovesByTurn[4]   += rights;
     }
 
-    public void resetMovesPerTurn() {
+    public void resetMoveHistory() {
         // set all equal to 0
         for (int i=0; i<5; i++) {
         leftMovesByTurn[i]    = 0;
@@ -120,7 +129,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     /**
      * helper method to handle move history update after turn ends
      */
-    public void handleMovesAtEndOfTurn()
+    public void updateMoveHistoryAfterTurn()
     {
         for (int i=0; i<4; i++) // leftshift elements 0,1,2,3 by 1 place
         {
@@ -221,7 +230,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private TextureRegion leftMoveTexture;
     private TextureRegion rightMoveTexture;
     private TextureRegion forwardMoveTexture;
-    private TextureRegion manuaverTexture; // for ships that only are 3 moves
+    private TextureRegion blockingMoveTexture; // for ships that only are 3 moves
     private TextureRegion emptyLeftMoveTexture;
     private TextureRegion emptyRightMoveTexture;
     private TextureRegion emptyForwardMoveTexture;
@@ -553,7 +562,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private final int CHAT_MAXIMUM_SCROLL_Y = CHAT_scrollBarScrollY + 86;
     private final int CHAT_MINIMUM_SCROLL_Y = CHAT_scrollBarScrollY;
 
-    private int manuaverSlot = 3;         // initial value; no effect if !isBigShip
+    private int blockingMoveSlot = 3;         // initial value; no effect if !isBigShip
 
     private boolean isBigShip = false;    // big == 3 moves, not big == 4 moves
     private boolean isDoubleShot = false; // has 2 cannons per side
@@ -640,7 +649,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         leftMoveTexture = new TextureRegion(moves, 0, 0, 28, 28);
         forwardMoveTexture = new TextureRegion(moves, 28, 0, 28, 28);
         rightMoveTexture = new TextureRegion(moves, 56, 0, 28, 28);
-        manuaverTexture = new TextureRegion(moves, 84, 0, 28, 28);
+        blockingMoveTexture = new TextureRegion(moves, 84, 0, 28, 28);
 
         emptyLeftMoveTexture = new TextureRegion(emptyMoves, 0, 0, 28, 28);
         emptyForwardMoveTexture = new TextureRegion(emptyMoves, 28, 0, 28, 28);
@@ -925,9 +934,9 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         enableRadio(1);
 
         auto=true;
-        resetMoves();        // reset the moves placed
-        resetMovesPerTurn(); // reset the tooltip counts to zero
-        this.updateMovesThisTurn(leftMoves, forwardMoves, rightMoves ); // set tooltip most recent to current moves available
+        resetPlacedMovesAfterTurn();        // reset the moves placed
+        resetMoveHistory(); // reset the tooltip counts to zero
+        updateMoveHistoryWithNewMoves(leftMoves, forwardMoves, rightMoves); // set tooltip most recent to current moves available
     }
 
 
@@ -1084,8 +1093,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleDrag(float x, float y, float ix, float iy) {
-        boolean isBreak = context.getBattleScene().getInformation().getIsBreak();
-        if (!isDragging && !isBreak) {
+        boolean controlsLocked = context.getBattleScene().getInformation().getIsBreak() || isLockedDuringAnimate();
+        if (!isDragging && !controlsLocked) {
             if (startDragSlot != -1) { // cant start dragging from an invalid region
                 switch (startDragSlot) {
                 case 4:
@@ -1187,8 +1196,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public boolean handleRelease(float x, float y, int button) {
-        boolean isBreak = context.getBattleScene().getInformation().getIsBreak();
-        if (isDragging && (!isBreak)) {
+        boolean controlsLocked = context.getBattleScene().getInformation().getIsBreak() || isLockedDuringAnimate();
+        if (isDragging && (!controlsLocked)) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
             if (endDragSlot == -1) { // dragged to nothing
@@ -1204,32 +1213,32 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             else if (
                     (startDragSlot <= 3) &&
                     (movesHolder[startDragSlot].getMove() == MoveType.NONE) &&
-                    manuaverSlot != startDragSlot)
+                    blockingMoveSlot != startDragSlot)
             {
                 // no-op, can't drag a None token to anything
             }
             else
             {
                 if (startDragSlot <= 3 && endDragSlot <= 3) { // drag from place to place; swap
-                    // update move swap - manuaver slot is "None"
+                    // update move swap - blockingMove slot is "None"
                     getContext().sendSwapMovesPacket(
                         endDragSlot,
                         startDragSlot
                     );
 
-                    // update manuaver location
+                    // update blockingMove location
                     if (isBigShip) {
-                        if ((manuaverSlot == startDragSlot) && endDragSlot <= 3) { // cant drag manauver off to new piece
-                            manuaverSlot = endDragSlot;
-                            getContext().sendManuaverSlotChanged(manuaverSlot);
-                        } else if ((manuaverSlot == endDragSlot) && startDragSlot <= 3) { // cant drag new piece onto manuaver
-                            manuaverSlot = startDragSlot;
-                            getContext().sendManuaverSlotChanged(manuaverSlot);
+                        if ((blockingMoveSlot == startDragSlot) && endDragSlot <= 3) { // cant drag blockingMove off to new piece
+                            blockingMoveSlot = endDragSlot;
+                            getContext().sendBlockingMoveSlotChanged(blockingMoveSlot);
+                        } else if ((blockingMoveSlot == endDragSlot) && startDragSlot <= 3) { // cant drag new piece onto blockingMove
+                            blockingMoveSlot = startDragSlot;
+                            getContext().sendBlockingMoveSlotChanged(blockingMoveSlot);
                         }
                     }
                 } else if (startDragSlot > 3 && startDragSlot <= 6 && endDragSlot <= 3) { // moving from available to placed; replace
-                    // if there's anything there already, replace it, apart from a manuaver slot
-                    if ((!isBigShip) || (manuaverSlot != endDragSlot)) {
+                    // if there's anything there already, replace it, apart from a blockingMove
+                    if ((!isBigShip) || (blockingMoveSlot != endDragSlot)) {
                         getContext().sendSelectMoveSlot(endDragSlot, MoveType.forId(startDragSlot-3));
                     }
                 } else if (startDragSlot <= 3) { // started on something, but dragged it to something unhandled
@@ -1254,7 +1263,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
                 scrollDownButtonIsDown = false;
             }
-            else if (isBreak) {
+            else if (controlsLocked) {
                 // pass - cant set moves on break
             }
             else if ((startDragSlot >=0) && (startDragSlot <=3) && isPlacingMoves(x, y)) {
@@ -1354,7 +1363,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
 
     private void handleMovePlace(int position, int button) {
-        if (isBigShip && (position == manuaverSlot)) {
+        if (isBigShip && (position == blockingMoveSlot)) {
             return;
         }
         if (isDragging) {
@@ -1521,16 +1530,16 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         drawShipStatus();
         drawTimer();
         drawMovesSelect();
-        TextureRegion t = manuaverTexture; // initial, prevent crashes
+        TextureRegion t = blockingMoveTexture; // initial, prevent crashes
         batch.draw(title, MOVES_titleX, MOVES_titleY);
         if (isDragging && startDragSlot != -1) {
-            if (isBigShip && (startDragSlot == manuaverSlot)) {
-                t = manuaverTexture;
+            if (isBigShip && (startDragSlot == blockingMoveSlot)) {
+                t = blockingMoveTexture;
             } else {
                 t = getTextureForMove(startDragMove);
             }
 
-            if ((startDragMove != MoveType.NONE) || (isBigShip && (startDragSlot == manuaverSlot))) {
+            if ((startDragMove != MoveType.NONE) || (isBigShip && (startDragSlot == blockingMoveSlot))) {
                 batch.draw(t, draggingPosition.x - t.getRegionWidth() / 2, Gdx.graphics.getHeight() - draggingPosition.y - t.getRegionHeight() / 2);
             }
         }
@@ -1694,8 +1703,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             
 
             // draw moves and manauver
-            if (isBigShip && (i == manuaverSlot)) {
-                batch.draw(manuaverTexture, MOVES_moveSlotX, mH);
+            if (isBigShip && (i == blockingMoveSlot)) {
+                batch.draw(blockingMoveTexture, MOVES_moveSlotX, mH);
             }
             else
             {
@@ -1827,7 +1836,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         hm.setMoveTemporary(temp);
     }
 
-    public void resetMoves() {
+    public void resetPlacedMovesAfterTurn() {
         for (int i = 0; i < movesHolder.length; i++) {
             movesHolder[i].setMove(MoveType.NONE);
             movesHolder[i].resetLeft();
@@ -1836,14 +1845,11 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             // fix stuck moves that might appear after a turn completes
             getContext().sendSelectMoveSlot(i, MoveType.NONE);
         }
-        
-        // reset generated moves
-        resetMovesPerTurn();
 
         // reset slider
         if (isBigShip) {
-	        manuaverSlot = 3;
-	        getContext().sendManuaverSlotChanged(3);
+	        blockingMoveSlot = 3;
+	        getContext().sendBlockingMoveSlotChanged(3);
         }
 
         // fix stuck buttons if they were clicked across a turn
