@@ -25,10 +25,11 @@ public class Constants {
 	public static final int MAX_CODE_SIZE = 30;   // server code
 
     /**
-     * The default port the simulator is using
+     * The default port the simulator is using - being initialized based on 
+     * last room selected on startup.
      */
-    public static int PROTOCOL_PORT = 4970;
-
+    public static int PROTOCOL_PORT = 0;
+    public static int SERVER_CODE = 0;
     /**
      * whether or not players can choose the black ship. A debugging option.
      */
