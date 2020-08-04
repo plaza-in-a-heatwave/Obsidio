@@ -389,9 +389,9 @@ public class GameContext {
             connectScene.setPopup("You have disconnected from the server.");
     }
 
-    public void sendManuaverSlotChanged(int manuaverSlot) {
-        ManuaverSlotChanged packet = new ManuaverSlotChanged();
-        packet.setSlot(manuaverSlot);
+    public void sendBlockingMoveSlotChanged(int blockingMoveSlot) {
+        BlockingMoveSlotChanged packet = new BlockingMoveSlotChanged();
+        packet.setSlot(blockingMoveSlot);
         sendPacket(packet);
     }
 

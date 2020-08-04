@@ -3,11 +3,11 @@ package com.benberi.cadesim.client.packet.out;
 import com.benberi.cadesim.client.codec.util.PacketLength;
 import com.benberi.cadesim.client.packet.OutgoingPacket;
 
-public class ManuaverSlotChanged extends OutgoingPacket {
+public class BlockingMoveSlotChanged extends OutgoingPacket {
 
     private int slot;
 
-    public ManuaverSlotChanged() {
+    public BlockingMoveSlotChanged() {
         super(2);
     }
 
