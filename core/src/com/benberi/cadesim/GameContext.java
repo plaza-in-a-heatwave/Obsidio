@@ -201,6 +201,7 @@ public class GameContext {
         seaBattleScene.create();
         this.controlArea = new ControlAreaScene(this);
         controlArea.create();
+        scenes.clear();
         scenes.add(controlArea);
         scenes.add(seaBattleScene);
     }
@@ -377,17 +378,22 @@ public class GameContext {
     	return input;
     }
 
-    public void dispose() {
-        controlArea.dispose();
-        seaBattleScene.dispose();
-        entities.dispose();
-        isReady = false;
-        connected = false;
-        scenes.clear();
-        connectScene.setup();
-        if (!connectScene.hasPopup())
-            connectScene.setPopup("You have disconnected from the server.");
-    }
+	public void dispose() {
+		for (GameScene scene : scenes) {
+			if (scene != null) {
+				scene.dispose();
+			}
+		}
+		scenes.clear();
+		if (entities != null) {
+			entities.dispose();
+		}
+		isReady = false;
+		connected = false;
+		connectScene.setup();
+		if (!connectScene.hasPopup())
+			connectScene.setPopup("You have disconnected from the server.");
+	}
 
     public void sendBlockingMoveSlotChanged(int blockingMoveSlot) {
         BlockingMoveSlotChanged packet = new BlockingMoveSlotChanged();

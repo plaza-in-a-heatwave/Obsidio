@@ -1263,6 +1263,39 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             else if (scrollDownButtonIsDown && isClickingScrollDown(x,y)) {
                 scrollDownButtonIsDown = false;
             }
+            else if (isTogglingAuto(x, y)) {
+                if (auto) {
+                    auto = false;
+                }
+                else {
+                    auto = true;
+                }
+                getContext().sendToggleAuto(auto);
+            }
+            else if (!auto){
+                // can either click on the radio button or the move
+                if (
+                        (isPointInRect(x,y,MOVES_shape_leftRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_leftToken))
+                ) {
+                    targetMove = MoveType.LEFT;
+                    getContext().sendGenerationTarget(targetMove);
+                }
+                else if (
+                        (isPointInRect(x,y,MOVES_shape_forwardRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_forwardToken))
+                ) {
+                    targetMove = MoveType.FORWARD;
+                    getContext().sendGenerationTarget(targetMove);
+                }
+                else if (
+                        (isPointInRect(x,y,MOVES_shape_rightRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_rightToken))
+                ) {
+                     targetMove = MoveType.RIGHT;
+                     getContext().sendGenerationTarget(targetMove);
+                }
+            }
             else if (controlsLocked) {
                 // pass - cant set moves on break
             }
@@ -1314,39 +1347,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 else if ((startDragSlot == 14) && isPointInRect(x,y,MOVES_shape_cannonRightSlot3))
                 {
                     getContext().sendAddCannon(1,3);
-                }
-            }
-            else if (isTogglingAuto(x, y)) {
-                if (auto) {
-                    auto = false;
-                }
-                else {
-                    auto = true;
-                }
-                getContext().sendToggleAuto(auto);
-            }
-            else if (!auto){
-                // can either click on the radio button or the move
-                if (
-                        (isPointInRect(x,y,MOVES_shape_leftRadio)) ||
-                        (isPointInRect(x,y,MOVES_shape_leftToken))
-                ) {
-                    targetMove = MoveType.LEFT;
-                    getContext().sendGenerationTarget(targetMove);
-                }
-                else if (
-                        (isPointInRect(x,y,MOVES_shape_forwardRadio)) ||
-                        (isPointInRect(x,y,MOVES_shape_forwardToken))
-                ) {
-                    targetMove = MoveType.FORWARD;
-                    getContext().sendGenerationTarget(targetMove);
-                }
-                else if (
-                        (isPointInRect(x,y,MOVES_shape_rightRadio)) ||
-                        (isPointInRect(x,y,MOVES_shape_rightToken))
-                ) {
-                     targetMove = MoveType.RIGHT;
-                     getContext().sendGenerationTarget(targetMove);
                 }
             }
         }
