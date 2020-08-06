@@ -215,7 +215,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         address.setSize(120, 49);
         address.setPosition(326, MAIN_GROUP_OFFSET_Y + 325);
         
-        code = new TextField(Integer.toString(Constants.SERVER_CODE), style);
+        code = new TextField(Constants.SERVER_CODE, style);
         code.setPasswordCharacter('*');
         code.setPasswordMode(true);
         code.setSize(120, 49);
@@ -430,8 +430,8 @@ public class ConnectScene implements GameScene, InputProcessor {
         if (roomLabel.getSelectedIndex() < port_numbers.size()) { //sanity check
         	System.out.println("Room " + (roomLabel.getSelectedIndex() + 1) + " Selected.");
             Constants.PROTOCOL_PORT = Integer.parseInt(port_numbers.get(roomLabel.getSelectedIndex()));
-            Constants.SERVER_CODE = Integer.parseInt(server_codes.get(roomLabel.getSelectedIndex()));
-            code.setText(Integer.toString(Constants.SERVER_CODE));
+            Constants.SERVER_CODE = server_codes.get(roomLabel.getSelectedIndex());
+            code.setText(Constants.SERVER_CODE);
         }
     }
 

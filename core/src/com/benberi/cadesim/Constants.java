@@ -29,7 +29,7 @@ public class Constants {
      * last room selected on startup.
      */
     public static int PROTOCOL_PORT = 0;
-    public static int SERVER_CODE = 0;
+    public static String SERVER_CODE = "";
     /**
      * whether or not players can choose the black ship. A debugging option.
      */
