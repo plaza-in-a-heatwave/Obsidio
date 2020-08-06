@@ -201,6 +201,7 @@ public class GameContext {
         seaBattleScene.create();
         this.controlArea = new ControlAreaScene(this);
         controlArea.create();
+        scenes.clear();
         scenes.add(controlArea);
         scenes.add(seaBattleScene);
     }
