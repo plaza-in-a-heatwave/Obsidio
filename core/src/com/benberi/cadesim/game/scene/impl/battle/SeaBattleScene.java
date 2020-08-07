@@ -104,7 +104,10 @@ public class SeaBattleScene implements GameScene {
     }
 
     public void createMap(int[][] tiles) {
-        this.blockadeMap = new BlockadeMap(context, tiles);
+        // if there was a previous map: delete it
+        if (blockadeMap != null) { blockadeMap.dispose();}
+
+        blockadeMap = new BlockadeMap(context, tiles);
     }
 
     private void recountVessels() {
@@ -654,6 +657,12 @@ public class SeaBattleScene implements GameScene {
         currentSlot = -1;
         information.dispose();
         recountVessels();
+
+        font.dispose();
+        renderer.dispose();
+        batch.dispose();
+        sea.dispose();
+        camera = null;
     }
 
     @Override
