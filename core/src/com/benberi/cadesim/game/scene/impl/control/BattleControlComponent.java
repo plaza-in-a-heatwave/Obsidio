@@ -533,8 +533,10 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     
     /**
      * Max number of messages before clearing old ones
+     * Messages are created inefficiently and use quite a lot of memory.
+     * Once this number rolls over, memory usage will stabilize.
      */
-    private static final int CHAT_MAX_NUMBER_OF_MESSAGES = 500;
+    private static final int CHAT_MAX_NUMBER_OF_MESSAGES = 100;
     
     /**
      * size of scroll increment (px) when scrolling (mouse or button)
@@ -787,7 +789,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         	
         // handle chat if it has grown too big?
         if (chatTable.getCells().size > CHAT_MAX_NUMBER_OF_MESSAGES) {
-            Cell<Actor> cell = chatTable.getCells().first();
+            Cell<Label> cell = chatTable.getCells().first();
+            cell.getActor().getStyle().font.dispose();    // rm font, bugfix #37 chat messages cause memory leak
             cell.getActor().remove();                     // rm actor
             chatTable.getCells().removeValue(cell, true); // rm lingering physical presence
             chatTable.invalidate();
