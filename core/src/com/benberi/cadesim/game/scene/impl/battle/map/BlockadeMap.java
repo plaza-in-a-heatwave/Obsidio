@@ -147,4 +147,17 @@ public class BlockadeMap {
     public BlockadeMapLayer<Flag> getFlags() {
         return flags;
     }
+
+	public void dispose() {
+		rocks.clear();
+		flags.clear();
+
+		for (int x = 0; x < MAP_WIDTH; x++) {
+			for (int y = 0; y < MAP_HEIGHT; y++) {
+				if (   sea[x][y] != null) {    sea[x][y].getTexture().dispose(); }
+				if ( winds[x][y] != null) {  winds[x][y].getTexture().dispose(); }
+				if (whirls[x][y] != null) { whirls[x][y].getTexture().dispose(); }
+			}
+		}
+	}
 }
