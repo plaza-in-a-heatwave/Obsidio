@@ -56,6 +56,9 @@ public class ConnectScene implements GameScene, InputProcessor {
     
     // connectscene
     private ArrayList<String> greetings = new ArrayList<String>();
+    private ArrayList<String> port_numbers = new ArrayList<String>();
+    private ArrayList<String> server_codes = new ArrayList<String>();
+    private ArrayList<String> room_names = new ArrayList<String>();
     private java.util.Random prng = new java.util.Random(System.currentTimeMillis());
     private String chosenGreeting;
     private String code_url = "https://github.com/plaza-in-a-heatwave/Obsidio-Server/issues";
@@ -95,12 +98,16 @@ public class ConnectScene implements GameScene, InputProcessor {
     private SelectBox<ShipTypeLabel> shipType;
     private SelectBox<ResolutionTypeLabel> resolutionType;
     private SelectBox<TeamTypeLabel> teamType;
+    private SelectBox<RoomNumberLabel> roomLabel;
 
     private boolean popup;
     private String popupMessage;
     private boolean popupCloseHover;
     private boolean loginHover;
     private boolean codeURL;
+    
+    private String old_Name;
+    private String room_info;
     
     private final int MAIN_GROUP_OFFSET_Y = 20;
 
@@ -208,12 +215,12 @@ public class ConnectScene implements GameScene, InputProcessor {
         address.setSize(120, 49);
         address.setPosition(326, MAIN_GROUP_OFFSET_Y + 325);
         
-        code = new TextField("", style);
+        code = new TextField(Constants.SERVER_CODE, style);
         code.setPasswordCharacter('*');
         code.setPasswordMode(true);
         code.setSize(120, 49);
         code.setPosition(482, MAIN_GROUP_OFFSET_Y + 325);
-
+        
         SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
         selectBoxStyle.background = new Image(new Texture("assets/skin/selectbg.png")).getDrawable();
         selectBoxStyle.font = font;
@@ -228,15 +235,19 @@ public class ConnectScene implements GameScene, InputProcessor {
 
         teamType = new SelectBox<>(selectBoxStyle);
         teamType.setSize(150, 44);
-        teamType.setPosition(640, 125);
+        teamType.setPosition(640, 105);
         
         resolutionType = new SelectBox<>(selectBoxStyle);
         resolutionType.setSize(150, 44);
-        resolutionType.setPosition(640, 75);
+        resolutionType.setPosition(640, 155);
 
         shipType = new SelectBox<>(selectBoxStyle);
         shipType.setSize(150, 44);
-        shipType.setPosition(640, 25);
+        shipType.setPosition(640, 5);
+        
+        roomLabel = new SelectBox(selectBoxStyle);
+        roomLabel.setSize(150.0f, 44.0f);
+        roomLabel.setPosition(640, 55);
 
         baghlah = new Texture("assets/skin/ships/baghlah.png");
         blackship = new Texture("assets/skin/ships/blackship.png");
@@ -293,6 +304,36 @@ public class ConnectScene implements GameScene, InputProcessor {
         blob2[1] = new TeamTypeLabel("Attacker", labelStyle, TeamTypeLabel.ATTACKER);
         
         teamType.setItems(blob2);
+        /*
+         * Parse server code/port data for rooms
+         */
+        try {
+			room_info = ConnectScene.getProperty("user.config", "user.room_locations");
+			//Split info for each room (Port:Server Code)
+			String[] rooms = room_info.split(",");
+			for (int i = 0; i < rooms.length; i++) {
+				String[] temp_room_info = rooms[i].split(":");
+				for (int j = 0; j < temp_room_info.length;j++)
+				{
+					if (j % 2 == 0) {
+						port_numbers.add(temp_room_info[j]);
+					}
+					else {
+						String[] print = temp_room_info[j].split(";");
+						server_codes.add(print[0]);
+						room_names.add(print[1]);
+					}
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("Check format");
+			e.printStackTrace();
+		}
+        RoomNumberLabel[] blob_room = new RoomNumberLabel[port_numbers.size()];
+        for (int i = 0; i < port_numbers.size(); ++i) {
+        	blob_room[i] = new RoomNumberLabel((CharSequence)room_names.get(i), labelStyle, 0);
+        }
+        roomLabel.setItems(blob_room);
         
         // set previous values/defaults from config file
         try 
@@ -318,6 +359,12 @@ public class ConnectScene implements GameScene, InputProcessor {
         {
         	teamType.setSelectedIndex(0);
         }
+        try {
+            roomLabel.setSelectedIndex(Integer.parseInt(prop.getProperty("user.last_room_index")));
+        }
+        catch (IndexOutOfBoundsException e) {
+            roomLabel.setSelectedIndex(0);
+        }
 
         stage.addActor(name);
         stage.addActor(address);
@@ -325,6 +372,29 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage.addActor(shipType);
         stage.addActor(resolutionType);
         stage.addActor(teamType);
+        stage.addActor(roomLabel);
+        
+        getServerCode(); // initialize server code with currently selected room
+        
+        name.addListener(new ChangeListener(){
+
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                old_Name = name.getText();
+            }
+        });
+        roomLabel.addListener(new ChangeListener(){
+
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                try {
+                    getServerCode();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         resolutionType.addListener(new ChangeListener() {
 
@@ -341,6 +411,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                         changeProperty("user.config", "user.width", resolution[0]);
                         changeProperty("user.config", "user.height", resolution[1]);
                         changeProperty("user.config", "user.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
+                        changeProperty("user.config", "user.last_room_index", Integer.toString(roomLabel.getSelectedIndex()));
                         changeProperty("user.config", "user.last_team", Integer.toString(teamType.getSelectedIndex()));
                         
                         // reload for now
@@ -353,6 +424,15 @@ public class ConnectScene implements GameScene, InputProcessor {
                 }
             }
          });
+    }
+    
+    public void getServerCode() {
+        if (roomLabel.getSelectedIndex() < port_numbers.size()) { //sanity check
+        	System.out.println("Room " + (roomLabel.getSelectedIndex() + 1) + " Selected.");
+            Constants.PROTOCOL_PORT = Integer.parseInt(port_numbers.get(roomLabel.getSelectedIndex()));
+            Constants.SERVER_CODE = server_codes.get(roomLabel.getSelectedIndex());
+            code.setText(Constants.SERVER_CODE);
+        }
     }
 
     @Override
@@ -398,7 +478,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             Texture t;
             batch.begin();
             t = shipType.getSelected().getType();
-            batch.draw(t, 735, 25); // draw t, whatever it may be
+            batch.draw(t, 735, 5); // draw t, whatever it may be
             batch.end();
 
             if (popup) {
