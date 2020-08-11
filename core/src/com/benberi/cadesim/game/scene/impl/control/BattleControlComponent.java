@@ -931,15 +931,74 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatBar.spin();
     }
 
-    @Override
-    public void dispose() {
-        targetMove = MoveType.FORWARD;
+    public void reset() {
+		targetMove = MoveType.FORWARD;
         enableRadio(1);
 
         auto=true;
         resetPlacedMovesAfterTurn();        // reset the moves placed
         resetMoveHistory(); // reset the tooltip counts to zero
         updateMoveHistoryWithNewMoves(leftMoves, forwardMoves, rightMoves); // set tooltip most recent to current moves available
+    }
+
+    @Override
+    public void dispose() {
+        // dispose memory hogging things
+        batch.dispose();
+        shape.dispose();
+        font.dispose();
+        chatContainerStage.dispose();
+
+        shiphand.dispose();
+        moves.dispose();
+        emptyMoves.dispose();
+        tooltipBackground.dispose();
+
+        sandTopTexture.dispose();
+        sandBottomTexture.dispose();
+
+        sandTrickleTexture.dispose();
+
+        hourGlass.dispose();
+        cannonSlots.dispose();
+        controlBackground.dispose();
+        disengageBackground.dispose();
+        chatBackground.dispose();
+        chatBackgroundFrame.dispose();
+        shipStatus.dispose();
+        shipStatusBg.dispose();
+        moveGetTargetTexture.dispose();
+        title.dispose();
+        radioOn.dispose();
+        radioOff.dispose();
+        radioOnDisable.dispose();
+        radioOffDisable.dispose();
+        autoOn.dispose();
+        autoOff.dispose();
+        autoBackground.dispose();
+
+        cannonSelection.dispose();
+        cannonSelectionEmpty.dispose();
+
+        disengageUp.dispose();
+        disengageDown.dispose();
+
+        chatIndicator.dispose();
+        chatBarBackground.dispose();
+        chatButtonSend.dispose();
+        chatButtonSendPressed.dispose();
+
+        chatScrollBarUp.dispose();
+        chatScrollBarUpPressed.dispose();
+        chatScrollBarDown.dispose();
+        chatScrollBarDownPressed.dispose();
+        chatScrollBarMiddle.dispose();
+        chatScrollBarScroll.dispose();
+
+        chatMessagePlayer.dispose();
+        chatMessageServerBroadcast.dispose();
+
+        messageFontGenerator.dispose();
     }
 
 

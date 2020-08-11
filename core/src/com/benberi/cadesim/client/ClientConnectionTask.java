@@ -62,12 +62,19 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
                 callback.onSuccess(f.channel());
             }
             f.channel().closeFuture().sync();
-            context.dispose();
         } catch (Exception e) {
+			// normally a AnnotatedConnectException (extends ConnectException).
+			// however cannot catch ConnectException, so use generic.
+			// ConnectException occurs when a connection failed abruptly e.g.
+			// 1. login failed due to timeout.
+			// 2. server cut out while a packet was in flight.
+			// the onFailure() callback should only handle these two cases.
             e.printStackTrace();
             callback.onFailure();
         } finally {
+			// connection is dead, cleanup
             worker.shutdownGracefully();
+            context.dispose();
         }
     }
 }
