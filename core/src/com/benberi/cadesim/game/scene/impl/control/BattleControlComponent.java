@@ -1272,9 +1272,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     @Override
     public boolean handleRelease(float x, float y, int button) {
         boolean controlsLocked = context.getBattleScene().getInformation().getIsBreak() || isLockedDuringAnimate();
-        if (isDragging && (!controlsLocked) && (startDragSlot >= 0)) { // bugfix - startDragSlot may be -1
+        if (isDragging && (!controlsLocked)) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
+            if (startDragSlot < 0) {
+                // no-op bugfix - startDragSlot may be -1
+            }
             if (endDragSlot == -1) { // dragged to nothing
 
                 if (startDragSlot <= 3) {
@@ -1324,6 +1327,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
             draggingPosition = null;
         } else {
+            isDragging = false; // bugfix locked controls
             if (disengageButtonIsDown && isClickingDisengage(x, y)) {
                 getContext().sendDisengageRequestPacket();
                 disengageButtonIsDown = false;
