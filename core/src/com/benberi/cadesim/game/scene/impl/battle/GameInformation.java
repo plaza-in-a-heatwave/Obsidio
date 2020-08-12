@@ -19,6 +19,8 @@ public class GameInformation extends SceneComponent {
      */
     private SpriteBatch batch;
 
+    private GameContext context;
+    
     private Texture panel;
     private Texture contenders;
     private TextureRegion defenderThem;
@@ -53,13 +55,14 @@ public class GameInformation extends SceneComponent {
 
     GameInformation(GameContext context, GameScene owner) {
         super(context, owner);
+        this.context = context;
     }
 
     @Override
     public void create() {
         this.batch = new SpriteBatch();
-        this.panel = new Texture("assets/ui/info.png");
-        this.contenders = new Texture("assets/cade/contender_icons.png");
+        this.panel = context.getManager().get(context.getAssetObject().infoPanel,Texture.class);
+        this.contenders = context.getManager().get(context.getAssetObject().contenders,Texture.class);
         this.defenderThem = new TextureRegion(contenders, 0, 0, 13, 18);
         this.defenderUs = new TextureRegion(contenders, 13, 0, 13, 18);
         this.attackerThem = new TextureRegion(contenders, 26, 0, 13, 18);

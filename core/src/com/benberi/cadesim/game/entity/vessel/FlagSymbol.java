@@ -33,7 +33,8 @@ public class FlagSymbol extends TextureRegion {
     }
 
     public void createTexture() {
-        setTexture(new Texture("assets/cade/buoy_symbols.png"));
+        setTexture(
+        		new Texture("assets/cade/buoy_symbols.png"));
         if (isBlue) {
             switch (size) {
                 case 1:

@@ -28,6 +28,7 @@ import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Whirlpool;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Wind;
 import com.benberi.cadesim.game.scene.impl.control.BattleControlComponent;
 
+import java.awt.Menu;
 import java.util.Iterator;
 
 public class SeaBattleScene implements GameScene {
@@ -93,6 +94,7 @@ public class SeaBattleScene implements GameScene {
     private MovePhase currentPhase;
 
     private BlockadeMap blockadeMap;
+    private MenuComponent mainmenu;
 
     private int vesselsCountWithCurrentPhase = 0;
     private int vesselsCountNonSinking = 0;
@@ -114,10 +116,10 @@ public class SeaBattleScene implements GameScene {
         vesselsCountWithCurrentPhase = context.getEntities().countVsselsByPhase(currentPhase);
         vesselsCountNonSinking = context.getEntities().countNonSinking();
     }
-
+    FreeTypeFontGenerator generator;
     @Override
     public void create() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 10;
         parameter.spaceX = 0;
@@ -132,9 +134,11 @@ public class SeaBattleScene implements GameScene {
         renderer = new ShapeRenderer();
         this.batch = new SpriteBatch();
         information.create();
-        sea = new Texture("assets/sea/sea1.png");
+        sea = context.getManager().get(context.getAssetObject().sea,Texture.class);
         sea.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
+        this.mainmenu = new MenuComponent(context, this);
+        mainmenu.create();
     }
 
     @Override
@@ -434,6 +438,7 @@ public class SeaBattleScene implements GameScene {
         batch.end();
 
         information.render();
+        mainmenu.render();
     }
 
     public GameInformation getInformation() {
@@ -657,17 +662,20 @@ public class SeaBattleScene implements GameScene {
         currentSlot = -1;
         information.dispose();
         recountVessels();
-
-        font.dispose();
-        renderer.dispose();
-        batch.dispose();
-        sea.dispose();
+        generator.dispose();
+        //font.dispose();
+        //renderer.dispose();
+        //batch.dispose();
+        //sea.dispose();
         camera = null;
     }
 
     @Override
     public boolean handleDrag(float sx, float sy, float x, float y) {
-        if (sy > camera.viewportHeight) {
+        if (mainmenu.handleDrag(sx, sy, x, y)) {
+            return true;
+        }
+    	if (sy > camera.viewportHeight) {
             return false;
         }
 
@@ -679,7 +687,10 @@ public class SeaBattleScene implements GameScene {
     }
 
     @Override
-    public boolean handleClick(float x, float y, int button) {    	
+    public boolean handleClick(float x, float y, int button) {  
+        if (mainmenu.handleClick(x, y, button)) {
+            return true;
+        }
         if (y < camera.viewportHeight) {
         	// handle camera not following vessel
         	cameraFollowsVessel = false;
@@ -693,11 +704,17 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public boolean handleMouseMove(float x, float y) {
+        if (mainmenu.handleMouseMove(x, y)) {
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean handleClickRelease(float x, float y, int button) {
+        if (mainmenu.handleRelease(x, y, button)) {
+            return true;
+        }
     	if (y < camera.viewportHeight) {
     		// handle camera following/not following vessel
         	if (button == Input.Buttons.RIGHT) {

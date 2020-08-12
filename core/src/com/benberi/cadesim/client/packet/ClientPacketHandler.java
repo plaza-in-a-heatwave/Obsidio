@@ -98,4 +98,9 @@ public class ClientPacketHandler {
         packets.put(18, new SetTeamNamesPacket(context));
         packets.put(19, new ReceiveMessagePacket(context));
     }
+    
+    public void clearPackets() {
+    	packets.clear();
+    	packetQueue.clear();
+    }
 }

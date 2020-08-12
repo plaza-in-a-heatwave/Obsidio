@@ -607,38 +607,40 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         parameter.size = 12;
         font = generator.generateFont(parameter);
 
-        title = new Texture("assets/ui/title.png");
-        radioOn = new Texture("assets/ui/radio-on.png");
-        radioOff = new Texture("assets/ui/radio-off.png");
-        radioOnDisable = new Texture("assets/ui/radio-on-disable.png");
-        radioOffDisable = new Texture("assets/ui/radio-off-disable.png");
-        autoOn = new Texture("assets/ui/auto-on.png");
-        autoOff = new Texture("assets/ui/auto-off.png");
-        autoBackground = new Texture("assets/ui/auto_background.png");
+        title = context.getManager().get(context.getAssetObject().title,Texture.class);
+        radioOn = context.getManager().get(context.getAssetObject().radioOn,Texture.class);
+        radioOff = context.getManager().get(context.getAssetObject().radioOff,Texture.class);
+        radioOnDisable = context.getManager().get(context.getAssetObject().radioOnDisable,Texture.class);
+        radioOffDisable = context.getManager().get(context.getAssetObject().radioOffDisable,Texture.class);
+        autoOn = context.getManager().get(context.getAssetObject().autoOn,Texture.class);
+        autoOff = context.getManager().get(context.getAssetObject().autoOff,Texture.class);
+        autoBackground = context.getManager().get(context.getAssetObject().autoBackground,Texture.class);
 
-        sandTopTexture = new Texture("assets/ui/sand_top.png");
-        sandBottomTexture = new Texture("assets/ui/sand_bot.png");
+        sandTopTexture = context.getManager().get(context.getAssetObject().sandTop,Texture.class);
+        sandBottomTexture = context.getManager().get(context.getAssetObject().sandBottom,Texture.class);
 
-        sandTrickleTexture = new Texture("assets/ui/sand_trickle.png");
+        sandTrickleTexture = context.getManager().get(context.getAssetObject().sandTrickle,Texture.class);
         sandTrickle = new TextureRegion(sandTrickleTexture, 0, 0, 1, 43);
 
         sandTop = new TextureRegion(sandTopTexture, 19, 43);
         sandBottom= new TextureRegion(sandBottomTexture, 19, 43);
 
-        cannonSlots = new Texture("assets/ui/cannonslots.png");
-        moves = new Texture("assets/ui/move.png");
-        emptyMoves = new Texture("assets/ui/move_empty.png");
-        tooltipBackground = new Texture("assets/ui/tooltip_background.png");
-        shiphand = new Texture("assets/ui/shiphand.png");
-        hourGlass = new Texture("assets/ui/hourglass.png");
-        controlBackground = new Texture("assets/ui/moves-background.png");
-        shipStatus = new Texture("assets/ui/status.png");
-        shipStatusBg = new Texture("assets/ui/status-bg.png");
-        moveGetTargetTexture = new Texture("assets/ui/sel_border_square.png");
-        cannonSelectionEmpty = new Texture("assets/ui/grapplecannon_empty.png");
-        cannonSelection = new Texture("assets/ui/grapplecannon.png");
-        damage = new TextureRegion(new Texture("assets/ui/damage.png"));
-        bilge = new TextureRegion(new Texture("assets/ui/bilge.png"));
+        cannonSlots = context.getManager().get(context.getAssetObject().cannonSlot,Texture.class);
+        moves = context.getManager().get(context.getAssetObject().moves,Texture.class);
+        emptyMoves = context.getManager().get(context.getAssetObject().emptyMoves,Texture.class);
+        tooltipBackground = context.getManager().get(context.getAssetObject().toolTipBackground,Texture.class);
+        shiphand = context.getManager().get(context.getAssetObject().shipHand,Texture.class);
+        hourGlass = context.getManager().get(context.getAssetObject().hourGlass,Texture.class);
+        controlBackground = context.getManager().get(context.getAssetObject().controlBackground,Texture.class);
+        shipStatus = context.getManager().get(context.getAssetObject().shipStatus,Texture.class);
+        shipStatusBg = context.getManager().get(context.getAssetObject().shipStatusBg,Texture.class);
+        moveGetTargetTexture = context.getManager().get(context.getAssetObject().moveGetTarget,Texture.class);
+        cannonSelectionEmpty = context.getManager().get(context.getAssetObject().cannonSelectionEmpty,Texture.class);
+        cannonSelection = context.getManager().get(context.getAssetObject().cannonSelection,Texture.class);
+        damage = new TextureRegion(
+        		context.getManager().get(context.getAssetObject().damage,Texture.class));
+        bilge = new TextureRegion(
+        		context.getManager().get(context.getAssetObject().bilge,Texture.class));
         damage.flip(false, true);
         bilge.flip(false, true);
 
@@ -666,20 +668,20 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         moveTargetSelForce = new TextureRegion(moveGetTargetTexture, 0, 0, 36, 36);
         moveTargetSelAuto = new TextureRegion(moveGetTargetTexture, 36, 0, 36, 36);
 
-        disengageUp = new Texture("assets/ui/disengage.png");
-        disengageDown = new Texture("assets/ui/disengagePressed.png");
-        disengageBackground = new Texture("assets/ui/center_background.png");
+        disengageUp = context.getManager().get(context.getAssetObject().disengageUp,Texture.class);
+        disengageDown = context.getManager().get(context.getAssetObject().disengageDown,Texture.class);
+        disengageBackground = context.getManager().get(context.getAssetObject().disengageBackground,Texture.class);
 
-        chatBackground = new Texture("assets/ui/chat_background.png");
-        chatBackgroundFrame = new Texture("assets/ui/chat_background_frame.png");
-        chatIndicator  = new Texture("assets/ui/chat_indicator.png");
-        chatBarBackground = new Texture("assets/ui/chat_bar_background.png");
-        chatButtonSend = new Texture("assets/ui/chat_button_send.png");
-        chatButtonSendPressed = new Texture("assets/ui/chat_button_sendPressed.png");
+        chatBackground = context.getManager().get(context.getAssetObject().chatBackground,Texture.class);
+        chatBackgroundFrame = context.getManager().get(context.getAssetObject().chatBackgroundFrame,Texture.class);
+        chatIndicator  = context.getManager().get(context.getAssetObject().chatIndicator,Texture.class);
+        chatBarBackground = context.getManager().get(context.getAssetObject().chatBarBackground,Texture.class);
+        chatButtonSend = context.getManager().get(context.getAssetObject().chatButtonSend,Texture.class);
+        chatButtonSendPressed = context.getManager().get(context.getAssetObject().chatButtonSendPressed,Texture.class);
         
-        chatMessagePlayer = new Texture("assets/ui/chat_message_player.png");
-        chatMessageServerBroadcast = new Texture("assets/ui/chat_message_server_broadcast.png");
-        chatMessageServerPrivate = new Texture("assets/ui/chat_message_server_private.png");
+        chatMessagePlayer = context.getManager().get(context.getAssetObject().chatMessagePlayer,Texture.class);
+        chatMessageServerBroadcast = context.getManager().get(context.getAssetObject().chatMessageServerBroadcast,Texture.class);
+        chatMessageServerPrivate = context.getManager().get(context.getAssetObject().chatMessageServerPrivate,Texture.class);
         
         // stage for chatContainer
         chatContainerStage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
@@ -737,12 +739,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         resetChatView();
 
         // get scroll bar textures
-        chatScrollBarUp = new Texture("assets/ui/scrollbar_top.png");
-        chatScrollBarUpPressed = new Texture("assets/ui/scrollbar_topPressed.png");
-        chatScrollBarDown = new Texture("assets/ui/scrollbar_bottom.png");
-        chatScrollBarDownPressed = new Texture("assets/ui/scrollbar_bottomPressed.png");
-        chatScrollBarMiddle = new Texture("assets/ui/scrollbar_center.png");
-        chatScrollBarScroll = new Texture("assets/ui/scrollbar_scroll.png");
+        chatScrollBarUp = context.getManager().get(context.getAssetObject().chatScrollBarUp,Texture.class);
+        chatScrollBarUpPressed = context.getManager().get(context.getAssetObject().chatScrollBarUpPressed,Texture.class);
+        chatScrollBarDown = context.getManager().get(context.getAssetObject().chatScrollBarDown,Texture.class);
+        chatScrollBarDownPressed = context.getManager().get(context.getAssetObject().chatScrollBarDownPressed,Texture.class);
+        chatScrollBarMiddle = context.getManager().get(context.getAssetObject().chatScrollBarMiddle,Texture.class);
+        chatScrollBarScroll = context.getManager().get(context.getAssetObject().chatScrollBarScroll,Texture.class);
 
         // initialise
         setDamagePercentage(0);

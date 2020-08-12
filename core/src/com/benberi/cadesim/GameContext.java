@@ -2,6 +2,7 @@ package com.benberi.cadesim;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.benberi.cadesim.client.ClientConnectionCallback;
 import com.benberi.cadesim.client.ClientConnectionTask;
 import com.benberi.cadesim.client.codec.util.Packet;
@@ -11,11 +12,11 @@ import com.benberi.cadesim.client.packet.in.LoginResponsePacket;
 import com.benberi.cadesim.client.packet.out.*;
 import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.entity.EntityManager;
-import com.benberi.cadesim.game.entity.vessel.Vessel;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectScene;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
 import com.benberi.cadesim.game.scene.GameScene;
+import com.benberi.cadesim.game.scene.SceneAssetManager;
 import com.benberi.cadesim.game.scene.TextureCollection;
 import com.benberi.cadesim.game.scene.impl.battle.SeaBattleScene;
 import com.benberi.cadesim.game.scene.impl.control.ControlAreaScene;
@@ -24,6 +25,7 @@ import com.benberi.cadesim.util.GameToolsContainer;
 import com.benberi.cadesim.util.RandomUtils;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,6 +39,8 @@ public class GameContext {
     private Channel serverChannel;
 
     public boolean clear;
+    public boolean isConnected = false;
+    public boolean isInLobby = false;
 
     private int shipId = 0;
 
@@ -67,6 +71,7 @@ public class GameContext {
 		this.roundDuration = roundDuration;
 	}
 
+	private SceneAssetManager assetManager;
     /**
      * The main input processor of the game
      */
@@ -85,12 +90,12 @@ public class GameContext {
     /**
      * The texture collection
      */
-    private TextureCollection textures;
+    public TextureCollection textures;
 
     /**
      * The entity manager
      */
-    private EntityManager entities;
+    public EntityManager entities;
 
     public String myVessel;
     
@@ -99,22 +104,22 @@ public class GameContext {
     /**
      * List of scenes
      */
-    private List<GameScene> scenes = new ArrayList<GameScene>();
+    public List<GameScene> scenes = new ArrayList<GameScene>();
 
     /**
      * If connected to server
      */
-    private boolean connected = false;
+    public boolean connected = false;
 
     /**
      * If the game is ready to display
      */
-    private boolean isReady = false;
+    public boolean isReady = false;
 
     /**
      * Executors service
      */
-    private ExecutorService service = Executors.newSingleThreadExecutor();
+    public ExecutorService service = Executors.newSingleThreadExecutor();
 
     /**
      * Public GSON object
@@ -123,7 +128,7 @@ public class GameContext {
 
     private ClientPacketHandler packets;
 
-    private ConnectScene connectScene;
+    public ConnectScene connectScene;
     public Team myTeam;
 
     public GameContext(BlockadeSimulator main) {
@@ -138,15 +143,19 @@ public class GameContext {
      * Create!
      */
     public void create() {
+        
+        assetManager = new SceneAssetManager();
+        assetManager.loadConnectSceneTextures();
+        assetManager.loadAllShipTextures();
+        assetManager.loadShipInfo();
+        assetManager.loadSeaBattle();
+        assetManager.manager.finishLoading();
+
         textures = new TextureCollection(this);
         textures.create();
-
-
-
+        
         this.connectScene = new ConnectScene(this);
         connectScene.create();
-
-
 
     }
 
@@ -195,6 +204,8 @@ public class GameContext {
     }
     
     public void createFurtherScenes(int shipId) {
+    	assetManager.loadControl();
+    	assetManager.manager.finishLoading();
     	ControlAreaScene.shipId = shipId;
     	this.input = new GameInputProcessor(this);
         this.seaBattleScene = new SeaBattleScene(this);
@@ -218,6 +229,10 @@ public class GameContext {
         return isReady;
     }
 
+    public boolean getConnect() {
+        return this.connected;
+    }
+    
     public void setConnect(boolean flag) {
         this.connected = flag;
     }
@@ -246,6 +261,13 @@ public class GameContext {
      */
     public ConnectScene getConnectScene() {
         return connectScene;
+    }
+    public void setBackToLobby(boolean bool) {
+    	this.isInLobby = bool;
+    }
+    
+    public boolean getBackToLobby() {
+    	return this.isInLobby;
     }
 
     /**
@@ -313,6 +335,7 @@ public class GameContext {
                 myVessel = displayName;
                 myVesselType = ship;
                 myTeam = Team.forId(team);
+                setBackToLobby(false);
             }
 
             @Override
@@ -388,11 +411,12 @@ public class GameContext {
 		if (entities != null) {
 			entities.dispose();
 		}
-		isReady = false;
-		connected = false;
 		connectScene.setup();
-		if (!connectScene.hasPopup())
+		if ((getConnect() == false)) {
+			System.out.println("Returned to lobby");
+		}else {
 			connectScene.setPopup("You have disconnected from the server.");
+		}
 	}
 
     public void sendBlockingMoveSlotChanged(int blockingMoveSlot) {
@@ -435,4 +459,26 @@ public class GameContext {
     	packet.setMessage(message);
     	sendPacket(packet);
     }
+
+    /*
+     * Method to disconnect from server and go back to connectscene
+     */
+	public void disconnect() {
+		setReady(false);
+		setConnect(false);
+		setBackToLobby(true);
+		getServerChannel().disconnect();
+	}
+
+	public SceneAssetManager getAssetObject() {
+		return assetManager;
+	}
+
+	public void setAssetObject(SceneAssetManager assetManager) {
+		this.assetManager = assetManager;
+	}
+	
+	public AssetManager getManager() {
+		return assetManager.manager;
+	}
 }
