@@ -218,8 +218,8 @@ public class ConnectScene implements GameScene, InputProcessor {
         address.setPosition(326, MAIN_GROUP_OFFSET_Y + 325);
         
         code = new TextField(Constants.SERVER_CODE, style);
-//        code.setPasswordCharacter('*');
-//        code.setPasswordMode(true);
+        code.setPasswordCharacter('*');
+        code.setPasswordMode(true);
         code.setSize(120, 49);
         code.setPosition(482, MAIN_GROUP_OFFSET_Y + 325);
         
@@ -617,7 +617,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                     stage.setKeyboardFocus(address);
                 } else {
                     try {
-                        performLogin();
+                    	performLogin();
                     } catch (UnknownHostException e) {
                         return failed;
                     }
@@ -664,7 +664,10 @@ public class ConnectScene implements GameScene, InputProcessor {
         }
         else if (loginHover) {
             try {
-                performLogin();
+            	this.setState(ConnectionSceneState.DEFAULT);
+            	performLogin();
+            	
+            	
             } catch (UnknownHostException e) {
                 return failed;
             }
@@ -706,9 +709,10 @@ public class ConnectScene implements GameScene, InputProcessor {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            setState(ConnectionSceneState.CONNECTING);
-            context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getIndex(), teamType.getSelected().getType());
+            if(context.getBackToLobby() && (!context.getIsConnect())) {
+	            setState(ConnectionSceneState.CONNECTING);
+		        context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getIndex(), teamType.getSelected().getType());
+            }
         }
     }
 
@@ -768,6 +772,10 @@ public class ConnectScene implements GameScene, InputProcessor {
     public void setState(ConnectionSceneState state) {
         this.state = state;
     }
+    
+    public ConnectionSceneState getState() {
+        return this.state;
+    }
 
     public void setup() {
         setState(ConnectionSceneState.DEFAULT);
@@ -781,7 +789,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         return popup;
     }
 
-	public String getOld_Name() {
+	public String getOld_Name() {                
 		return old_Name;
 	}
 

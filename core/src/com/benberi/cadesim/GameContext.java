@@ -40,7 +40,7 @@ public class GameContext {
 
     public boolean clear;
     public boolean isConnected = false;
-    public boolean isInLobby = false;
+    public boolean isInLobby = true;
 
     private int shipId = 0;
 
@@ -109,12 +109,12 @@ public class GameContext {
     /**
      * If connected to server
      */
-    public boolean connected = false;
+    private boolean connected = false;
 
     /**
      * If the game is ready to display
      */
-    public boolean isReady = false;
+    private boolean isReady = false;
 
     /**
      * Executors service
@@ -229,11 +229,11 @@ public class GameContext {
         return isReady;
     }
 
-    public boolean getConnect() {
+    public boolean getIsConnect() {
         return this.connected;
     }
     
-    public void setConnect(boolean flag) {
+    public void setIsConnect(boolean flag) {
         this.connected = flag;
     }
 
@@ -335,7 +335,7 @@ public class GameContext {
                 myVessel = displayName;
                 myVesselType = ship;
                 myTeam = Team.forId(team);
-                setBackToLobby(false);
+               
             }
 
             @Override
@@ -384,10 +384,10 @@ public class GameContext {
             connectScene.setState(ConnectionSceneState.DEFAULT);
         }
         else {
-        	createFurtherScenes(shipId);
-            connectScene.setState(ConnectionSceneState.CREATING_MAP);
+        	connectScene.setState(ConnectionSceneState.CREATING_MAP);
+	    	createFurtherScenes(shipId);
+        	
         }
-
     }
 
     public void setReady(boolean ready) {
@@ -411,12 +411,12 @@ public class GameContext {
 		if (entities != null) {
 			entities.dispose();
 		}
-		connectScene.setup();
-		if ((getConnect() == false)) {
+		if (!getIsConnect() && getBackToLobby()) {
 			System.out.println("Returned to lobby");
 		}else {
 			connectScene.setPopup("You have disconnected from the server.");
 		}
+		connectScene.setup();
 	}
 
     public void sendBlockingMoveSlotChanged(int blockingMoveSlot) {
@@ -465,9 +465,12 @@ public class GameContext {
      */
 	public void disconnect() {
 		setReady(false);
-		setConnect(false);
+		setIsConnect(false);
 		setBackToLobby(true);
+		getServerChannel().flush();
 		getServerChannel().disconnect();
+		connectScene.setState(ConnectionSceneState.DEFAULT);
+		connectScene.setup();
 	}
 
 	public SceneAssetManager getAssetObject() {
