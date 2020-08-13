@@ -2,14 +2,9 @@ package com.benberi.cadesim.game.scene;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class SceneAssetManager {
 	public final AssetManager manager = new AssetManager();
-	
-//	private SpriteBatch seaBattleBatch;
-//	private SpriteBatch controlBatch;
-//	private SpriteBatch menuBatch;
 	/*
 	 * Ship Textures
 	 */
@@ -135,7 +130,7 @@ public class SceneAssetManager {
     public String bilge = "assets/ui/bilge.png";
     
     public String menuUp = "assets/ui/settings.png";
-    public String menuDown = "assets/ui/settings-down.png";
+    public String menuDown = "assets/ui/settings.png";
     
     public String disengageUp = "assets/ui/disengage.png";
     public String disengageDown = "assets/ui/disengagePressed.png";
@@ -159,10 +154,6 @@ public class SceneAssetManager {
     public String chatMessageServerBroadcast = "assets/ui/chat_message_server_broadcast.png";
     public String chatMessageServerPrivate = "assets/ui/chat_message_server_private.png";
 
-    public String lobbyUp = "assets/ui/menu_button.png";
-    public String lobbyDown = "assets/ui/menu_button-down.png";
-    public String mapUp = "assets/ui/menu_button.png";
-    public String mapDown = "assets/ui/menu_button-down.png";
     
     public void loadSeaBattle() {
     	manager.load(sea, Texture.class);
@@ -176,12 +167,8 @@ public class SceneAssetManager {
     	manager.load(contenders, Texture.class);
     	manager.load(flag, Texture.class);
     	manager.load(flagTexture, Texture.class);
-    	manager.load(menuUp, Texture.class);
-    	manager.load(menuDown, Texture.class);
-    	manager.load(lobbyUp, Texture.class);
-    	manager.load(lobbyDown, Texture.class);
-    	manager.load(mapUp, Texture.class);
-    	manager.load(mapDown, Texture.class);
+//    	manager.load(menuUp, Texture.class);
+//    	manager.load(menuDown, Texture.class);
     	
     }
     

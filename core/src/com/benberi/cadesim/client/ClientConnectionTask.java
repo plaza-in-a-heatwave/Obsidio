@@ -5,8 +5,6 @@ import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.client.codec.ClientChannelHandler;
 import com.benberi.cadesim.client.codec.util.PacketDecoder;
 import com.benberi.cadesim.client.codec.util.PacketEncoder;
-import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -42,35 +40,44 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
     }
 
     @Override
-    public void run() {	
-        group(worker);
-        channel(NioSocketChannel.class);
-        option(ChannelOption.TCP_NODELAY, true);
-        handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(SocketChannel socketChannel) throws Exception {
-                ChannelPipeline p = socketChannel.pipeline();
-                p.addLast("encoder", new PacketEncoder());
-                p.addLast("decoder", new PacketDecoder());
-                p.addLast("handler", new ClientChannelHandler(context));
-            }
-        });
-
-        ChannelFuture f = null;
-
-        try {
-            f = connect(ip, Constants.PROTOCOL_PORT).sync();
-            if (f.isSuccess()) {
-                callback.onSuccess(f.channel());
-            }
-            f.channel().closeFuture().sync();
-            f.channel().flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-            callback.onFailure();
-        } finally {
-        	context.dispose();
-            worker.shutdownGracefully();
-        }
+    public void run() {
+    	if (context.getBackToLobby() == false){
+    		
+	        group(worker);
+	        channel(NioSocketChannel.class);
+	        option(ChannelOption.TCP_NODELAY, true);
+	        handler(new ChannelInitializer<SocketChannel>() {
+	            @Override
+	            protected void initChannel(SocketChannel socketChannel) throws Exception {
+	                ChannelPipeline p = socketChannel.pipeline();
+	                p.addLast("encoder", new PacketEncoder());
+	                p.addLast("decoder", new PacketDecoder());
+	                p.addLast("handler", new ClientChannelHandler(context));
+	            }
+	        });
+	
+	        ChannelFuture f = null;
+	
+	        try {
+	            f = connect(ip, Constants.PROTOCOL_PORT).sync();
+	            if (f.isSuccess()) {
+	                callback.onSuccess(f.channel());
+	            }
+	            f.channel().closeFuture().sync();
+	            f.channel().flush();
+	            context.dispose();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            callback.onFailure();
+	        } finally {
+	            worker.shutdownGracefully();
+	        }
+    	}
+    	else {
+    		worker.shutdownGracefully();
+            context.dispose();
+            context.setBackToLobby(false);
+            
+    	}
     }
 }
