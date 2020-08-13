@@ -2,304 +2,462 @@ package com.benberi.cadesim.game.scene;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.assets.AssetDescriptor;
 
 public class SceneAssetManager {
 	public final AssetManager manager = new AssetManager();
 	/*
 	 * Ship Textures
 	 */
-	public String baghlahSkin = "assets/skin/ships/baghlah.png";
-	public String blackshipSkin ="assets/skin/ships/blackship.png";
-	public String dhowSkin = "assets/skin/ships/dhow.png";
-	public String fanchuanSkin ="assets/skin/ships/fanchuan.png";
-	public String grandfrigSkin = "assets/skin/ships/grandfrig.png";
-	public String junkSkin ="assets/skin/ships/junk.png";
-	public String lgsloopSkin = "assets/skin/ships/lgsloop.png";
-	public String longshipSkin ="assets/skin/ships/longship.png";
-	public String merchbrigSkin = "assets/skin/ships/merchbrig.png";
-	public String merchgalSkin ="assets/skin/ships/merchgal.png";
-	public String smsloopSkin = "assets/skin/ships/smsloop.png";
-	public String warbrigSkin ="assets/skin/ships/warbrig.png";
-	public String warfrigSkin = "assets/skin/ships/warfrig.png";
-	public String wargalSkin ="assets/skin/ships/wargal.png";
-	public String xebecSkin = "assets/skin/ships/xebec.png";
+	public final static String BAGHLAHSKIN = "assets/skin/ships/baghlah.png";
+	public final static String BLACKSHIPSKIN ="assets/skin/ships/blackship.png";
+	public final static String DHOWSKIN = "assets/skin/ships/dhow.png";
+	public final static String FANCHUANSKIN ="assets/skin/ships/fanchuan.png";
+	public final static String GRANDFRIGSKIN = "assets/skin/ships/grandfrig.png";
+	public final static String JUNKSKIN ="assets/skin/ships/junk.png";
+	public final static String LGSLOOPSKIN = "assets/skin/ships/lgsloop.png";
+	public final static String LONGSHIPSKIN ="assets/skin/ships/longship.png";
+	public final static String MERCHBRIGSKIN = "assets/skin/ships/merchbrig.png";
+	public final static String MERCHGALSKIN ="assets/skin/ships/merchgal.png";
+	public final static String SMSLOOPSKIN = "assets/skin/ships/smsloop.png";
+	public final static String WARBRIGSKIN ="assets/skin/ships/warbrig.png";
+	public final static String WARFRIGSKIN = "assets/skin/ships/warfrig.png";
+	public final static String WARGALSKIN ="assets/skin/ships/wargal.png";
+	public final static String XEBECSKIN = "assets/skin/ships/xebec.png";
 	
-	public String baghlah = "assets/vessel/baghlah/sail.png";
-	public String blackship ="assets/vessel/blackship/sail.png";
-	public String dhow = "assets/vessel/dhow/sail.png";
-	public String fanchuan ="assets/vessel/fanchuan/sail.png";
-	public String grandfrig = "assets/vessel/grandfrig/sail.png";
-	public String junk ="assets/vessel/junk/sail.png";
-	public String lgsloop = "assets/vessel/lgsloop/sail.png";
-	public String longship ="assets/vessel/longship/sail.png";
-	public String merchbrig = "assets/vessel/merchbrig/sail.png";
-	public String merchgal ="assets/vessel/merchgal/sail.png";
-	public String smsloop = "assets/vessel/smsloop/sail.png";
-	public String warbrig ="assets/vessel/warbrig/sail.png";
-	public String warfrig = "assets/vessel/warfrig/sail.png";
-	public String wargal ="assets/vessel/wargal/sail.png";
-	public String xebec = "assets/vessel/xebec/sail.png";
+	public final static String BAGHLAH = "assets/vessel/baghlah/sail.png";
+	public final static String BLACKSHIP ="assets/vessel/blackship/sail.png";
+	public final static String DHOW = "assets/vessel/dhow/sail.png";
+	public final static String FANCHUAN ="assets/vessel/fanchuan/sail.png";
+	public final static String GRANDFRIG = "assets/vessel/grandfrig/sail.png";
+	public final static String JUNK ="assets/vessel/junk/sail.png";
+	public final static String LGSLOOP = "assets/vessel/lgsloop/sail.png";
+	public final static String LONGSHIP ="assets/vessel/longship/sail.png";
+	public final static String MERCHBRIG = "assets/vessel/merchbrig/sail.png";
+	public final static String MERCHGAL ="assets/vessel/merchgal/sail.png";
+	public final static String SMSLOOP = "assets/vessel/smsloop/sail.png";
+	public final static String WARBRIG ="assets/vessel/warbrig/sail.png";
+	public final static String WARFRIG = "assets/vessel/warfrig/sail.png";
+	public final static String WARGAL ="assets/vessel/wargal/sail.png";
+	public final static String XEBEC = "assets/vessel/xebec/sail.png";
 	
-	public String baghlah_sinking = "assets/vessel/baghlah/sink.png";
-//	public String blackship_sinking ="assets/vessel/blackship/sink.png";
-	public String dhow_sinking = "assets/vessel/dhow/sink.png";
-	public String fanchuan_sinking ="assets/vessel/fanchuan/sink.png";
-	public String grandfrig_sinking = "assets/vessel/grandfrig/sink.png";
-	public String junk_sinking = "assets/vessel/junk/sink.png";
-	public String lgsloop_sinking = "assets/vessel/lgsloop/sink.png";
-	public String longship_sinking ="assets/vessel/longship/sink.png";
-	public String merchbrig_sinking = "assets/vessel/merchbrig/sink.png";
-	public String merchgal_sinking ="assets/vessel/merchgal/sink.png";
-	public String smsloop_sinking = "assets/vessel/smsloop/sink.png";
-	public String warbrig_sinking ="assets/vessel/warbrig/sink.png";
-	public String warfrig_sinking = "assets/vessel/warfrig/sink.png";
-	public String wargal_sinking ="assets/vessel/wargal/sink.png";
-	public String xebec_sinking = "assets/vessel/xebec/sink.png";
+	public final static String BAGHLAH_SINKING = "assets/vessel/baghlah/sink.png";
+//	public final static String blackship_sinking ="assets/vessel/blackship/sink.png";
+	public final static String DHOW_SINKING = "assets/vessel/dhow/sink.png";
+	public final static String FANCHUAN_SINKING ="assets/vessel/fanchuan/sink.png";
+	public final static String GRANDFRIG_SINKING = "assets/vessel/grandfrig/sink.png";
+	public final static String JUNK_SINKING = "assets/vessel/junk/sink.png";
+	public final static String LGSLOOP_SINKING = "assets/vessel/lgsloop/sink.png";
+	public final static String LONGSHIP_SINKING ="assets/vessel/longship/sink.png";
+	public final static String MERCHBRIG_SINKING = "assets/vessel/merchbrig/sink.png";
+	public final static String MERCHGAL_SINKING ="assets/vessel/merchgal/sink.png";
+	public final static String SMSLOOP_SINKING = "assets/vessel/smsloop/sink.png";
+	public final static String WARBRIG_SINKING ="assets/vessel/warbrig/sink.png";
+	public final static String WARFRIG_SINKING = "assets/vessel/warfrig/sink.png";
+	public final static String WARGAL_SINKING ="assets/vessel/wargal/sink.png";
+	public final static String XEBEC_SINKING = "assets/vessel/xebec/sink.png";
 	
 	/*
 	 * Map Textures
 	 */
-	public String cell = "assets/sea/cell.png";
-	public String safe = "assets/sea/safezone.png";
-	public String sea = "assets/sea/sea1.png";
+	public final static String CELL = "assets/sea/cell.png";
+	public final static String SAFE = "assets/sea/safezone.png";
+	public final static String SEA = "assets/sea/sea1.png";
 	
-	public String bigrock ="assets/sea/rocks_big.png";
-	public String smallrock = "assets/sea/rocks_small.png";
-	public String whirlpool = "assets/sea/whirl.png";
-	public String wind = "assets/sea/wind.png";
+	public final static String BIGROCK ="assets/sea/rocks_big.png";
+	public final static String SMALLROCK = "assets/sea/rocks_small.png";
+	public final static String WHIRLPOOL = "assets/sea/whirl.png";
+	public final static String WIND = "assets/sea/wind.png";
 	/*
 	 * Cannon Textures
 	 */
-	public String cannonball_large = "assets/projectile/cannonball_large.png";
-    public String cannonball_medium = "assets/projectile/cannonball_medium.png";
-    public String cannonball_small = "assets/projectile/cannonball_small.png";
-    public String splash_large = "assets/effects/splash_large.png";
-    public String splash_small = "assets/effects/splash_small.png";
-    public String explode_large = "assets/effects/explode_large.png";
-    public String explode_medium = "assets/effects/explode_medium.png";
-    public String explode_small = "assets/effects/explode_small.png";
-    public String hit = "assets/effects/hit.png";
+	public final static String CANNONBALL_LARGE = "assets/projectile/cannonball_large.png";
+    public final static String CANNONBALL_MEDIUM = "assets/projectile/cannonball_medium.png";
+    public final static String CANNONBALL_SMALL = "assets/projectile/cannonball_small.png";
+    public final static String SPLASH_LARGE = "assets/effects/splash_large.png";
+    public final static String SPLASH_SMALL = "assets/effects/splash_small.png";
+    public final static String EXPLODE_LARGE = "assets/effects/explode_large.png";
+    public final static String EXPLODE_MEDIUM = "assets/effects/explode_medium.png";
+    public final static String EXPLODE_SMALL = "assets/effects/explode_small.png";
+    public final static String HIT = "assets/effects/hit.png";
     
 	/*
 	 * Misc Textures
 	 */
-    public String infoPanel = "assets/ui/info.png";
-    public String contenders = "assets/cade/contender_icons.png";
-    public String flag = "assets/cade/buoy_symbols.png";
-    public String flagTexture = "assets/cade/buoy.png";
+    public final static String INFOPANEL = "assets/ui/info.png";
+    public final static String CONTENDERS = "assets/cade/contender_icons.png";
+    public final static String FLAG = "assets/cade/buoy_symbols.png";
+    public final static String FLAGTEXTURE = "assets/cade/buoy.png";
     
-    public String background = "assets/bg.png";
-    public String textfieldTexture = "assets/skin/textfield.png";
-    public String loginButton = "assets/skin/login.png";
-    public String loginButtonHover = "assets/skin/login-hover.png";
+    public final static String BACKGROUND = "assets/bg.png";
+    public final static String TEXTFIELDTEXTURE = "assets/skin/textfield.png";
+    public final static String LOGINBUTTON = "assets/skin/login.png";
+    public final static String LOGINBUTTONHOVER = "assets/skin/login-hover.png";
     
-    public String cursor = "assets/skin/textfield-cursor.png";
-    public String selection  = "assets/skin/textfield-selection.png";
+    public final static String CURSOR = "assets/skin/textfield-cursor.png";
+    public final static String SELECTION  = "assets/skin/textfield-selection.png";
     
-    public String battleSelection = "assets/skin/battle-textfield-selection.png";
+    public final static String BATTLESELECTION = "assets/skin/battle-textfield-selection.png";
     
-    public String selectBoxBackground = "assets/skin/selectbg.png";
-    public String selectBoxListSelection = "assets/skin/selectbg.png";
-    public String selectBoxListBackground  = "assets/skin/select-list-bg.png";
+    public final static String SELECTBOXBACKGROUND = "assets/skin/selectbg.png";
+    public final static String SELECTBOXLISTSELECTION = "assets/skin/selectbg.png";
+    public final static String SELECTBOXLISTBACKGROUND  = "assets/skin/select-list-bg.png";
     
 
-    public String title = "assets/ui/title.png";
-    public String radioOn = "assets/ui/radio-on.png";
-    public String radioOff = "assets/ui/radio-off.png";
-    public String radioOnDisable = "assets/ui/radio-on-disable.png";
-    public String radioOffDisable = "assets/ui/radio-off-disable.png";
-    public String autoOn = "assets/ui/auto-on.png";
-    public String autoOff = "assets/ui/auto-off.png";
-    public String autoBackground = "assets/ui/auto_background.png";
-    public String sandTop = "assets/ui/sand_top.png";
-    public String sandBottom = "assets/ui/sand_bot.png";
-    public String sandTrickle = "assets/ui/sand_bot.png";
-    public String cannonSlot = "assets/ui/cannonslots.png";
-    public String moves = "assets/ui/move.png";
-    public String emptyMoves = "assets/ui/move_empty.png";
-    public String toolTipBackground = "assets/ui/tooltip_background.png";
-    public String shipHand = "assets/ui/shiphand.png";
-    public String hourGlass = "assets/ui/hourglass.png";
-    public String controlBackground = "assets/ui/moves-background.png";
-    public String shipStatus = "assets/ui/status.png";
-    public String shipStatusBg = "assets/ui/status-bg.png";
-    public String moveGetTarget = "assets/ui/sel_border_square.png";
-    public String cannonSelectionEmpty = "assets/ui/grapplecannon_empty.png";
-    public String cannonSelection = "assets/ui/grapplecannon.png";
-    public String damage = "assets/ui/grapplecannon.png";
-    public String bilge = "assets/ui/bilge.png";
+    public final static String TITLE = "assets/ui/title.png";
+    public final static String RADIOON = "assets/ui/radio-on.png";
+    public final static String RADIOOFF = "assets/ui/radio-off.png";
+    public final static String RADIOONDISABLE = "assets/ui/radio-on-disable.png";
+    public final static String RADIOOFFDISABLE = "assets/ui/radio-off-disable.png";
+    public final static String AUTOON = "assets/ui/auto-on.png";
+    public final static String AUTOOFF = "assets/ui/auto-off.png";
+    public final static String AUTOBACKGROUND = "assets/ui/auto_background.png";
+    public final static String SANDTOP = "assets/ui/sand_top.png";
+    public final static String SANDBOTTOM = "assets/ui/sand_bot.png";
+    public final static String SANDTRICKLE = "assets/ui/sand_bot.png";
+    public final static String CANNONSLOT = "assets/ui/cannonslots.png";
+    public final static String MOVES = "assets/ui/move.png";
+    public final static String EMPTYMOVES = "assets/ui/move_empty.png";
+    public final static String TOOLTIPBACKGROUND = "assets/ui/tooltip_background.png";
+    public final static String SHIPHAND = "assets/ui/shiphand.png";
+    public final static String HOURGLASS = "assets/ui/hourglass.png";
+    public final static String CONTROLBACKGROUND = "assets/ui/moves-background.png";
+    public final static String SHIPSTATUS = "assets/ui/status.png";
+    public final static String SHIPSTATUSBG = "assets/ui/status-bg.png";
+    public final static String MOVEGETTARGET = "assets/ui/sel_border_square.png";
+    public final static String CANNONSELECTIONEMPTY = "assets/ui/grapplecannon_empty.png";
+    public final static String CANNONSELECTION = "assets/ui/grapplecannon.png";
+    public final static String DAMAGE = "assets/ui/grapplecannon.png";
+    public final static String BILGE = "assets/ui/bilge.png";
     
-    public String menuUp = "assets/ui/settings.png";
-    public String menuDown = "assets/ui/settings.png";
+    public final static String MENUUP = "assets/ui/settings.png";
+    public final static String MENUDOWN = "assets/ui/settings-disabled.png";
+    public final static String LOBBYUP = "assets/ui/menu_button.png";
+    public final static String LOBBYDOWN = "assets/ui/menu_button-disabled.png";
+    public final static String MAPSUP = "assets/ui/menu_button.png";
+    public final static String MAPSDOWN = "assets/ui/menu_button-disabled.png";
     
-    public String disengageUp = "assets/ui/disengage.png";
-    public String disengageDown = "assets/ui/disengagePressed.png";
-    public String disengageBackground = "assets/ui/center_background.png";
+    public final static String DISENGAGEUP = "assets/ui/disengage.png";
+    public final static String DISENGAGEDOWN = "assets/ui/disengagePressed.png";
+    public final static String DISENGAGEBACKGROUND = "assets/ui/center_background.png";
     
-    public String chatBackground = "assets/ui/chat_background.png";
-    public String chatBackgroundFrame = "assets/ui/chat_background_frame.png";
-    public String chatIndicator  = "assets/ui/chat_indicator.png";
-    public String chatBarBackground = "assets/ui/chat_bar_background.png";
-    public String chatButtonSend = "assets/ui/chat_button_send.png";
-    public String chatButtonSendPressed = "assets/ui/chat_button_sendPressed.png";
+    public final static String CHATBACKGROUND = "assets/ui/chat_background.png";
+    public final static String CHATBACKGROUNDFRAME = "assets/ui/chat_background_frame.png";
+    public final static String CHATINDICATOR  = "assets/ui/chat_indicator.png";
+    public final static String CHATBARBACKGROUND = "assets/ui/chat_bar_background.png";
+    public final static String CHATBUTTONSEND = "assets/ui/chat_button_send.png";
+    public final static String CHATBUTTONSENDPRESSED = "assets/ui/chat_button_sendPressed.png";
     
-    public String chatScrollBarUp = "assets/ui/scrollbar_top.png";
-    public String chatScrollBarUpPressed = "assets/ui/scrollbar_topPressed.png";
-    public String chatScrollBarDown = "assets/ui/scrollbar_bottom.png";
-    public String chatScrollBarDownPressed = "assets/ui/scrollbar_bottomPressed.png";
-    public String chatScrollBarMiddle = "assets/ui/scrollbar_center.png";
-    public String chatScrollBarScroll = "assets/ui/scrollbar_scroll.png";
+    public final static String CHATSCROLLBARUP = "assets/ui/scrollbar_top.png";
+    public final static String CHATSCROLLBARUPPRESSED = "assets/ui/scrollbar_topPressed.png";
+    public final static String CHATSCROLLBARDOWN = "assets/ui/scrollbar_bottom.png";
+    public final static String CHATSCROLLBARDOWNPRESSED = "assets/ui/scrollbar_bottomPressed.png";
+    public final static String CHATSCROLLBARMIDDLE = "assets/ui/scrollbar_center.png";
+    public final static String CHATSCROLLBARSCROLL = "assets/ui/scrollbar_scroll.png";
     
-    public String chatMessagePlayer = "assets/ui/chat_message_player.png";
-    public String chatMessageServerBroadcast = "assets/ui/chat_message_server_broadcast.png";
-    public String chatMessageServerPrivate = "assets/ui/chat_message_server_private.png";
+    public final static String CHATMESSAGEPLAYER = "assets/ui/chat_message_player.png";
+    public final static String CHATMESSAGESERVERBROADCAST = "assets/ui/chat_message_server_broadcast.png";
+    public final static String CHATMESSAGESERVERPRIVATE = "assets/ui/chat_message_server_private.png";
 
+    
+	public AssetDescriptor<Texture> baghlahSkin = new AssetDescriptor<Texture>(BAGHLAHSKIN, Texture.class);
+	public AssetDescriptor<Texture> blackshipSkin = new AssetDescriptor<Texture>(BLACKSHIPSKIN, Texture.class);
+	public AssetDescriptor<Texture> dhowSkin = new AssetDescriptor<Texture>(DHOWSKIN, Texture.class);
+	public AssetDescriptor<Texture> fanchuanSkin = new AssetDescriptor<Texture>(FANCHUANSKIN, Texture.class);
+	public AssetDescriptor<Texture> grandfrigSkin = new AssetDescriptor<Texture>(GRANDFRIGSKIN, Texture.class);
+	public AssetDescriptor<Texture> junkSkin = new AssetDescriptor<Texture>(JUNKSKIN, Texture.class);
+	public AssetDescriptor<Texture> lgsloopSkin = new AssetDescriptor<Texture>(LGSLOOPSKIN, Texture.class);
+	public AssetDescriptor<Texture> longshipSkin = new AssetDescriptor<Texture>(LONGSHIPSKIN, Texture.class);
+	public AssetDescriptor<Texture> merchbrigSkin = new AssetDescriptor<Texture>(MERCHBRIGSKIN, Texture.class);
+	public AssetDescriptor<Texture> merchgalSkin = new AssetDescriptor<Texture>(MERCHGALSKIN, Texture.class);
+	public AssetDescriptor<Texture> smsloopSkin = new AssetDescriptor<Texture>(SMSLOOPSKIN, Texture.class);
+	public AssetDescriptor<Texture> warbrigSkin = new AssetDescriptor<Texture>(WARBRIGSKIN, Texture.class);
+	public AssetDescriptor<Texture> warfrigSkin = new AssetDescriptor<Texture>(WARFRIGSKIN, Texture.class);
+	public AssetDescriptor<Texture> wargalSkin = new AssetDescriptor<Texture>(WARGALSKIN, Texture.class);
+	public AssetDescriptor<Texture> xebecSkin = new AssetDescriptor<Texture>(XEBECSKIN, Texture.class);
+	
+	public AssetDescriptor<Texture> baghlah = new AssetDescriptor<Texture>(BAGHLAH, Texture.class);
+	public AssetDescriptor<Texture> blackship = new AssetDescriptor<Texture>(BLACKSHIP, Texture.class);
+	public AssetDescriptor<Texture> dhow  = new AssetDescriptor<Texture>(DHOW, Texture.class);
+	public AssetDescriptor<Texture> fanchuan = new AssetDescriptor<Texture>(FANCHUAN, Texture.class);
+	public AssetDescriptor<Texture> grandfrig = new AssetDescriptor<Texture>(GRANDFRIG, Texture.class);
+	public AssetDescriptor<Texture> junk = new AssetDescriptor<Texture>(JUNK, Texture.class);
+	public AssetDescriptor<Texture> lgsloop = new AssetDescriptor<Texture>(LGSLOOP, Texture.class);
+	public AssetDescriptor<Texture> longship = new AssetDescriptor<Texture>(LONGSHIP, Texture.class);
+	public AssetDescriptor<Texture> merchbrig = new AssetDescriptor<Texture>(MERCHBRIG, Texture.class);
+	public AssetDescriptor<Texture> merchgal = new AssetDescriptor<Texture>(MERCHGAL, Texture.class);
+	public AssetDescriptor<Texture> smsloop = new AssetDescriptor<Texture>(SMSLOOP, Texture.class);
+	public AssetDescriptor<Texture> warbrig = new AssetDescriptor<Texture>(WARBRIG, Texture.class);
+	public AssetDescriptor<Texture> warfrig = new AssetDescriptor<Texture>(WARFRIG, Texture.class);
+	public AssetDescriptor<Texture> wargal = new AssetDescriptor<Texture>(WARGAL, Texture.class);
+	public AssetDescriptor<Texture> xebec = new AssetDescriptor<Texture>(XEBEC, Texture.class);
+	
+	public AssetDescriptor<Texture> baghlah_sinking = new AssetDescriptor<Texture>(BAGHLAH_SINKING, Texture.class);
+	public AssetDescriptor<Texture> dhow_sinking = new AssetDescriptor<Texture>(DHOW_SINKING, Texture.class);
+	public AssetDescriptor<Texture> fanchuan_sinking = new AssetDescriptor<Texture>(FANCHUAN_SINKING, Texture.class);
+	public AssetDescriptor<Texture> grandfrig_sinking = new AssetDescriptor<Texture>(GRANDFRIG_SINKING, Texture.class);
+	public AssetDescriptor<Texture> junk_sinking = new AssetDescriptor<Texture>(JUNK_SINKING, Texture.class);
+	public AssetDescriptor<Texture> lgsloop_sinking = new AssetDescriptor<Texture>(LGSLOOP_SINKING, Texture.class);
+	public AssetDescriptor<Texture> longship_sinking = new AssetDescriptor<Texture>(LONGSHIP_SINKING, Texture.class);
+	public AssetDescriptor<Texture> merchbrig_sinking = new AssetDescriptor<Texture>(MERCHBRIG_SINKING, Texture.class);
+	public AssetDescriptor<Texture> merchgal_sinking = new AssetDescriptor<Texture>(MERCHGAL_SINKING, Texture.class);
+	public AssetDescriptor<Texture> smsloop_sinking = new AssetDescriptor<Texture>(SMSLOOP_SINKING, Texture.class);
+	public AssetDescriptor<Texture> warbrig_sinking = new AssetDescriptor<Texture>(WARBRIG_SINKING, Texture.class);
+	public AssetDescriptor<Texture> warfrig_sinking = new AssetDescriptor<Texture>(WARFRIG_SINKING, Texture.class);
+	public AssetDescriptor<Texture> wargal_sinking = new AssetDescriptor<Texture>(WARGAL_SINKING, Texture.class);
+	public AssetDescriptor<Texture> xebec_sinking = new AssetDescriptor<Texture>(XEBEC_SINKING, Texture.class);
+	
+	/*
+	 * Map Textures
+	 */
+	public AssetDescriptor<Texture> cell = new AssetDescriptor<Texture>(CELL, Texture.class);
+	public AssetDescriptor<Texture> safe = new AssetDescriptor<Texture>(SAFE, Texture.class);
+	public AssetDescriptor<Texture> sea = new AssetDescriptor<Texture>(SEA, Texture.class);
+	
+	public AssetDescriptor<Texture> bigrock = new AssetDescriptor<Texture>(BIGROCK, Texture.class);
+	public AssetDescriptor<Texture> smallrock = new AssetDescriptor<Texture>(SMALLROCK, Texture.class);
+	public AssetDescriptor<Texture> whirlpool = new AssetDescriptor<Texture>(WHIRLPOOL, Texture.class);
+	public AssetDescriptor<Texture> wind = new AssetDescriptor<Texture>(WIND, Texture.class);
+	/*
+	 * Cannon Textures
+	 */
+	public AssetDescriptor<Texture> cannonball_large = new AssetDescriptor<Texture>(CANNONBALL_LARGE, Texture.class);
+    public AssetDescriptor<Texture> cannonball_medium = new AssetDescriptor<Texture>(CANNONBALL_MEDIUM, Texture.class);
+    public AssetDescriptor<Texture> cannonball_small = new AssetDescriptor<Texture>(CANNONBALL_SMALL, Texture.class);
+    public AssetDescriptor<Texture> splash_large = new AssetDescriptor<Texture>(SPLASH_LARGE, Texture.class);
+    public AssetDescriptor<Texture> splash_small = new AssetDescriptor<Texture>(SPLASH_SMALL, Texture.class);
+    public AssetDescriptor<Texture> explode_large = new AssetDescriptor<Texture>(EXPLODE_LARGE, Texture.class);
+    public AssetDescriptor<Texture> explode_medium = new AssetDescriptor<Texture>(EXPLODE_MEDIUM, Texture.class);
+    public AssetDescriptor<Texture> explode_small = new AssetDescriptor<Texture>(EXPLODE_SMALL, Texture.class);
+    public AssetDescriptor<Texture> hit = new AssetDescriptor<Texture>(HIT, Texture.class);
+    
+	/*
+	 * Misc Textures
+	 */
+    public AssetDescriptor<Texture> infoPanel = new AssetDescriptor<Texture>(INFOPANEL, Texture.class);
+    public AssetDescriptor<Texture> contenders = new AssetDescriptor<Texture>(CONTENDERS, Texture.class);
+    public AssetDescriptor<Texture> flag = new AssetDescriptor<Texture>(FLAG, Texture.class);
+    public AssetDescriptor<Texture> flagTexture = new AssetDescriptor<Texture>(FLAGTEXTURE, Texture.class);
+    
+    public AssetDescriptor<Texture> background = new AssetDescriptor<Texture>(BACKGROUND, Texture.class);
+    public AssetDescriptor<Texture> textfieldTexture = new AssetDescriptor<Texture>(TEXTFIELDTEXTURE, Texture.class);
+    public AssetDescriptor<Texture> loginButton = new AssetDescriptor<Texture>(LOGINBUTTON, Texture.class);
+    public AssetDescriptor<Texture> loginButtonHover = new AssetDescriptor<Texture>(LOGINBUTTONHOVER, Texture.class);
+    
+    public AssetDescriptor<Texture> cursor = new AssetDescriptor<Texture>(CURSOR, Texture.class);
+    public AssetDescriptor<Texture> selection = new AssetDescriptor<Texture>(SELECTION, Texture.class);
+    
+    public AssetDescriptor<Texture> battleSelection = new AssetDescriptor<Texture>(BATTLESELECTION, Texture.class);
+    
+    public AssetDescriptor<Texture> selectBoxBackground = new AssetDescriptor<Texture>(SELECTBOXBACKGROUND, Texture.class);
+    public AssetDescriptor<Texture> selectBoxListSelection = new AssetDescriptor<Texture>(SELECTBOXLISTSELECTION, Texture.class);
+    public AssetDescriptor<Texture> selectBoxListBackground = new AssetDescriptor<Texture>(SELECTBOXLISTBACKGROUND, Texture.class);
+    
+
+    public AssetDescriptor<Texture> title = new AssetDescriptor<Texture>(TITLE, Texture.class);
+    public AssetDescriptor<Texture> radioOn = new AssetDescriptor<Texture>(RADIOON, Texture.class);
+    public AssetDescriptor<Texture> radioOff = new AssetDescriptor<Texture>(RADIOOFF, Texture.class);
+    public AssetDescriptor<Texture> radioOnDisable = new AssetDescriptor<Texture>(RADIOONDISABLE, Texture.class);
+    public AssetDescriptor<Texture> radioOffDisable = new AssetDescriptor<Texture>(RADIOOFFDISABLE, Texture.class);
+    public AssetDescriptor<Texture> autoOn = new AssetDescriptor<Texture>(AUTOON, Texture.class);
+    public AssetDescriptor<Texture> autoOff = new AssetDescriptor<Texture>(AUTOOFF, Texture.class);
+    public AssetDescriptor<Texture> autoBackground = new AssetDescriptor<Texture>(AUTOBACKGROUND, Texture.class);
+    public AssetDescriptor<Texture> sandTop = new AssetDescriptor<Texture>(SANDTOP, Texture.class);
+    public AssetDescriptor<Texture> sandBottom = new AssetDescriptor<Texture>(SANDBOTTOM, Texture.class);
+    public AssetDescriptor<Texture> sandTrickle = new AssetDescriptor<Texture>(SANDTRICKLE, Texture.class);
+    public AssetDescriptor<Texture> cannonSlot = new AssetDescriptor<Texture>(CANNONSLOT, Texture.class);
+    public AssetDescriptor<Texture> moves = new AssetDescriptor<Texture>(MOVES, Texture.class);
+    public AssetDescriptor<Texture> emptyMoves = new AssetDescriptor<Texture>(EMPTYMOVES, Texture.class);
+    public AssetDescriptor<Texture> toolTipBackground = new AssetDescriptor<Texture>(TOOLTIPBACKGROUND, Texture.class);
+    public AssetDescriptor<Texture> shipHand = new AssetDescriptor<Texture>(SHIPHAND, Texture.class);
+    public AssetDescriptor<Texture> hourGlass = new AssetDescriptor<Texture>(HOURGLASS, Texture.class);
+    public AssetDescriptor<Texture> controlBackground = new AssetDescriptor<Texture>(CONTROLBACKGROUND, Texture.class);
+    public AssetDescriptor<Texture> shipStatus = new AssetDescriptor<Texture>(SHIPSTATUS, Texture.class);
+    public AssetDescriptor<Texture> shipStatusBg = new AssetDescriptor<Texture>(SHIPSTATUSBG, Texture.class);
+    public AssetDescriptor<Texture> moveGetTarget = new AssetDescriptor<Texture>(MOVEGETTARGET, Texture.class);
+    public AssetDescriptor<Texture> cannonSelectionEmpty = new AssetDescriptor<Texture>(CANNONSELECTIONEMPTY, Texture.class);
+    public AssetDescriptor<Texture> cannonSelection = new AssetDescriptor<Texture>(CANNONSELECTION, Texture.class);
+    public AssetDescriptor<Texture> damage = new AssetDescriptor<Texture>(DAMAGE, Texture.class);
+    public AssetDescriptor<Texture> bilge = new AssetDescriptor<Texture>(BILGE, Texture.class);
+    
+    public AssetDescriptor<Texture> menuUp = new AssetDescriptor<Texture>(MENUUP, Texture.class);
+    public AssetDescriptor<Texture> menuDown = new AssetDescriptor<Texture>(MENUDOWN, Texture.class);
+    public AssetDescriptor<Texture> lobbyUp = new AssetDescriptor<Texture>(LOBBYUP, Texture.class);
+    public AssetDescriptor<Texture> lobbyDown = new AssetDescriptor<Texture>(LOBBYDOWN, Texture.class);
+    public AssetDescriptor<Texture> mapsUp = new AssetDescriptor<Texture>(MAPSUP, Texture.class);
+    public AssetDescriptor<Texture> mapsDown = new AssetDescriptor<Texture>(MAPSDOWN, Texture.class);
+    
+    public AssetDescriptor<Texture> disengageUp = new AssetDescriptor<Texture>(DISENGAGEUP, Texture.class);
+    public AssetDescriptor<Texture> disengageDown = new AssetDescriptor<Texture>(DISENGAGEDOWN, Texture.class);
+    public AssetDescriptor<Texture> disengageBackground = new AssetDescriptor<Texture>(DISENGAGEBACKGROUND, Texture.class);
+    
+    public AssetDescriptor<Texture> chatBackground = new AssetDescriptor<Texture>(CHATBACKGROUND, Texture.class);
+    public AssetDescriptor<Texture> chatBackgroundFrame = new AssetDescriptor<Texture>(CHATBACKGROUNDFRAME, Texture.class);
+    public AssetDescriptor<Texture> chatIndicator = new AssetDescriptor<Texture>(CHATINDICATOR, Texture.class);
+    public AssetDescriptor<Texture> chatBarBackground = new AssetDescriptor<Texture>(CHATBARBACKGROUND, Texture.class);
+    public AssetDescriptor<Texture> chatButtonSend = new AssetDescriptor<Texture>(CHATBUTTONSEND, Texture.class);
+    public AssetDescriptor<Texture> chatButtonSendPressed = new AssetDescriptor<Texture>(CHATBUTTONSENDPRESSED, Texture.class);
+    
+    public AssetDescriptor<Texture> chatScrollBarUp = new AssetDescriptor<Texture>(CHATSCROLLBARUP, Texture.class);
+    public AssetDescriptor<Texture> chatScrollBarUpPressed = new AssetDescriptor<Texture>(CHATSCROLLBARUPPRESSED, Texture.class);
+    public AssetDescriptor<Texture> chatScrollBarDown = new AssetDescriptor<Texture>(CHATSCROLLBARDOWN, Texture.class);
+    public AssetDescriptor<Texture> chatScrollBarDownPressed = new AssetDescriptor<Texture>(CHATSCROLLBARDOWNPRESSED, Texture.class);
+    public AssetDescriptor<Texture> chatScrollBarMiddle = new AssetDescriptor<Texture>(CHATSCROLLBARMIDDLE, Texture.class);
+    public AssetDescriptor<Texture> chatScrollBarScroll = new AssetDescriptor<Texture>(CHATSCROLLBARSCROLL, Texture.class);
+    
+    public AssetDescriptor<Texture> chatMessagePlayer= new AssetDescriptor<Texture>(CHATMESSAGEPLAYER, Texture.class);
+    public AssetDescriptor<Texture> chatMessageServerBroadcast= new AssetDescriptor<Texture>(CHATMESSAGESERVERBROADCAST, Texture.class);
+    public AssetDescriptor<Texture> chatMessageServerPrivate= new AssetDescriptor<Texture>(CHATMESSAGESERVERPRIVATE, Texture.class);
     
     public void loadSeaBattle() {
-    	manager.load(sea, Texture.class);
-    	manager.load(cell, Texture.class);
-    	manager.load(safe, Texture.class);
-    	manager.load(bigrock, Texture.class);
-    	manager.load(smallrock, Texture.class);
-    	manager.load(whirlpool, Texture.class);
-    	manager.load(wind, Texture.class);
-    	manager.load(infoPanel, Texture.class);
-    	manager.load(contenders, Texture.class);
-    	manager.load(flag, Texture.class);
-    	manager.load(flagTexture, Texture.class);
-//    	manager.load(menuUp, Texture.class);
-//    	manager.load(menuDown, Texture.class);
+    	manager.load(sea);
+    	manager.load(cell);
+    	manager.load(safe);
+    	manager.load(bigrock);
+    	manager.load(smallrock);
+    	manager.load(whirlpool);
+    	manager.load(wind);
+    	manager.load(infoPanel);
+    	manager.load(contenders);
+    	manager.load(flag);
+    	manager.load(flagTexture);
+    	manager.load(menuUp);
+    	manager.load(menuDown);
+    	manager.load(lobbyUp);
+    	manager.load(lobbyDown);
+    	manager.load(mapsUp);
+    	manager.load(mapsDown);
     	
     }
     
     public void loadShipInfo() {
-    	manager.load(cannonball_large, Texture.class);
-        manager.load(cannonball_medium, Texture.class);
-        manager.load(cannonball_small, Texture.class);
-        manager.load(splash_large, Texture.class);
-        manager.load(splash_small, Texture.class);
-        manager.load(explode_large, Texture.class);
-        manager.load(explode_medium, Texture.class);
-        manager.load(explode_small, Texture.class);
-        manager.load(hit, Texture.class);
+    	manager.load(cannonball_large);
+        manager.load(cannonball_medium);
+        manager.load(cannonball_small);
+        manager.load(splash_large);
+        manager.load(splash_small);
+        manager.load(explode_large);
+        manager.load(explode_medium);
+        manager.load(explode_small);
+        manager.load(hit);
 
     }
     
     public void loadControl() {
-        manager.load(title, Texture.class);
-        manager.load(radioOn, Texture.class);
-        manager.load(radioOff, Texture.class);
-        manager.load(radioOnDisable, Texture.class);
-        manager.load(radioOffDisable, Texture.class);
-        manager.load(autoOn, Texture.class);
-        manager.load(autoOff, Texture.class);
-        manager.load(autoBackground, Texture.class);
-        manager.load(sandTop, Texture.class);
-        manager.load(sandBottom, Texture.class);
-        manager.load(sandTrickle, Texture.class);
-        manager.load(cannonSlot, Texture.class);
-        manager.load(moves, Texture.class);
-        manager.load(emptyMoves, Texture.class);
-        manager.load(toolTipBackground, Texture.class);
-        manager.load(shipHand, Texture.class);
-        manager.load(hourGlass, Texture.class);
-        manager.load(controlBackground, Texture.class);
-        manager.load(shipStatus, Texture.class);
-        manager.load(shipStatusBg, Texture.class);
-        manager.load(moveGetTarget, Texture.class);
-        manager.load(cannonSelectionEmpty, Texture.class);
-        manager.load(cannonSelection, Texture.class);
-        manager.load(damage, Texture.class);
-        manager.load(bilge, Texture.class);
+        manager.load(title);
+        manager.load(radioOn);
+        manager.load(radioOff);
+        manager.load(radioOnDisable);
+        manager.load(radioOffDisable);
+        manager.load(autoOn);
+        manager.load(autoOff);
+        manager.load(autoBackground);
+        manager.load(sandTop);
+        manager.load(sandBottom);
+        manager.load(sandTrickle);
+        manager.load(cannonSlot);
+        manager.load(moves);
+        manager.load(emptyMoves);
+        manager.load(toolTipBackground);
+        manager.load(shipHand);
+        manager.load(hourGlass);
+        manager.load(controlBackground);
+        manager.load(shipStatus);
+        manager.load(shipStatusBg);
+        manager.load(moveGetTarget);
+        manager.load(cannonSelectionEmpty);
+        manager.load(cannonSelection);
+        manager.load(damage);
+        manager.load(bilge);
         
-        manager.load(disengageUp, Texture.class);
-        manager.load(disengageDown, Texture.class);
-        manager.load(disengageBackground, Texture.class);
+        manager.load(disengageUp);
+        manager.load(disengageDown);
+        manager.load(disengageBackground);
         
-        manager.load(chatBackground, Texture.class);
-        manager.load(chatBackgroundFrame, Texture.class);
-        manager.load(chatIndicator, Texture.class);
-        manager.load(chatBarBackground, Texture.class);
-        manager.load(chatButtonSend, Texture.class);
-        manager.load(chatButtonSendPressed, Texture.class);
+        manager.load(chatBackground);
+        manager.load(chatBackgroundFrame);
+        manager.load(chatIndicator);
+        manager.load(chatBarBackground);
+        manager.load(chatButtonSend);
+        manager.load(chatButtonSendPressed);
         
-        manager.load(chatScrollBarUp, Texture.class);
-        manager.load(chatScrollBarUpPressed, Texture.class);
-        manager.load(chatScrollBarDown, Texture.class);
-        manager.load(chatScrollBarDownPressed, Texture.class);
-        manager.load(chatScrollBarMiddle, Texture.class);
-        manager.load(chatScrollBarScroll, Texture.class);
+        manager.load(chatScrollBarUp);
+        manager.load(chatScrollBarUpPressed);
+        manager.load(chatScrollBarDown);
+        manager.load(chatScrollBarDownPressed);
+        manager.load(chatScrollBarMiddle);
+        manager.load(chatScrollBarScroll);
         
-        manager.load(chatMessagePlayer, Texture.class);
-        manager.load(chatMessageServerBroadcast, Texture.class);
-        manager.load(chatMessageServerPrivate, Texture.class);
+        manager.load(chatMessagePlayer);
+        manager.load(chatMessageServerBroadcast);
+        manager.load(chatMessageServerPrivate);
     }
     
 	public void loadConnectSceneTextures() {
-		manager.load(background, Texture.class);
-		manager.load(textfieldTexture, Texture.class);
-		manager.load(loginButton, Texture.class);
-		manager.load(loginButtonHover, Texture.class);
-		manager.load(cursor, Texture.class);
-		manager.load(selection, Texture.class);
-		manager.load(selectBoxBackground, Texture.class);
-		manager.load(selectBoxListBackground, Texture.class);
-		manager.load(selectBoxListSelection, Texture.class);
+		manager.load(background);
+		manager.load(textfieldTexture);
+		manager.load(loginButton);
+		manager.load(loginButtonHover);
+		manager.load(cursor);
+		manager.load(selection);
+		manager.load(selectBoxBackground);
+		manager.load(selectBoxListBackground);
+		manager.load(selectBoxListSelection);
 		loadSkinShipTexture();
 		
 	}
 	
 	public void loadAllShipTextures() {
 		loadNormalShipTexture();
-    	manager.load(baghlah_sinking, Texture.class);
-    	manager.load(dhow_sinking, Texture.class);
-    	manager.load(fanchuan_sinking, Texture.class);
-    	manager.load(grandfrig_sinking, Texture.class);
-    	manager.load(junk_sinking, Texture.class);
-    	manager.load(lgsloop_sinking, Texture.class);
-    	manager.load(longship_sinking, Texture.class);
-    	manager.load(merchbrig_sinking, Texture.class);
-    	manager.load(merchgal_sinking, Texture.class);
-    	manager.load(smsloop_sinking, Texture.class);
-    	manager.load(warbrig_sinking, Texture.class);
-    	manager.load(warfrig_sinking, Texture.class);
-    	manager.load(wargal_sinking, Texture.class);
-    	manager.load(xebec_sinking, Texture.class);
+    	manager.load(baghlah_sinking);
+    	manager.load(dhow_sinking);
+    	manager.load(fanchuan_sinking);
+    	manager.load(grandfrig_sinking);
+    	manager.load(junk_sinking);
+    	manager.load(lgsloop_sinking);
+    	manager.load(longship_sinking);
+    	manager.load(merchbrig_sinking);
+    	manager.load(merchgal_sinking);
+    	manager.load(smsloop_sinking);
+    	manager.load(warbrig_sinking);
+    	manager.load(warfrig_sinking);
+    	manager.load(wargal_sinking);
+    	manager.load(xebec_sinking);
 	}
 	
     public void loadNormalShipTexture() {
-    	manager.load(baghlah, Texture.class);
-    	manager.load(blackship, Texture.class);
-    	manager.load(dhow, Texture.class);
-    	manager.load(fanchuan, Texture.class);
-    	manager.load(grandfrig, Texture.class);
-    	manager.load(junk, Texture.class);
-    	manager.load(lgsloop, Texture.class);
-    	manager.load(longship, Texture.class);
-    	manager.load(merchbrig, Texture.class);
-    	manager.load(merchgal, Texture.class);
-    	manager.load(smsloop, Texture.class);
-    	manager.load(warbrig, Texture.class);
-    	manager.load(warfrig, Texture.class);
-    	manager.load(wargal, Texture.class);
-    	manager.load(xebec, Texture.class);
+    	manager.load(baghlah);
+    	manager.load(blackship);
+    	manager.load(dhow);
+    	manager.load(fanchuan);
+    	manager.load(grandfrig);
+    	manager.load(junk);
+    	manager.load(lgsloop);
+    	manager.load(longship);
+    	manager.load(merchbrig);
+    	manager.load(merchgal);
+    	manager.load(smsloop);
+    	manager.load(warbrig);
+    	manager.load(warfrig);
+    	manager.load(wargal);
+    	manager.load(xebec);
 	}
     
     private void loadSkinShipTexture() {
-    	manager.load(baghlahSkin, Texture.class);
-    	manager.load(blackshipSkin, Texture.class);
-    	manager.load(dhowSkin, Texture.class);
-    	manager.load(fanchuanSkin, Texture.class);
-    	manager.load(grandfrigSkin, Texture.class);
-    	manager.load(junkSkin, Texture.class);
-    	manager.load(lgsloopSkin, Texture.class);
-    	manager.load(longshipSkin, Texture.class);
-    	manager.load(merchbrigSkin, Texture.class);
-    	manager.load(merchgalSkin, Texture.class);
-    	manager.load(smsloopSkin, Texture.class);
-    	manager.load(warbrigSkin, Texture.class);
-    	manager.load(warfrigSkin, Texture.class);
-    	manager.load(wargalSkin, Texture.class);
-    	manager.load(xebecSkin, Texture.class);
+    	manager.load(baghlahSkin);
+    	manager.load(blackshipSkin);
+    	manager.load(dhowSkin);
+    	manager.load(fanchuanSkin);
+    	manager.load(grandfrigSkin);
+    	manager.load(junkSkin);
+    	manager.load(lgsloopSkin);
+    	manager.load(longshipSkin);
+    	manager.load(merchbrigSkin);
+    	manager.load(merchgalSkin);
+    	manager.load(smsloopSkin);
+    	manager.load(warbrigSkin);
+    	manager.load(warfrigSkin);
+    	manager.load(wargalSkin);
+    	manager.load(xebecSkin);
 	}
 }

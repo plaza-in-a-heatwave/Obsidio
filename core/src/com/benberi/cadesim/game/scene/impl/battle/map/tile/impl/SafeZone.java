@@ -13,7 +13,7 @@ public class SafeZone extends Cell {
     public SafeZone(GameContext context) {
         super(context);
         setTexture(
-        		context.getManager().get(context.getAssetObject().safe,Texture.class));
+        		context.getManager().get(context.getAssetObject().safe));
         setPackedObjectOrientation("cell_safe");
         setOrientation(RandomUtils.randInt(0, 3));
     }

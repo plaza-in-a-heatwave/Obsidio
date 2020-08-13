@@ -71,57 +71,57 @@ public class TextureCollection {
      */
     private void createVessels() {
     	// sail textures
-    	vessels.put("baghlah", context.getManager().get(context.getAssetObject().baghlah,Texture.class));
-    	vessels.put("blackship", context.getManager().get(context.getAssetObject().blackship,Texture.class));
-    	vessels.put("dhow", context.getManager().get(context.getAssetObject().dhow,Texture.class));
-    	vessels.put("fanchuan", context.getManager().get(context.getAssetObject().fanchuan,Texture.class));
-    	vessels.put("grandfrig", context.getManager().get(context.getAssetObject().grandfrig,Texture.class));
-    	vessels.put("junk", context.getManager().get(context.getAssetObject().junk,Texture.class));
-    	vessels.put("lgsloop", context.getManager().get(context.getAssetObject().lgsloop,Texture.class));
-    	vessels.put("longship", context.getManager().get(context.getAssetObject().longship,Texture.class));
-    	vessels.put("merchbrig", context.getManager().get(context.getAssetObject().merchbrig,Texture.class));
-    	vessels.put("merchgal", context.getManager().get(context.getAssetObject().merchgal,Texture.class));
-    	vessels.put("smsloop", context.getManager().get(context.getAssetObject().smsloop,Texture.class));
-    	vessels.put("warbrig", context.getManager().get(context.getAssetObject().warbrig,Texture.class));
-    	vessels.put("warfrig", context.getManager().get(context.getAssetObject().warfrig,Texture.class));
-    	vessels.put("wargal", context.getManager().get(context.getAssetObject().wargal,Texture.class));
-    	vessels.put("xebec", context.getManager().get(context.getAssetObject().xebec_sinking,Texture.class));
+    	vessels.put("baghlah", context.getManager().get(context.getAssetObject().baghlah));
+    	vessels.put("blackship", context.getManager().get(context.getAssetObject().blackship));
+    	vessels.put("dhow", context.getManager().get(context.getAssetObject().dhow));
+    	vessels.put("fanchuan", context.getManager().get(context.getAssetObject().fanchuan));
+    	vessels.put("grandfrig", context.getManager().get(context.getAssetObject().grandfrig));
+    	vessels.put("junk", context.getManager().get(context.getAssetObject().junk));
+    	vessels.put("lgsloop", context.getManager().get(context.getAssetObject().lgsloop));
+    	vessels.put("longship", context.getManager().get(context.getAssetObject().longship));
+    	vessels.put("merchbrig", context.getManager().get(context.getAssetObject().merchbrig));
+    	vessels.put("merchgal", context.getManager().get(context.getAssetObject().merchgal));
+    	vessels.put("smsloop", context.getManager().get(context.getAssetObject().smsloop));
+    	vessels.put("warbrig", context.getManager().get(context.getAssetObject().warbrig));
+    	vessels.put("warfrig", context.getManager().get(context.getAssetObject().warfrig));
+    	vessels.put("wargal", context.getManager().get(context.getAssetObject().wargal));
+    	vessels.put("xebec", context.getManager().get(context.getAssetObject().xebec_sinking));
 
     	// sink textures (the Black Ship doesn't sink!)
-    	vessels.put("baghlah_sinking", context.getManager().get(context.getAssetObject().baghlah_sinking,Texture.class));
-    	vessels.put("dhow_sinking", context.getManager().get(context.getAssetObject().dhow_sinking,Texture.class));
-    	vessels.put("fanchuan_sinking", context.getManager().get(context.getAssetObject().fanchuan_sinking,Texture.class));
-    	vessels.put("grandfrig_sinking", context.getManager().get(context.getAssetObject().grandfrig_sinking,Texture.class));
-    	vessels.put("junk_sinking", context.getManager().get(context.getAssetObject().junk_sinking,Texture.class));
-    	vessels.put("lgsloop_sinking", context.getManager().get(context.getAssetObject().lgsloop_sinking,Texture.class));
-    	vessels.put("longship_sinking", context.getManager().get(context.getAssetObject().longship_sinking,Texture.class));
-    	vessels.put("merchbrig_sinking", context.getManager().get(context.getAssetObject().merchbrig_sinking,Texture.class));
-    	vessels.put("merchgal_sinking", context.getManager().get(context.getAssetObject().merchgal_sinking,Texture.class));
-    	vessels.put("smsloop_sinking", context.getManager().get(context.getAssetObject().smsloop_sinking,Texture.class));
-    	vessels.put("warbrig_sinking", context.getManager().get(context.getAssetObject().warbrig_sinking,Texture.class));
-    	vessels.put("warfrig_sinking", context.getManager().get(context.getAssetObject().warfrig_sinking,Texture.class));
-    	vessels.put("wargal_sinking", context.getManager().get(context.getAssetObject().wargal_sinking,Texture.class));
-    	vessels.put("xebec_sinking", context.getManager().get(context.getAssetObject().xebec_sinking,Texture.class));
+    	vessels.put("baghlah_sinking", context.getManager().get(context.getAssetObject().baghlah_sinking));
+    	vessels.put("dhow_sinking", context.getManager().get(context.getAssetObject().dhow_sinking));
+    	vessels.put("fanchuan_sinking", context.getManager().get(context.getAssetObject().fanchuan_sinking));
+    	vessels.put("grandfrig_sinking", context.getManager().get(context.getAssetObject().grandfrig_sinking));
+    	vessels.put("junk_sinking", context.getManager().get(context.getAssetObject().junk_sinking));
+    	vessels.put("lgsloop_sinking", context.getManager().get(context.getAssetObject().lgsloop_sinking));
+    	vessels.put("longship_sinking", context.getManager().get(context.getAssetObject().longship_sinking));
+    	vessels.put("merchbrig_sinking", context.getManager().get(context.getAssetObject().merchbrig_sinking));
+    	vessels.put("merchgal_sinking", context.getManager().get(context.getAssetObject().merchgal_sinking));
+    	vessels.put("smsloop_sinking", context.getManager().get(context.getAssetObject().smsloop_sinking));
+    	vessels.put("warbrig_sinking", context.getManager().get(context.getAssetObject().warbrig_sinking));
+    	vessels.put("warfrig_sinking", context.getManager().get(context.getAssetObject().warfrig_sinking));
+    	vessels.put("wargal_sinking", context.getManager().get(context.getAssetObject().wargal_sinking));
+    	vessels.put("xebec_sinking", context.getManager().get(context.getAssetObject().xebec_sinking));
     }
 
     /**
      * Creates sea tiles textures
      */
     private void createSeaTiles() {
-        seaTiles.put("cell", context.getManager().get(context.getAssetObject().cell,Texture.class));
-        seaTiles.put("safe", context.getManager().get(context.getAssetObject().safe,Texture.class));
+        seaTiles.put("cell", context.getManager().get(context.getAssetObject().cell));
+        seaTiles.put("safe", context.getManager().get(context.getAssetObject().safe));
     }
 
     private void createMisc() {
-        misc.put("cannonball_large", context.getManager().get(context.getAssetObject().cannonball_large,Texture.class));
-        misc.put("cannonball_medium", context.getManager().get(context.getAssetObject().cannonball_medium,Texture.class));
-        misc.put("cannonball_small", context.getManager().get(context.getAssetObject().cannonball_small,Texture.class));
-        misc.put("splash_large", context.getManager().get(context.getAssetObject().splash_large,Texture.class));
-        misc.put("splash_small", context.getManager().get(context.getAssetObject().splash_small,Texture.class));
-        misc.put("explode_large", context.getManager().get(context.getAssetObject().explode_large,Texture.class));
-        misc.put("explode_medium", context.getManager().get(context.getAssetObject().explode_medium,Texture.class));
-        misc.put("explode_small"  , context.getManager().get(context.getAssetObject().explode_small,Texture.class));
-        misc.put("hit", context.getManager().get(context.getAssetObject().hit,Texture.class));
+        misc.put("cannonball_large", context.getManager().get(context.getAssetObject().cannonball_large));
+        misc.put("cannonball_medium", context.getManager().get(context.getAssetObject().cannonball_medium));
+        misc.put("cannonball_small", context.getManager().get(context.getAssetObject().cannonball_small));
+        misc.put("splash_large", context.getManager().get(context.getAssetObject().splash_large));
+        misc.put("splash_small", context.getManager().get(context.getAssetObject().splash_small));
+        misc.put("explode_large", context.getManager().get(context.getAssetObject().explode_large));
+        misc.put("explode_medium", context.getManager().get(context.getAssetObject().explode_medium));
+        misc.put("explode_small"  , context.getManager().get(context.getAssetObject().explode_small));
+        misc.put("hit", context.getManager().get(context.getAssetObject().hit));
     }
     
     public void dispose() {

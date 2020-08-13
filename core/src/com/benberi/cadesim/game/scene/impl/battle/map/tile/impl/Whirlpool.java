@@ -21,7 +21,7 @@ public class Whirlpool extends GameTile {
     public Whirlpool(GameContext context, int direction) {
         super(context);
         setTexture(
-        		context.getManager().get(context.getAssetObject().whirlpool,Texture.class));
+        		context.getManager().get(context.getAssetObject().whirlpool));
         setPackedObjectOrientation("whirl");
 
         switch (direction) {

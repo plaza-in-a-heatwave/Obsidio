@@ -134,7 +134,7 @@ public class SeaBattleScene implements GameScene {
         renderer = new ShapeRenderer();
         this.batch = new SpriteBatch();
         information.create();
-        sea = context.getManager().get(context.getAssetObject().sea,Texture.class);
+        sea = context.getManager().get(context.getAssetObject().sea);
         sea.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
         this.mainmenu = new MenuComponent(context, this);

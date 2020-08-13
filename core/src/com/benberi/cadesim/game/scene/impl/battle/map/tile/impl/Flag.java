@@ -25,7 +25,7 @@ public class Flag extends GameObject {
         super(context);
         set(x, y);
         setTexture(
-        		context.getManager().get(context.getAssetObject().flagTexture,Texture.class));
+        		context.getManager().get(context.getAssetObject().flagTexture));
 
         setCustomOffsetX(2);
         setCustomOffsetY(22);

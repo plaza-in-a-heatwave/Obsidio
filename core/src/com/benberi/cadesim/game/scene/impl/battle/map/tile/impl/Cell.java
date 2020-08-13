@@ -17,7 +17,7 @@ public class Cell extends GameTile {
     public Cell(GameContext context) {
         super(context);
         setTexture(
-        		context.getManager().get(context.getAssetObject().cell,Texture.class));
+        		context.getManager().get(context.getAssetObject().cell));
         setPackedObjectOrientation("cell");
         setOrientation(RandomUtils.randInt(0, 3));
     }

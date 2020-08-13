@@ -61,8 +61,8 @@ public class GameInformation extends SceneComponent {
     @Override
     public void create() {
         this.batch = new SpriteBatch();
-        this.panel = context.getManager().get(context.getAssetObject().infoPanel,Texture.class);
-        this.contenders = context.getManager().get(context.getAssetObject().contenders,Texture.class);
+        this.panel = context.getManager().get(context.getAssetObject().infoPanel);
+        this.contenders = context.getManager().get(context.getAssetObject().contenders);
         this.defenderThem = new TextureRegion(contenders, 0, 0, 13, 18);
         this.defenderUs = new TextureRegion(contenders, 13, 0, 13, 18);
         this.attackerThem = new TextureRegion(contenders, 26, 0, 13, 18);

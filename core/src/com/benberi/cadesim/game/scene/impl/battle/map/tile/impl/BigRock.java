@@ -18,7 +18,7 @@ public class BigRock extends GameObject {
         super(context);
         set(x, y);
         setTexture(
-        		context.getManager().get(context.getAssetObject().bigrock,Texture.class));
+        		context.getManager().get(context.getAssetObject().bigrock));
         setPackedObjectOrientation("big_rock");
         setOrientation(RandomUtils.randInt(0, 3));
     }

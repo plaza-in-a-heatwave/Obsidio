@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -24,15 +25,10 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
      * The context
      */
     private GameContext context;
-
     /**
      * Batch renderer for sprites and textures
      */
     private SpriteBatch batch;
-    /**
-     * Menu Window given as table
-     */
-    private Table menuWindow;
 
     /**
      * Textures
@@ -44,35 +40,36 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     private Texture mapUp;
     private Texture mapDown;
     
+    FreeTypeFontGenerator generator;
+    BitmapFont font;
+    
     // reference coords - menu control
     private int MENU_REF_X       = 0;
     private int MENU_REF_Y       = 0;
-    private int MENU_buttonX     = MENU_REF_X + 705;
-    private int MENU_buttonY     = MENU_REF_Y + 370;
+    private int MENU_buttonX     = MENU_REF_X + 764;
+    private int MENU_buttonY     = MENU_REF_Y + 362;
 
-    private int MENU_tableX     = MENU_REF_X + 700;
-    private int MENU_tableY     = MENU_REF_Y + 0;
+    private int MENU_tableX     = MENU_REF_X + 720;
+    private int MENU_tableY     = MENU_REF_Y + 279;
     
-    private int MENU_lobbyButtonX     = MENU_REF_X + 690;
-    private int MENU_lobbyButtonY     = MENU_REF_Y + 312;
+    private int MENU_lobbyButtonX     = MENU_REF_X + 724;
+    private int MENU_lobbyButtonY     = MENU_REF_Y + 327;
     
-    private int MENU_mapsButtonX     = MENU_REF_X + 690;
-    private int MENU_mapsButtonY     = MENU_REF_Y + 278;
+    private int MENU_mapsButtonX     = MENU_REF_X + 724;
+    private int MENU_mapsButtonY     = MENU_REF_Y + 292;
     
 	
     // DISENGAGE shapes
-    Rectangle menuButton_Shape   = new Rectangle(MENU_buttonX, MENU_buttonY-350, 77, 16);
-    Rectangle menuTable_Shape   = new Rectangle(MENU_tableX, MENU_tableY, 120, 250);
-    Rectangle menuLobby_Shape   = new Rectangle(MENU_lobbyButtonX, MENU_lobbyButtonY-250, 100, 30);
-    Rectangle menuMap_Shape   = new Rectangle(MENU_mapsButtonX, MENU_mapsButtonY-185, 100, 30);
+    Rectangle menuButton_Shape   = new Rectangle(MENU_buttonX, 13, 25, 25);
+    Rectangle menuTable_Shape   = new Rectangle(MENU_tableX, 30, 80, 80);
+    Rectangle menuLobby_Shape   = new Rectangle(MENU_lobbyButtonX, 50, 70, 22);
+    Rectangle menuMap_Shape   = new Rectangle(MENU_mapsButtonX, 80, 70, 22);
 
     /**
      * state of buttons. true if pushed, false if not.
      */
     private boolean menuButtonIsDown = false; // initial
-    @SuppressWarnings("unused")
 	private boolean menuLobbyIsDown = false; // initial
-    @SuppressWarnings("unused")
 	private boolean menuMapsIsDown = false; // initial
     
     protected MenuComponent(GameContext context, SeaBattleScene owner) {
@@ -83,12 +80,19 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     @Override
     public void create() {
         batch = new SpriteBatch();
-        menuUp = context.getManager().get(context.getAssetObject().menuUp,Texture.class);
-        menuDown = context.getManager().get(context.getAssetObject().menuDown,Texture.class);
-        lobbyUp = context.getManager().get(context.getAssetObject().lobbyUp,Texture.class);
-        lobbyDown = context.getManager().get(context.getAssetObject().lobbyDown,Texture.class);
-        mapUp = context.getManager().get(context.getAssetObject().mapUp,Texture.class);
-        mapDown = context.getManager().get(context.getAssetObject().mapDown,Texture.class);
+        menuUp = context.getManager().get(context.getAssetObject().menuUp);
+        menuDown = context.getManager().get(context.getAssetObject().menuDown);
+        lobbyUp = context.getManager().get(context.getAssetObject().lobbyUp);
+        lobbyDown = context.getManager().get(context.getAssetObject().lobbyDown);
+        mapUp = context.getManager().get(context.getAssetObject().mapsUp);
+        mapDown = context.getManager().get(context.getAssetObject().mapsDown);
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 10;
+        parameter.shadowColor = new Color(0, 0, 0, 0.2f);
+        parameter.shadowOffsetY = 1;
+        font = generator.generateFont(parameter);
+        font.setColor(Color.BLACK);
     }
     
     @Override
@@ -99,9 +103,11 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     public void render() {
         batch.begin();
         batch.draw((menuButtonIsDown)?menuDown:menuUp, MENU_buttonX, MENU_buttonY);
-        if(menuButtownIsDown) {
+        if(menuButtonIsDown) {
         	batch.draw((menuLobbyIsDown)?lobbyDown:lobbyUp, MENU_lobbyButtonX, MENU_lobbyButtonY);
+        	font.draw(batch,"Lobby",MENU_lobbyButtonX+25,MENU_lobbyButtonY+21);
         	batch.draw((menuMapsIsDown)?mapDown:mapUp, MENU_mapsButtonX, MENU_mapsButtonY);
+        	font.draw(batch,"Show Maps",MENU_mapsButtonX+17,MENU_mapsButtonY+21);
         }
         batch.end();
     }
@@ -121,7 +127,7 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         	menuButtonIsDown = false;
         	menuLobbyIsDown = false;
         	menuMapsIsDown = false;
-        	return true;
+        	return false;
         }
     	else if(menuButtonIsDown && isClickingLobbyButton(x,y)) {
     		menuLobbyIsDown = true;
@@ -170,32 +176,18 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     @Override
     public boolean handleDrag(float x, float y, float ix, float iy) {
         // deactivate it with no penalty to the user.
-        if (menuButtonIsDown) {
-            if (!isClickingMenuButton(x, y)) {
-                menuButtonIsDown = false;
-            }
-        }
 
         return false;
     }
 
     @Override
     public boolean handleRelease(float x, float y, int button) {
-       
-        if (menuButtonIsDown && isClickingMenuButton(x, y)) {
-        	menuButtonIsDown = false;
-            }
+    	menuLobbyIsDown = false;
+    	menuMapsIsDown = false;
 
         return false;
     }
 
-    public void resetPlacedMovesAfterTurn() {
-        // fix stuck buttons if they were clicked across a turn
-        // with no penalty to the user
-        if (menuButtonIsDown) {
-            menuButtonIsDown = false;
-        }
-    }
 
 	@Override
 	public boolean keyDown(int arg0) {
@@ -240,30 +232,5 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 	@Override
 	public boolean handleMouseMove(float x, float y) {
 		return false;
-	}
-
-	
-	public static Texture createRoundPixMap(Color color, int width,
-            int height, int cornerRadius) {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.Alpha);
-        pixmap.setBlending(Pixmap.Blending.None);
-        pixmap.setColor(color.r,color.g,color.b,0.4f);
-        pixmap.fillCircle(cornerRadius, cornerRadius, cornerRadius);
-        pixmap.fillCircle(width - cornerRadius, cornerRadius, cornerRadius);
-        pixmap.fillCircle(width - cornerRadius, height - cornerRadius, cornerRadius);
-        pixmap.fillCircle(cornerRadius, height - cornerRadius, cornerRadius);
-        pixmap.fillRectangle(0, cornerRadius, width, height - (cornerRadius * 2));
-        pixmap.fillRectangle(cornerRadius, 0, width - (cornerRadius * 2), height);
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        return texture;
-    }
-
-	public ShapeRenderer getRenderer() {
-		return renderer;
-	}
-
-	public void setRenderer(ShapeRenderer renderer) {
-		this.renderer = renderer;
 	}
 }

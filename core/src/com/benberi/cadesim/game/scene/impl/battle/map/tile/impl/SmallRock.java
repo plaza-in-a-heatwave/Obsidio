@@ -18,7 +18,7 @@ public class SmallRock extends GameObject {
         super(context);
         set(x, y);
         setTexture(
-        		context.getManager().get(context.getAssetObject().smallrock,Texture.class));
+        		context.getManager().get(context.getAssetObject().smallrock));
         setPackedObjectOrientation("small_rock");
         setOrientation(RandomUtils.randInt(0, 3));
     }

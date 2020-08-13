@@ -229,11 +229,11 @@ public class GameContext {
         return isReady;
     }
 
-    public boolean getConnect() {
+    public boolean getIsConnect() {
         return this.connected;
     }
     
-    public void setConnect(boolean flag) {
+    public void setIsConnect(boolean flag) {
         this.connected = flag;
     }
 
@@ -412,7 +412,7 @@ public class GameContext {
 			entities.dispose();
 		}
 		connectScene.setup();
-		if ((getConnect() == false)) {
+		if ((getIsConnect() == false)) {
 			System.out.println("Returned to lobby");
 		}else {
 			connectScene.setPopup("You have disconnected from the server.");
@@ -465,7 +465,7 @@ public class GameContext {
      */
 	public void disconnect() {
 		setReady(false);
-		setConnect(false);
+		setIsConnect(false);
 		setBackToLobby(true);
 		getServerChannel().disconnect();
 	}

@@ -16,7 +16,7 @@ public class Wind extends GameTile {
     public Wind(GameContext context, int direction) {
         super(context);
         setTexture(
-        		context.getManager().get(context.getAssetObject().wind,Texture.class));
+        		context.getManager().get(context.getAssetObject().wind));
         setPackedObjectOrientation("cell");
 
         switch (direction) {

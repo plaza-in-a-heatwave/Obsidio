@@ -190,10 +190,10 @@ public class ConnectScene implements GameScene, InputProcessor {
         chosenGreeting = greetings.get(prng.nextInt(greetings.size()));
         
         batch = new SpriteBatch();
-        background = context.getManager().get(context.getAssetObject().background,Texture.class);
-        textfieldTexture = context.getManager().get(context.getAssetObject().textfieldTexture,Texture.class);
-        loginButton = context.getManager().get(context.getAssetObject().loginButton,Texture.class);
-        loginButtonHover = context.getManager().get(context.getAssetObject().loginButtonHover,Texture.class);
+        background = context.getManager().get(context.getAssetObject().background);
+        textfieldTexture = context.getManager().get(context.getAssetObject().textfieldTexture);
+        loginButton = context.getManager().get(context.getAssetObject().loginButton);
+        loginButtonHover = context.getManager().get(context.getAssetObject().loginButtonHover);
 
         renderer = new ShapeRenderer();
 
@@ -205,9 +205,9 @@ public class ConnectScene implements GameScene, InputProcessor {
         style.font = font;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
         style.cursor = new Image(
-        		context.getManager().get(context.getAssetObject().cursor,Texture.class)).getDrawable();
+        		context.getManager().get(context.getAssetObject().cursor)).getDrawable();
         style.selection = new Image(
-        		context.getManager().get(context.getAssetObject().selection,Texture.class)).getDrawable();
+        		context.getManager().get(context.getAssetObject().selection)).getDrawable();
 
         name = new TextField( prop.getProperty("user.username"), style);
         name.setSize(120, 49);
@@ -218,23 +218,23 @@ public class ConnectScene implements GameScene, InputProcessor {
         address.setPosition(326, MAIN_GROUP_OFFSET_Y + 325);
         
         code = new TextField(Constants.SERVER_CODE, style);
-//        code.setPasswordCharacter('*');
-//        code.setPasswordMode(true);
+        code.setPasswordCharacter('*');
+        code.setPasswordMode(true);
         code.setSize(120, 49);
         code.setPosition(482, MAIN_GROUP_OFFSET_Y + 325);
         
         SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
         selectBoxStyle.background = new Image(
-        		context.getManager().get(context.getAssetObject().selectBoxBackground,Texture.class)).getDrawable();
+        		context.getManager().get(context.getAssetObject().selectBoxBackground)).getDrawable();
         selectBoxStyle.font = font;
         selectBoxStyle.fontColor = new Color(1,1,1, 1);
         selectBoxStyle.listStyle = new List.ListStyle();
         selectBoxStyle.listStyle.selection = new Image(
-        		context.getManager().get(context.getAssetObject().selectBoxListSelection,Texture.class)).getDrawable();
+        		context.getManager().get(context.getAssetObject().selectBoxListSelection)).getDrawable();
         selectBoxStyle.listStyle.selection.setLeftWidth(5);
         selectBoxStyle.listStyle.font = font;
         selectBoxStyle.listStyle.background = new Image(
-        		context.getManager().get(context.getAssetObject().selectBoxListBackground,Texture.class)).getDrawable();
+        		context.getManager().get(context.getAssetObject().selectBoxListBackground)).getDrawable();
         selectBoxStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
         selectBoxStyle.background.setLeftWidth(10);
 
@@ -254,21 +254,21 @@ public class ConnectScene implements GameScene, InputProcessor {
         roomLabel.setSize(150.0f, 44.0f);
         roomLabel.setPosition(640, 55);
 
-        baghlah = context.getManager().get(context.getAssetObject().baghlahSkin,Texture.class);
-        blackship = context.getManager().get(context.getAssetObject().blackshipSkin,Texture.class);
-        dhow = context.getManager().get(context.getAssetObject().dhowSkin,Texture.class);
-        fanchuan = context.getManager().get(context.getAssetObject().fanchuanSkin,Texture.class);
-        grandfrig = context.getManager().get(context.getAssetObject().grandfrigSkin,Texture.class);
-        junk = context.getManager().get(context.getAssetObject().junkSkin,Texture.class);
-        lgsloop = context.getManager().get(context.getAssetObject().lgsloopSkin,Texture.class);
-        longship = context.getManager().get(context.getAssetObject().longshipSkin,Texture.class);
-        merchbrig = context.getManager().get(context.getAssetObject().merchbrigSkin,Texture.class);
-        merchgal = context.getManager().get(context.getAssetObject().merchgalSkin,Texture.class);
-        smsloop = context.getManager().get(context.getAssetObject().smsloopSkin,Texture.class);
-        warbrig = context.getManager().get(context.getAssetObject().warbrigSkin,Texture.class);
-        warfrig = context.getManager().get(context.getAssetObject().warfrigSkin,Texture.class);
-        wargal = context.getManager().get(context.getAssetObject().wargalSkin,Texture.class);
-        xebec = context.getManager().get(context.getAssetObject().xebecSkin,Texture.class);
+        baghlah = context.getManager().get(context.getAssetObject().baghlahSkin);
+        blackship = context.getManager().get(context.getAssetObject().blackshipSkin);
+        dhow = context.getManager().get(context.getAssetObject().dhowSkin);
+        fanchuan = context.getManager().get(context.getAssetObject().fanchuanSkin);
+        grandfrig = context.getManager().get(context.getAssetObject().grandfrigSkin);
+        junk = context.getManager().get(context.getAssetObject().junkSkin);
+        lgsloop = context.getManager().get(context.getAssetObject().lgsloopSkin);
+        longship = context.getManager().get(context.getAssetObject().longshipSkin);
+        merchbrig = context.getManager().get(context.getAssetObject().merchbrigSkin);
+        merchgal = context.getManager().get(context.getAssetObject().merchgalSkin);
+        smsloop = context.getManager().get(context.getAssetObject().smsloopSkin);
+        warbrig = context.getManager().get(context.getAssetObject().warbrigSkin);
+        warfrig = context.getManager().get(context.getAssetObject().warfrigSkin);
+        wargal = context.getManager().get(context.getAssetObject().wargalSkin);
+        xebec = context.getManager().get(context.getAssetObject().xebecSkin);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
