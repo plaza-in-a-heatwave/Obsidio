@@ -130,9 +130,6 @@ public class GameContext {
     private ConnectScene connectScene;
     public Team myTeam;
 
-	public boolean disposeFurtherScenes = false; // done by render loop
-	public boolean disposeConnectScene  = false; // done by render loop
-
     public GameContext(BlockadeSimulator main) {
         this.tools = new GameToolsContainer();
 
@@ -189,8 +186,7 @@ public class GameContext {
      */
     public void handlePacket(Packet o) {
     }
-
-
+    
     /**
      * Gets the texture collection
      * @return {@link #textures}

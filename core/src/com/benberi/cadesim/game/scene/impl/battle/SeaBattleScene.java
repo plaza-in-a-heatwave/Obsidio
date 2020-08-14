@@ -115,7 +115,7 @@ public class SeaBattleScene implements GameScene {
         vesselsCountWithCurrentPhase = context.getEntities().countVsselsByPhase(currentPhase);
         vesselsCountNonSinking = context.getEntities().countNonSinking();
     }
-    FreeTypeFontGenerator generator;
+
     @Override
     public void create() {
         font = context.getManager().get(context.getAssetObject().seaFont);

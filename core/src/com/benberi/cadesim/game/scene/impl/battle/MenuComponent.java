@@ -1,24 +1,12 @@
 package com.benberi.cadesim.game.scene.impl.battle;
 
 import java.awt.Rectangle;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.InputProcessor;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.scene.SceneComponent;
-import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
 
 public class MenuComponent extends SceneComponent<SeaBattleScene> implements InputProcessor {
     /**
@@ -40,7 +28,6 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     private Texture mapUp;
     private Texture mapDown;
     
-    FreeTypeFontGenerator generator;
     BitmapFont font;
     
     // reference coords - menu control
