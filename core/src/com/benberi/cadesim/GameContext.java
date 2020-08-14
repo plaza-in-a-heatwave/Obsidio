@@ -397,11 +397,6 @@ public class GameContext {
     }
 
 	public void dispose() {
-		for (GameScene scene : scenes) {
-			if (scene != null) {
-				scene.dispose();
-			}
-		}
 		scenes.clear();
 		if (entities != null) {
 			entities.dispose();
