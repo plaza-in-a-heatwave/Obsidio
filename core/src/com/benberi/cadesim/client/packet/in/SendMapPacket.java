@@ -20,12 +20,8 @@ public class SendMapPacket extends ClientPacketExecutor {
             map[x][y] = tile;
         }
 
-		getContext().getBattleScene().createMap(map);
-		if (!getContext().isReady()) {
-			// one time - flag OpenGL to dispose unused scenes on next loop
-			getContext().setReady(true);
-			getContext().setDisposeConnectScene(true);
-		}
+        getContext().getBattleScene().createMap(map);
+        getContext().setReady(true);
     }
 
     @Override

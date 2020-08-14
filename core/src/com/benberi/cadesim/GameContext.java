@@ -126,9 +126,6 @@ public class GameContext {
     private ConnectScene connectScene;
     public Team myTeam;
 
-	public boolean disposeFurtherScenes = false; // done by render loop
-	public boolean disposeConnectScene  = false; // done by render loop
-
     public GameContext(BlockadeSimulator main) {
         this.tools = new GameToolsContainer();
 
@@ -221,7 +218,7 @@ public class GameContext {
         return isReady;
     }
 
-    public void setIsConnected(boolean flag) {
+    public void setConnect(boolean flag) {
         this.connected = flag;
     }
 
@@ -320,6 +317,8 @@ public class GameContext {
 
             @Override
             public void onFailure() {
+                connectScene.setState(ConnectionSceneState.DEFAULT);
+
                 // only show if server appears dead
                 if (!haveServerResponse) {
                 	connectScene.loginFailed();
@@ -372,38 +371,25 @@ public class GameContext {
         this.isReady = ready;
         Gdx.input.setInputProcessor(input);
         clear = true;
+
     }
     
-    public boolean isDisposeFurtherScenes() {
-		return disposeFurtherScenes;
-	}
-
-	public void setDisposeFurtherScenes(boolean disposeFurtherScenes) {
-		this.disposeFurtherScenes = disposeFurtherScenes;
-	}
-
-	public boolean isDisposeConnectScene() {
-		return disposeConnectScene;
-	}
-
-	public void setDisposeConnectScene(boolean disposeConnectScene) {
-		this.disposeConnectScene = disposeConnectScene;
-	}
-
-	public GameInputProcessor getInputProcessor() {
+    public GameInputProcessor getInputProcessor() {
     	return input;
     }
 
 	public void dispose() {
-		if (isReady()) {
-			setReady(false);
-
-			// one time - flag OpenGL to dispose unused scenes on next loop
-			setDisposeFurtherScenes(true);
+		for (GameScene scene : scenes) {
+			if (scene != null) {
+				scene.dispose();
+			}
 		}
-		entities.dispose();
-
-		setIsConnected(false);
+		scenes.clear();
+		if (entities != null) {
+			entities.dispose();
+		}
+		isReady = false;
+		connected = false;
 		connectScene.setup();
 		if (!connectScene.hasPopup())
 			connectScene.setPopup("You have disconnected from the server.");

@@ -539,7 +539,6 @@ public class ConnectScene implements GameScene, InputProcessor {
                 }
                 else if (state == ConnectionSceneState.CREATING_PROFILE) {
                     text += "Connected - creating profile";
-                    context.setIsConnected(true);
                 }
                 else if (state == ConnectionSceneState.CREATING_MAP) {
                     text += "Connected - waiting for board map update";
@@ -575,35 +574,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public void dispose() {
-		font.dispose();
-        titleFont.dispose();
-        notesFont.dispose();
 
-        batch.dispose();
-        renderer.dispose();
-
-        stage.dispose();
-
-        background.dispose();
-        textfieldTexture.dispose();
-        loginButton.dispose();
-        loginButtonHover.dispose();
-
-        baghlah.dispose();
-        blackship.dispose();
-        dhow.dispose();
-        fanchuan.dispose();
-        grandfrig.dispose();
-        junk.dispose();
-        lgsloop.dispose();
-        longship.dispose();
-        merchbrig.dispose();
-        merchgal.dispose();
-        smsloop.dispose();
-        warbrig.dispose();
-        warfrig.dispose();
-        wargal.dispose();
-        xebec.dispose();
     }
 
     @Override
