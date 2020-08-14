@@ -25,7 +25,6 @@ import com.benberi.cadesim.util.GameToolsContainer;
 import com.benberi.cadesim.util.RandomUtils;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -40,7 +39,7 @@ public class GameContext {
 
     public boolean clear;
     public boolean isConnected = false;
-    public boolean isInLobby = false;
+    public boolean isInLobby = true;
 
     private int shipId = 0;
 
@@ -70,8 +69,8 @@ public class GameContext {
 	public void setRoundDuration(int roundDuration) {
 		this.roundDuration = roundDuration;
 	}
+    private SceneAssetManager assetManager;
 
-	private SceneAssetManager assetManager;
     /**
      * The main input processor of the game
      */
@@ -90,12 +89,12 @@ public class GameContext {
     /**
      * The texture collection
      */
-    public TextureCollection textures;
+    private TextureCollection textures;
 
     /**
      * The entity manager
      */
-    public EntityManager entities;
+    private EntityManager entities;
 
     public String myVessel;
     
@@ -104,22 +103,22 @@ public class GameContext {
     /**
      * List of scenes
      */
-    public List<GameScene> scenes = new ArrayList<GameScene>();
+    private List<GameScene> scenes = new ArrayList<GameScene>();
 
     /**
      * If connected to server
      */
-    public boolean connected = false;
+    private boolean connected = false;
 
     /**
      * If the game is ready to display
      */
-    public boolean isReady = false;
+    private boolean isReady = false;
 
     /**
      * Executors service
      */
-    public ExecutorService service = Executors.newSingleThreadExecutor();
+    private ExecutorService service = Executors.newSingleThreadExecutor();
 
     /**
      * Public GSON object
@@ -128,8 +127,11 @@ public class GameContext {
 
     private ClientPacketHandler packets;
 
-    public ConnectScene connectScene;
+    private ConnectScene connectScene;
     public Team myTeam;
+
+	public boolean disposeFurtherScenes = false; // done by render loop
+	public boolean disposeConnectScene  = false; // done by render loop
 
     public GameContext(BlockadeSimulator main) {
         this.tools = new GameToolsContainer();
@@ -143,17 +145,19 @@ public class GameContext {
      * Create!
      */
     public void create() {
-        
+
         assetManager = new SceneAssetManager();
         assetManager.loadConnectSceneTextures();
         assetManager.loadAllShipTextures();
         assetManager.loadShipInfo();
         assetManager.loadSeaBattle();
+        assetManager.loadFonts();
+        assetManager.loadControl();
         assetManager.manager.finishLoading();
 
         textures = new TextureCollection(this);
         textures.create();
-        
+
         this.connectScene = new ConnectScene(this);
         connectScene.create();
 
@@ -204,8 +208,6 @@ public class GameContext {
     }
     
     public void createFurtherScenes(int shipId) {
-    	assetManager.loadControl();
-    	assetManager.manager.finishLoading();
     	ControlAreaScene.shipId = shipId;
     	this.input = new GameInputProcessor(this);
         this.seaBattleScene = new SeaBattleScene(this);
@@ -229,11 +231,11 @@ public class GameContext {
         return isReady;
     }
 
-    public boolean getIsConnect() {
+    public boolean getIsConnected() {
         return this.connected;
     }
     
-    public void setIsConnect(boolean flag) {
+    public void setIsConnected(boolean flag) {
         this.connected = flag;
     }
 
@@ -261,13 +263,6 @@ public class GameContext {
      */
     public ConnectScene getConnectScene() {
         return connectScene;
-    }
-    public void setBackToLobby(boolean bool) {
-    	this.isInLobby = bool;
-    }
-    
-    public boolean getBackToLobby() {
-    	return this.isInLobby;
     }
 
     /**
@@ -335,16 +330,17 @@ public class GameContext {
                 myVessel = displayName;
                 myVesselType = ship;
                 myTeam = Team.forId(team);
-                setBackToLobby(false);
+                setIsInLobby(false);
+                setIsConnected(true);
             }
 
             @Override
             public void onFailure() {
-                connectScene.setState(ConnectionSceneState.DEFAULT);
-
                 // only show if server appears dead
                 if (!haveServerResponse) {
                 	connectScene.loginFailed();
+                    setIsInLobby(true);
+                    setIsConnected(false);
                 }
             }
         }));
@@ -394,10 +390,9 @@ public class GameContext {
         this.isReady = ready;
         Gdx.input.setInputProcessor(input);
         clear = true;
-
     }
-    
-    public GameInputProcessor getInputProcessor() {
+
+	public GameInputProcessor getInputProcessor() {
     	return input;
     }
 
@@ -412,7 +407,7 @@ public class GameContext {
 			entities.dispose();
 		}
 		connectScene.setup();
-		if ((getIsConnect() == false)) {
+		if ((!getIsConnected()) && getIsInLobby()) {
 			System.out.println("Returned to lobby");
 		}else {
 			connectScene.setPopup("You have disconnected from the server.");
@@ -460,25 +455,32 @@ public class GameContext {
     	sendPacket(packet);
     }
 
-    /*
-     * Method to disconnect from server and go back to connectscene
+    public void disconnect() {
+        setReady(false);
+        setIsConnected(false);
+        setIsInLobby(true);
+        getServerChannel().disconnect();
+    }
+
+    public SceneAssetManager getAssetObject() {
+        return assetManager;
+    }
+    
+    public AssetManager getManager() {
+        return assetManager.manager;
+    }
+        
+    /**
+     * Sets isInLobby to boolean
      */
-	public void disconnect() {
-		setReady(false);
-		setIsConnect(false);
-		setBackToLobby(true);
-		getServerChannel().disconnect();
-	}
-
-	public SceneAssetManager getAssetObject() {
-		return assetManager;
-	}
-
-	public void setAssetObject(SceneAssetManager assetManager) {
-		this.assetManager = assetManager;
-	}
-	
-	public AssetManager getManager() {
-		return assetManager.manager;
-	}
+    public void setIsInLobby(boolean bool) {
+        isInLobby = bool;
+    }
+    /**
+     * Gets if user is in lobby
+     * @return  {@link #boolean}
+     */
+    public boolean getIsInLobby() {
+        return isInLobby;
+    }
 }

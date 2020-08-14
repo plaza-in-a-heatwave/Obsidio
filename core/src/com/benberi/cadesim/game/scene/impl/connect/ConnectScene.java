@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -114,8 +113,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     public ConnectScene(GameContext ctx) {
         this.context = ctx;
     }
-    FreeTypeFontGenerator generator;
-    FreeTypeFontGenerator generatorTitle;
+    
     @Override
     public void create() {
 
@@ -134,29 +132,10 @@ public class ConnectScene implements GameScene, InputProcessor {
             e.printStackTrace();
         }
 
-        // elements font
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 18;
-        parameter.shadowColor = new Color(0, 0, 0, 0.8f);
-        parameter.shadowOffsetY = 1;
-        font = generator.generateFont(parameter);
-        font.setColor(Color.YELLOW);
-        
-        // notes font
-        parameter.size = 11;
-        parameter.shadowOffsetX = 0;
-        parameter.shadowOffsetY = 0;
-        notesFont = generator.generateFont(parameter);
-        notesFont.setColor(Color.WHITE);
-        
-        // title font
-        generatorTitle = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Open_Sans/OpenSans-SemiBold.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameterTitle = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameterTitle.size = 46;
-        parameterTitle.gamma = 0.9f;
-        titleFont = generatorTitle.generateFont(parameterTitle);
-        titleFont.setColor(Color.WHITE);
+        // fonts
+        font = context.getManager().get(context.getAssetObject().regularFont);
+        notesFont = context.getManager().get(context.getAssetObject().notesFont);
+        titleFont = context.getManager().get(context.getAssetObject().titleFont);
         
         // greetings
         greetings.add("It simulates blockades!");
@@ -577,10 +556,8 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public void dispose() {
-    	font.dispose();
     	batch.dispose();
-    	generator.dispose();
-    	generatorTitle.dispose();
+    	renderer.dispose();
     }
 
     @Override
@@ -706,10 +683,9 @@ public class ConnectScene implements GameScene, InputProcessor {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            setState(ConnectionSceneState.CONNECTING);
-            context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getIndex(), teamType.getSelected().getType());
-        }
+	        setState(ConnectionSceneState.CONNECTING);
+	        context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getIndex(), teamType.getSelected().getType());
+           }
     }
 
     public static void changeProperty(String filename, String key, String value) throws IOException {

@@ -28,7 +28,6 @@ import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Whirlpool;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Wind;
 import com.benberi.cadesim.game.scene.impl.control.BattleControlComponent;
 
-import java.awt.Menu;
 import java.util.Iterator;
 
 public class SeaBattleScene implements GameScene {
@@ -119,18 +118,7 @@ public class SeaBattleScene implements GameScene {
     FreeTypeFontGenerator generator;
     @Override
     public void create() {
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 10;
-        parameter.spaceX = 0;
-        parameter.shadowColor = new Color(0, 0, 0, 0.5f);
-        parameter.borderColor = Color.BLACK;
-        parameter.borderWidth = 1;
-        parameter.borderStraight = true;
-        parameter.shadowOffsetY = 1;
-        parameter.shadowOffsetX = 1;
-        font = generator.generateFont(parameter);
-
+        font = context.getManager().get(context.getAssetObject().seaFont);
         renderer = new ShapeRenderer();
         this.batch = new SpriteBatch();
         information.create();
@@ -142,8 +130,7 @@ public class SeaBattleScene implements GameScene {
     }
 
     @Override
-    public void update()
-    {    	
+    public void update(){    	
         // update the camera
         camera.update();
 
@@ -424,7 +411,6 @@ public class SeaBattleScene implements GameScene {
     public void render() {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-
         Gdx.gl.glViewport(0,200, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
 
         drawSea();
@@ -662,11 +648,7 @@ public class SeaBattleScene implements GameScene {
         currentSlot = -1;
         information.dispose();
         recountVessels();
-        generator.dispose();
-        //font.dispose();
         //renderer.dispose();
-        //batch.dispose();
-        //sea.dispose();
         camera = null;
     }
 

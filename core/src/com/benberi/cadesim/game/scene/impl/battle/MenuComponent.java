@@ -86,13 +86,7 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         lobbyDown = context.getManager().get(context.getAssetObject().lobbyDown);
         mapUp = context.getManager().get(context.getAssetObject().mapsUp);
         mapDown = context.getManager().get(context.getAssetObject().mapsDown);
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 10;
-        parameter.shadowColor = new Color(0, 0, 0, 0.2f);
-        parameter.shadowOffsetY = 1;
-        font = generator.generateFont(parameter);
-        font.setColor(Color.BLACK);
+        font = context.getManager().get(context.getAssetObject().menuFont);
     }
     
     @Override
@@ -136,6 +130,9 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     	}
     	else if(menuButtonIsDown && isClickingMapsButton(x,y)) {
     		menuMapsIsDown = true;
+    		//work-around until server sends detail to client
+    		context.getControlScene().getBnavComponent().getChatBar().getTextfield().setText("/show maps");
+    		context.getControlScene().getBnavComponent().getChatBar().sendChat();
     		return true;
     	}
         else {

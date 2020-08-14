@@ -48,10 +48,16 @@ public class ControlAreaScene implements GameScene {
         renderBackground();
         getControl().render();
     }
-
+    
+	// reset controls.
+	public void reset() {
+		control.reset();
+	}
+	
     @Override
     public void dispose() {
         getControl().dispose();
+//        shapeRenderer.dispose();
     }
 
     @Override
