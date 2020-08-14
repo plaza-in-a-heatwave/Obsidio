@@ -807,18 +807,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     }
     
     /**
-     * clear chat table contents
-     */
-	public void clearChat() {
-		while (chatTable.getCells().size > 0) {
-			Cell<Label> cell = chatTable.getCells().first();
-			cell.getActor().getStyle().font.dispose();
-			cell.getActor().remove();
-			chatTable.getCells().removeValue(cell, true);
-		}
-	}
-
-    /**
      * given a change in chatbox position, update the scrollbar position
      * note: only called when not dragging scrollbar
      */
@@ -960,7 +948,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         shape.dispose();
         font.dispose();
         chatContainerStage.dispose();
-        clearChat();
 
         shiphand.dispose();
         moves.dispose();
