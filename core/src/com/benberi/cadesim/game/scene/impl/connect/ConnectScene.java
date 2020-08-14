@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -68,7 +67,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     /**
      * The main stage for elements
      */
-    private Stage stage;
+    public Stage stage;
 
     private TextField name;
     private TextField address;
@@ -114,7 +113,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     public ConnectScene(GameContext ctx) {
         this.context = ctx;
     }
-
+    
     @Override
     public void create() {
 
@@ -133,29 +132,10 @@ public class ConnectScene implements GameScene, InputProcessor {
             e.printStackTrace();
         }
 
-        // elements font
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 18;
-        parameter.shadowColor = new Color(0, 0, 0, 0.8f);
-        parameter.shadowOffsetY = 1;
-        font = generator.generateFont(parameter);
-        font.setColor(Color.YELLOW);
-        
-        // notes font
-        parameter.size = 11;
-        parameter.shadowOffsetX = 0;
-        parameter.shadowOffsetY = 0;
-        notesFont = generator.generateFont(parameter);
-        notesFont.setColor(Color.WHITE);
-        
-        // title font
-        FreeTypeFontGenerator generatorTitle = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Open_Sans/OpenSans-SemiBold.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameterTitle = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameterTitle.size = 46;
-        parameterTitle.gamma = 0.9f;
-        titleFont = generatorTitle.generateFont(parameterTitle);
-        titleFont.setColor(Color.WHITE);
+        // fonts
+        font = context.getManager().get(context.getAssetObject().regularFont);
+        notesFont = context.getManager().get(context.getAssetObject().notesFont);
+        titleFont = context.getManager().get(context.getAssetObject().titleFont);
         
         // greetings
         greetings.add("It simulates blockades!");
@@ -189,11 +169,10 @@ public class ConnectScene implements GameScene, InputProcessor {
         chosenGreeting = greetings.get(prng.nextInt(greetings.size()));
         
         batch = new SpriteBatch();
-
-        background = new Texture("assets/bg.png");
-        textfieldTexture = new Texture("assets/skin/textfield.png");
-        loginButton = new Texture("assets/skin/login.png");
-        loginButtonHover = new Texture("assets/skin/login-hover.png");
+        background = context.getManager().get(context.getAssetObject().background);
+        textfieldTexture = context.getManager().get(context.getAssetObject().textfieldTexture);
+        loginButton = context.getManager().get(context.getAssetObject().loginButton);
+        loginButtonHover = context.getManager().get(context.getAssetObject().loginButtonHover);
 
         renderer = new ShapeRenderer();
 
@@ -204,8 +183,10 @@ public class ConnectScene implements GameScene, InputProcessor {
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = font;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
-        style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
-        style.selection = new Image(new Texture("assets/skin/textfield-selection.png")).getDrawable();
+        style.cursor = new Image(
+        		context.getManager().get(context.getAssetObject().cursor)).getDrawable();
+        style.selection = new Image(
+        		context.getManager().get(context.getAssetObject().selection)).getDrawable();
 
         name = new TextField( prop.getProperty("user.username"), style);
         name.setSize(120, 49);
@@ -222,14 +203,17 @@ public class ConnectScene implements GameScene, InputProcessor {
         code.setPosition(482, MAIN_GROUP_OFFSET_Y + 325);
         
         SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
-        selectBoxStyle.background = new Image(new Texture("assets/skin/selectbg.png")).getDrawable();
+        selectBoxStyle.background = new Image(
+        		context.getManager().get(context.getAssetObject().selectBoxBackground)).getDrawable();
         selectBoxStyle.font = font;
         selectBoxStyle.fontColor = new Color(1,1,1, 1);
         selectBoxStyle.listStyle = new List.ListStyle();
-        selectBoxStyle.listStyle.selection = new Image(new Texture("assets/skin/selectbg.png")).getDrawable();
+        selectBoxStyle.listStyle.selection = new Image(
+        		context.getManager().get(context.getAssetObject().selectBoxListSelection)).getDrawable();
         selectBoxStyle.listStyle.selection.setLeftWidth(5);
         selectBoxStyle.listStyle.font = font;
-        selectBoxStyle.listStyle.background = new Image(new Texture("assets/skin/select-list-bg.png")).getDrawable();
+        selectBoxStyle.listStyle.background = new Image(
+        		context.getManager().get(context.getAssetObject().selectBoxListBackground)).getDrawable();
         selectBoxStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
         selectBoxStyle.background.setLeftWidth(10);
 
@@ -245,25 +229,25 @@ public class ConnectScene implements GameScene, InputProcessor {
         shipType.setSize(150, 44);
         shipType.setPosition(640, 5);
         
-        roomLabel = new SelectBox(selectBoxStyle);
+        roomLabel = new SelectBox<RoomNumberLabel>(selectBoxStyle);
         roomLabel.setSize(150.0f, 44.0f);
         roomLabel.setPosition(640, 55);
 
-        baghlah = new Texture("assets/skin/ships/baghlah.png");
-        blackship = new Texture("assets/skin/ships/blackship.png");
-        dhow = new Texture("assets/skin/ships/dhow.png");
-        fanchuan = new Texture("assets/skin/ships/fanchuan.png");
-        grandfrig = new Texture("assets/skin/ships/grandfrig.png");
-        junk = new Texture("assets/skin/ships/junk.png");
-        lgsloop = new Texture("assets/skin/ships/lgsloop.png");
-        longship = new Texture("assets/skin/ships/longship.png");
-        merchbrig = new Texture("assets/skin/ships/merchbrig.png");
-        merchgal = new Texture("assets/skin/ships/merchgal.png");
-        smsloop = new Texture("assets/skin/ships/smsloop.png");
-        warbrig = new Texture("assets/skin/ships/warbrig.png");
-        warfrig = new Texture("assets/skin/ships/warfrig.png");
-        wargal = new Texture("assets/skin/ships/wargal.png");
-        xebec = new Texture("assets/skin/ships/xebec.png");
+        baghlah = context.getManager().get(context.getAssetObject().baghlahSkin);
+        blackship = context.getManager().get(context.getAssetObject().blackshipSkin);
+        dhow = context.getManager().get(context.getAssetObject().dhowSkin);
+        fanchuan = context.getManager().get(context.getAssetObject().fanchuanSkin);
+        grandfrig = context.getManager().get(context.getAssetObject().grandfrigSkin);
+        junk = context.getManager().get(context.getAssetObject().junkSkin);
+        lgsloop = context.getManager().get(context.getAssetObject().lgsloopSkin);
+        longship = context.getManager().get(context.getAssetObject().longshipSkin);
+        merchbrig = context.getManager().get(context.getAssetObject().merchbrigSkin);
+        merchgal = context.getManager().get(context.getAssetObject().merchgalSkin);
+        smsloop = context.getManager().get(context.getAssetObject().smsloopSkin);
+        warbrig = context.getManager().get(context.getAssetObject().warbrigSkin);
+        warfrig = context.getManager().get(context.getAssetObject().warfrigSkin);
+        wargal = context.getManager().get(context.getAssetObject().wargalSkin);
+        xebec = context.getManager().get(context.getAssetObject().xebecSkin);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
@@ -380,7 +364,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                old_Name = name.getText();
+                setOld_Name(name.getText());
             }
         });
         roomLabel.addListener(new ChangeListener(){
@@ -437,7 +421,6 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public void update() {
-
     }
 
     @Override
@@ -446,7 +429,6 @@ public class ConnectScene implements GameScene, InputProcessor {
         batch.begin();
         batch.draw(background, 0, 0);
         if (state == ConnectionSceneState.DEFAULT) {
-
         	titleFont.draw(batch, "Blockade Simulator", 156, MAIN_GROUP_OFFSET_Y + 450);
         	notesFont.draw(batch, chosenGreeting,       587, MAIN_GROUP_OFFSET_Y + 429);
         	notesFont.draw(batch, "Version " + Constants.VERSION + " by Cyclist, based on the Cadesim by Benberi", 15, 75);
@@ -574,7 +556,8 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public void dispose() {
-
+    	batch.dispose();
+    	renderer.dispose();
     }
 
     @Override
@@ -695,14 +678,14 @@ public class ConnectScene implements GameScene, InputProcessor {
                 changeProperty("user.config", "user.height", resolution[1]);
                 changeProperty("user.config", "user.last_ship", Integer.toString(shipType.getSelectedIndex()));
                 changeProperty("user.config", "user.last_resolution", Integer.toString(resolutionType.getSelectedIndex()));
+                changeProperty("user.config", "user.last_room_index", Integer.toString(roomLabel.getSelectedIndex()));
                 changeProperty("user.config", "user.last_team", Integer.toString(teamType.getSelectedIndex()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            setState(ConnectionSceneState.CONNECTING);
-            context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getIndex(), teamType.getSelected().getType());
-        }
+	        setState(ConnectionSceneState.CONNECTING);
+	        context.connect(name.getText(), address.getText(), code.getText(), shipType.getSelected().getIndex(), teamType.getSelected().getType());
+           }
     }
 
     public static void changeProperty(String filename, String key, String value) throws IOException {
@@ -773,5 +756,13 @@ public class ConnectScene implements GameScene, InputProcessor {
     public boolean hasPopup() {
         return popup;
     }
+
+	public String getOld_Name() {
+		return old_Name;
+	}
+
+	public void setOld_Name(String old_Name) {
+		this.old_Name = old_Name;
+	}
 
 }

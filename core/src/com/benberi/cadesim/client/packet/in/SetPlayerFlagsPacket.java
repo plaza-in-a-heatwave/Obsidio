@@ -30,7 +30,7 @@ public class SetPlayerFlagsPacket extends ClientPacketExecutor {
 
                     Flag flag = getContext().getBattleScene().getMap().getFlags().get(x, y);
                     if (flag != null && flag.getControllerTeam() != null) {
-                        FlagSymbol fs = new FlagSymbol(flag.getSize(), flag.isAtWar(), flag.getControllerTeam());
+                        FlagSymbol fs = new FlagSymbol(getContext(),flag.getSize(), flag.isAtWar(), flag.getControllerTeam());
                         if (!flag.isAtWar() && (vesselName.equals(getContext().myVessel) || vessel.getTeam().getID() == getContext().myTeam.getID())) {
                             fs.setLocal(true);
                             flag.setLocal(true);

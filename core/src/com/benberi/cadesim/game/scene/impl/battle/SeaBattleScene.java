@@ -93,6 +93,7 @@ public class SeaBattleScene implements GameScene {
     private MovePhase currentPhase;
 
     private BlockadeMap blockadeMap;
+    private MenuComponent mainmenu;
 
     private int vesselsCountWithCurrentPhase = 0;
     private int vesselsCountNonSinking = 0;
@@ -117,29 +118,19 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public void create() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 10;
-        parameter.spaceX = 0;
-        parameter.shadowColor = new Color(0, 0, 0, 0.5f);
-        parameter.borderColor = Color.BLACK;
-        parameter.borderWidth = 1;
-        parameter.borderStraight = true;
-        parameter.shadowOffsetY = 1;
-        parameter.shadowOffsetX = 1;
-        font = generator.generateFont(parameter);
-
+        font = context.getManager().get(context.getAssetObject().seaFont);
         renderer = new ShapeRenderer();
         this.batch = new SpriteBatch();
         information.create();
-        sea = new Texture("assets/sea/sea1.png");
+        sea = context.getManager().get(context.getAssetObject().sea);
         sea.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
+        this.mainmenu = new MenuComponent(context, this);
+        mainmenu.create();
     }
 
     @Override
-    public void update()
-    {    	
+    public void update(){    	
         // update the camera
         camera.update();
 
@@ -420,7 +411,6 @@ public class SeaBattleScene implements GameScene {
     public void render() {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-
         Gdx.gl.glViewport(0,200, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
 
         drawSea();
@@ -434,6 +424,7 @@ public class SeaBattleScene implements GameScene {
         batch.end();
 
         information.render();
+        mainmenu.render();
     }
 
     public GameInformation getInformation() {
@@ -657,17 +648,16 @@ public class SeaBattleScene implements GameScene {
         currentSlot = -1;
         information.dispose();
         recountVessels();
-
-        font.dispose();
-        renderer.dispose();
-        batch.dispose();
-        sea.dispose();
+        //renderer.dispose();
         camera = null;
     }
 
     @Override
     public boolean handleDrag(float sx, float sy, float x, float y) {
-        if (sy > camera.viewportHeight) {
+        if (mainmenu.handleDrag(sx, sy, x, y)) {
+            return true;
+        }
+    	if (sy > camera.viewportHeight) {
             return false;
         }
 
@@ -679,7 +669,10 @@ public class SeaBattleScene implements GameScene {
     }
 
     @Override
-    public boolean handleClick(float x, float y, int button) {    	
+    public boolean handleClick(float x, float y, int button) {  
+        if (mainmenu.handleClick(x, y, button)) {
+            return true;
+        }
         if (y < camera.viewportHeight) {
         	// handle camera not following vessel
         	cameraFollowsVessel = false;
@@ -693,11 +686,17 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public boolean handleMouseMove(float x, float y) {
+        if (mainmenu.handleMouseMove(x, y)) {
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean handleClickRelease(float x, float y, int button) {
+        if (mainmenu.handleRelease(x, y, button)) {
+            return true;
+        }
     	if (y < camera.viewportHeight) {
     		// handle camera following/not following vessel
         	if (button == Input.Buttons.RIGHT) {

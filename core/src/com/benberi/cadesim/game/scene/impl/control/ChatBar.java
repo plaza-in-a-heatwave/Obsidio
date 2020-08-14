@@ -59,10 +59,7 @@ public class ChatBar {
         clipboard=Toolkit.getDefaultToolkit().getSystemClipboard();
         
         // setup fonts
-        messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        messageFontParameter.size = 11;
-        messageFont = messageFontGenerator.generateFont(messageFontParameter);
+        messageFont = context.getManager().get(context.getAssetObject().chatFont);
 
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = messageFont;
@@ -71,21 +68,23 @@ public class ChatBar {
         // configure chat bar
         // TODO how to change font color when selected
         //style.focusedFontColor = new Color(215f, 201f, 79f, 1);
-        style.cursor = new Image(new Texture("assets/skin/textfield-cursor.png")).getDrawable();
+        style.cursor = new Image(
+        		context.getManager().get(context.getAssetObject().cursor)).getDrawable();
         style.cursor.setMinWidth(1f);
-        style.selection = new Image(new Texture("assets/skin/battle-textfield-selection.png")).getDrawable();
-        textfield = new TextField("", style);
-        textfield.setSize(CHAT_shape_chatBox.width, CHAT_shape_chatBox.height);
-        textfield.setPosition(CHAT_shape_chatBox.x, CHAT_shape_chatBox.y);
-        textfield.setColor(235f, 240f, 242f, 255f);
-        textfield.setDisabled(false);
-        textfield.setVisible(true);
-        textfield.setFocusTraversal(true);
-        textfield.setBlinkTime(0.5f);
+        style.selection = new Image(
+        		context.getManager().get(context.getAssetObject().battleSelection)).getDrawable();
+        setTextfield(new TextField("", style));
+        getTextfield().setSize(CHAT_shape_chatBox.width, CHAT_shape_chatBox.height);
+        getTextfield().setPosition(CHAT_shape_chatBox.x, CHAT_shape_chatBox.y);
+        getTextfield().setColor(235f, 240f, 242f, 255f);
+        getTextfield().setDisabled(false);
+        getTextfield().setVisible(true);
+        getTextfield().setFocusTraversal(true);
+        getTextfield().setBlinkTime(0.5f);
         
         // add to stage
-        stage.addActor(textfield);
-        stage.setKeyboardFocus(textfield);
+        stage.addActor(getTextfield());
+        stage.setKeyboardFocus(getTextfield());
     }
     
     /**
@@ -193,30 +192,38 @@ public class ChatBar {
      * send a message via the textfield.
      */
     public void sendChat() {
-        String message = textfield.getText();
+        String message = getTextfield().getText();
         if (message.length() > 0 && message.length() <= maxMessageLength) {
             context.sendPostMessagePacket(message);
         }
-        textfield.setCursorPosition(0);
-        textfield.setText("");
-        textfield.clearSelection();
+        getTextfield().setCursorPosition(0);
+        getTextfield().setText("");
+        getTextfield().clearSelection();
     }
 
-    /**
+    public TextField getTextfield() {
+		return textfield;
+	}
+
+	public void setTextfield(TextField textfield) {
+		this.textfield = textfield;
+	}
+
+	/**
      * custom key handler for LEFT
      */
     private void handleLeftButton(int keycode) {
         // move cursor to left of selection, if any,
         // and clear it
-        if (textfield.getSelection().length() > 0) {
-            textfield.setCursorPosition(textfield.getSelectionStart());
-            textfield.clearSelection();
+        if (getTextfield().getSelection().length() > 0) {
+            getTextfield().setCursorPosition(getTextfield().getSelectionStart());
+            getTextfield().clearSelection();
         }
 
-        int p = textfield.getCursorPosition();
+        int p = getTextfield().getCursorPosition();
         if (p > 0)
         {
-            textfield.setCursorPosition(p - 1);
+            getTextfield().setCursorPosition(p - 1);
         }
     }
 
@@ -226,17 +233,17 @@ public class ChatBar {
     private void handleRightButton(int keycode) {
         // move cursor to right of selection, if any,
         // and clear it
-        int length = textfield.getSelection().length();
+        int length = getTextfield().getSelection().length();
         if (length > 0) {
-            textfield.setCursorPosition(textfield.getSelectionStart() + length);
-            textfield.clearSelection();
+            getTextfield().setCursorPosition(getTextfield().getSelectionStart() + length);
+            getTextfield().clearSelection();
         }
 
-        textfield.clearSelection();
-        int p = textfield.getCursorPosition();
-        if (p < (textfield.getText().length()))
+        getTextfield().clearSelection();
+        int p = getTextfield().getCursorPosition();
+        if (p < (getTextfield().getText().length()))
         {
-            textfield.setCursorPosition(p + 1);
+            getTextfield().setCursorPosition(p + 1);
         }
     }
 
@@ -244,16 +251,16 @@ public class ChatBar {
      * helper method to remove a selection from chat bar
      */
     private void removeSelection() {
-        String selection = textfield.getSelection();
+        String selection = getTextfield().getSelection();
         int length = selection.length();
         if (length == 0) {
             return;
         }
 
-        int start = textfield.getSelectionStart();
+        int start = getTextfield().getSelectionStart();
 
         // delete all indices not including end
-        String text = textfield.getText();
+        String text = getTextfield().getText();
 
         // get the first portion, checking the range.
         String textStart = "";
@@ -262,31 +269,31 @@ public class ChatBar {
         }
 
         String newText = textStart + text.substring(start+length, text.length());
-        textfield.setText(newText);
-        textfield.setCursorPosition(start);
-        textfield.clearSelection();
+        getTextfield().setText(newText);
+        getTextfield().setCursorPosition(start);
+        getTextfield().clearSelection();
     }
 
     /**
      * custom key handler for backspace
      */
     private void handleBackspace(int keycode) {
-        if (textfield.getSelection().length() > 0)
+        if (getTextfield().getSelection().length() > 0)
         {
             removeSelection();
         }
         else
         {
-            String text = textfield.getText();
-            int p = textfield.getCursorPosition();
+            String text = getTextfield().getText();
+            int p = getTextfield().getCursorPosition();
             if (p > 0)
             {
                 String newText =
                         text.substring(0, p - 1) +
                         text.substring(p, text.length()
                 );
-                textfield.setText(newText);
-                textfield.setCursorPosition(p - 1);
+                getTextfield().setText(newText);
+                getTextfield().setCursorPosition(p - 1);
             }
         }
     }
@@ -295,22 +302,22 @@ public class ChatBar {
      * custom key handler for del
      */
     private void handleDel(int keycode) {
-        if (textfield.getSelection().length() > 0)
+        if (getTextfield().getSelection().length() > 0)
         {
             removeSelection();
         }
         else
         {
-            String text = textfield.getText();
-            int p = textfield.getCursorPosition();
+            String text = getTextfield().getText();
+            int p = getTextfield().getCursorPosition();
             if (p < text.length())
             {
                 String newText =
                         text.substring(0, p) +
                         text.substring(p + 1, text.length()
                 );
-                textfield.setText(newText);
-                textfield.setCursorPosition(p);
+                getTextfield().setText(newText);
+                getTextfield().setCursorPosition(p);
             }
         }
     }
@@ -320,22 +327,22 @@ public class ChatBar {
      */
     private void handleChar(char character) {
         // optionally remove any selection first
-        if (textfield.getSelection().length() > 0)
+        if (getTextfield().getSelection().length() > 0)
         {
             removeSelection();
         }
 
         // insert char at cursor position
-        String text = textfield.getText();
-        int p = textfield.getCursorPosition();
+        String text = getTextfield().getText();
+        int p = getTextfield().getCursorPosition();
         String newText =
             text.substring(0, p) +
             Character.toString(character) +
             text.substring(p, text.length()
         );
         if (newText.length() <= maxMessageLength) {
-            textfield.setText(newText);
-            textfield.setCursorPosition(p + 1);
+            getTextfield().setText(newText);
+            getTextfield().setCursorPosition(p + 1);
         }
     }
 
@@ -351,7 +358,7 @@ public class ChatBar {
      */
     private void handleHome(int keycode) {
         // set cursor position to start of chat
-        textfield.setCursorPosition(0);
+        getTextfield().setCursorPosition(0);
     }
     
     /**
@@ -359,7 +366,7 @@ public class ChatBar {
      */
     private void handleEnd(int keycode) {
         // set cursor position to end of chat
-        textfield.setCursorPosition(textfield.getText().length());
+        getTextfield().setCursorPosition(getTextfield().getText().length());
     }
     
     /**
@@ -368,41 +375,41 @@ public class ChatBar {
      */
     private void handleCtrlArrow(boolean isLeft)
     {
-        String text = textfield.getText();
+        String text = getTextfield().getText();
         boolean found = false;
         if (isLeft)
         {
             // ctrl+left: set cursor to index of previous " ^[ ]"
             // treat all space chars the same
-            for (int i=textfield.getCursorPosition()-1; i>=1; i--)
+            for (int i=getTextfield().getCursorPosition()-1; i>=1; i--)
             {
                 if (text.charAt(i-1) == ' ' && text.charAt(i) != ' ')
                 {
-                    textfield.setCursorPosition(i);
+                    getTextfield().setCursorPosition(i);
                     found = true;
                     break;
                 }
             }
             if (!found)
             {
-                textfield.setCursorPosition(0);
+                getTextfield().setCursorPosition(0);
             }
         }
         else
         {           
             // ctrl+right: set cursor to index of next " ^[ ]", + 1
-            for (int i=textfield.getCursorPosition(); i<text.length() - 1; i++)
+            for (int i=getTextfield().getCursorPosition(); i<text.length() - 1; i++)
             {
                 if (text.charAt(i) == ' ' && text.charAt(i+1) != ' ')
                 {
-                    textfield.setCursorPosition(i+1);
+                    getTextfield().setCursorPosition(i+1);
                     found = true;
                     break;
                 }
             }
             if (!found)
             {
-                textfield.setCursorPosition(text.length());
+                getTextfield().setCursorPosition(text.length());
             }
         }
     }
@@ -522,10 +529,10 @@ public class ChatBar {
             handleCtrlArrow(false);
             break;
         case Input.Keys.A:
-            textfield.selectAll();
+            getTextfield().selectAll();
             break;
         case Input.Keys.C:
-            StringSelection data = new StringSelection(textfield.getSelection());
+            StringSelection data = new StringSelection(getTextfield().getSelection());
              clipboard.setContents(data, data);
             break;
         case Input.Keys.V:
@@ -537,22 +544,22 @@ public class ChatBar {
                     pastedData = (String)t.getTransferData(DataFlavor.stringFlavor);
 
                      // optionally remove any selection first
-                     if (textfield.getSelection().length() > 0)
+                     if (getTextfield().getSelection().length() > 0)
                      {
                          removeSelection();
                      }
 
                      // use the pasted data
-                        String text = textfield.getText();
-                        int p = textfield.getCursorPosition();
+                        String text = getTextfield().getText();
+                        int p = getTextfield().getCursorPosition();
                         String newText =
                             text.substring(0, p) +
                             pastedData +
                             text.substring(p, text.length()
                         );
                         if (newText.length() <= maxMessageLength) {
-                            textfield.setText(newText);
-                            textfield.setCursorPosition(p + 1);
+                            getTextfield().setText(newText);
+                            getTextfield().setCursorPosition(p + 1);
                         }
                  }
               } catch (Exception ex) {

@@ -28,35 +28,41 @@ public class ControlAreaScene implements GameScene {
     	// TODO make these properties static instead
     	Vessel v = Vessel.createVesselByType(context, null, 0, 0, context.myVesselType);
         shapeRenderer = new ShapeRenderer();
-        this.control = new BattleControlComponent(
+        this.setControl(new BattleControlComponent(
         	context,
         	this,
         	v.getMoveType() != VesselMoveType.FOUR_MOVES, // is it a big ship
         	v.isDoubleShot()                              // single or double shot
-        );
-        control.create();
+        ));
+        getControl().create();
     }
 
     @Override
     public void update() {
-        control.update();
+        getControl().update();
     }
 
     @Override
     public void render() {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         renderBackground();
-        control.render();
+        getControl().render();
     }
-
+    
+	// reset controls.
+	public void reset() {
+		control.reset();
+	}
+	
     @Override
     public void dispose() {
-        control.dispose();
+        getControl().dispose();
+//        shapeRenderer.dispose();
     }
 
     @Override
     public boolean handleDrag(float sx, float sy, float x, float y) {
-        if (control.handleDrag(sx, sy, x, y)) {
+        if (getControl().handleDrag(sx, sy, x, y)) {
             return true;
         }
         return false;
@@ -64,7 +70,7 @@ public class ControlAreaScene implements GameScene {
 
     @Override
     public boolean handleClick(float x, float y, int button) {
-        if (control.handleClick(x, y, button)) {
+        if (getControl().handleClick(x, y, button)) {
             return true;
         }
         return false;
@@ -72,7 +78,7 @@ public class ControlAreaScene implements GameScene {
 
     @Override
     public boolean handleMouseMove(float x, float y) {
-        if (control.handleMouseMove(x, y)) {
+        if (getControl().handleMouseMove(x, y)) {
             return true;
         }
         return false;
@@ -80,7 +86,7 @@ public class ControlAreaScene implements GameScene {
 
     @Override
     public boolean handleClickRelease(float x, float y, int button) {
-        if (control.handleRelease(x, y, button)) {
+        if (getControl().handleRelease(x, y, button)) {
             return true;
         }
         return false;
@@ -104,6 +110,14 @@ public class ControlAreaScene implements GameScene {
     }
 
     public BattleControlComponent getBnavComponent() {
-        return control;
+        return getControl();
     }
+
+	public BattleControlComponent getControl() {
+		return control;
+	}
+
+	public void setControl(BattleControlComponent control) {
+		this.control = control;
+	}
 }

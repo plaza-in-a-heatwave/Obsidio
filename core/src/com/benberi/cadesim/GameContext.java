@@ -2,6 +2,7 @@ package com.benberi.cadesim;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.benberi.cadesim.client.ClientConnectionCallback;
 import com.benberi.cadesim.client.ClientConnectionTask;
 import com.benberi.cadesim.client.codec.util.Packet;
@@ -11,11 +12,11 @@ import com.benberi.cadesim.client.packet.in.LoginResponsePacket;
 import com.benberi.cadesim.client.packet.out.*;
 import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.entity.EntityManager;
-import com.benberi.cadesim.game.entity.vessel.Vessel;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectScene;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
 import com.benberi.cadesim.game.scene.GameScene;
+import com.benberi.cadesim.game.scene.SceneAssetManager;
 import com.benberi.cadesim.game.scene.TextureCollection;
 import com.benberi.cadesim.game.scene.impl.battle.SeaBattleScene;
 import com.benberi.cadesim.game.scene.impl.control.ControlAreaScene;
@@ -37,6 +38,8 @@ public class GameContext {
     private Channel serverChannel;
 
     public boolean clear;
+    public boolean isConnected = false;
+    public boolean isInLobby = true;
 
     private int shipId = 0;
 
@@ -66,6 +69,7 @@ public class GameContext {
 	public void setRoundDuration(int roundDuration) {
 		this.roundDuration = roundDuration;
 	}
+    private SceneAssetManager assetManager;
 
     /**
      * The main input processor of the game
@@ -138,15 +142,21 @@ public class GameContext {
      * Create!
      */
     public void create() {
+
+        assetManager = new SceneAssetManager();
+        assetManager.loadConnectSceneTextures();
+        assetManager.loadAllShipTextures();
+        assetManager.loadShipInfo();
+        assetManager.loadSeaBattle();
+        assetManager.loadFonts();
+        assetManager.loadControl();
+        assetManager.manager.finishLoading();
+
         textures = new TextureCollection(this);
         textures.create();
 
-
-
         this.connectScene = new ConnectScene(this);
         connectScene.create();
-
-
 
     }
 
@@ -176,8 +186,7 @@ public class GameContext {
      */
     public void handlePacket(Packet o) {
     }
-
-
+    
     /**
      * Gets the texture collection
      * @return {@link #textures}
@@ -218,7 +227,11 @@ public class GameContext {
         return isReady;
     }
 
-    public void setConnect(boolean flag) {
+    public boolean getIsConnected() {
+        return this.connected;
+    }
+    
+    public void setIsConnected(boolean flag) {
         this.connected = flag;
     }
 
@@ -313,15 +326,17 @@ public class GameContext {
                 myVessel = displayName;
                 myVesselType = ship;
                 myTeam = Team.forId(team);
+                setIsInLobby(false);
+                setIsConnected(true);
             }
 
             @Override
             public void onFailure() {
-                connectScene.setState(ConnectionSceneState.DEFAULT);
-
                 // only show if server appears dead
                 if (!haveServerResponse) {
                 	connectScene.loginFailed();
+                    setIsInLobby(true);
+                    setIsConnected(false);
                 }
             }
         }));
@@ -371,10 +386,9 @@ public class GameContext {
         this.isReady = ready;
         Gdx.input.setInputProcessor(input);
         clear = true;
-
     }
-    
-    public GameInputProcessor getInputProcessor() {
+
+	public GameInputProcessor getInputProcessor() {
     	return input;
     }
 
@@ -383,11 +397,12 @@ public class GameContext {
 		if (entities != null) {
 			entities.dispose();
 		}
-		isReady = false;
-		connected = false;
 		connectScene.setup();
-		if (!connectScene.hasPopup())
+		if ((!getIsConnected()) && getIsInLobby()) {
+			System.out.println("Returned to lobby");
+		}else {
 			connectScene.setPopup("You have disconnected from the server.");
+		}
 	}
 
     public void sendBlockingMoveSlotChanged(int blockingMoveSlot) {
@@ -429,5 +444,34 @@ public class GameContext {
     	PostMessagePacket packet = new PostMessagePacket();
     	packet.setMessage(message);
     	sendPacket(packet);
+    }
+
+    public void disconnect() {
+        setReady(false);
+        setIsConnected(false);
+        setIsInLobby(true);
+        getServerChannel().disconnect();
+    }
+
+    public SceneAssetManager getAssetObject() {
+        return assetManager;
+    }
+    
+    public AssetManager getManager() {
+        return assetManager.manager;
+    }
+        
+    /**
+     * Sets isInLobby to boolean
+     */
+    public void setIsInLobby(boolean bool) {
+        isInLobby = bool;
+    }
+    /**
+     * Gets if user is in lobby
+     * @return  {@link #boolean}
+     */
+    public boolean getIsInLobby() {
+        return isInLobby;
     }
 }

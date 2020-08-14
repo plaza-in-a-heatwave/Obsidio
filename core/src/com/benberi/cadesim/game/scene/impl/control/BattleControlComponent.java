@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -502,11 +501,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     private int CHAT_scrollBarMiddleY   = CHAT_REF_Y + 50;
     
     private int CHAT_scrollBarScrollX   = CHAT_REF_X + 781;
-    private int CHAT_scrollBarScrollY   = CHAT_REF_Y + 48;
-    
-    FreeTypeFontGenerator messageFontGenerator;
-    FreeTypeFontGenerator.FreeTypeFontParameter messageFontParameter;
-    
+    private int CHAT_scrollBarScrollY   = CHAT_REF_Y + 48; 
 
     // CHAT shapes
     Rectangle CHAT_shape_clickingSend   = new Rectangle(CHAT_buttonSendX, CHAT_buttonSendY, 45, 16);
@@ -602,43 +597,42 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch = new SpriteBatch();
         shape = new ShapeRenderer();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 12;
-        font = generator.generateFont(parameter);
+        font = context.getManager().get(context.getAssetObject().controlFont);
 
-        title = new Texture("assets/ui/title.png");
-        radioOn = new Texture("assets/ui/radio-on.png");
-        radioOff = new Texture("assets/ui/radio-off.png");
-        radioOnDisable = new Texture("assets/ui/radio-on-disable.png");
-        radioOffDisable = new Texture("assets/ui/radio-off-disable.png");
-        autoOn = new Texture("assets/ui/auto-on.png");
-        autoOff = new Texture("assets/ui/auto-off.png");
-        autoBackground = new Texture("assets/ui/auto_background.png");
+        title = context.getManager().get(context.getAssetObject().title);
+        radioOn = context.getManager().get(context.getAssetObject().radioOn);
+        radioOff = context.getManager().get(context.getAssetObject().radioOff);
+        radioOnDisable = context.getManager().get(context.getAssetObject().radioOnDisable);
+        radioOffDisable = context.getManager().get(context.getAssetObject().radioOffDisable);
+        autoOn = context.getManager().get(context.getAssetObject().autoOn);
+        autoOff = context.getManager().get(context.getAssetObject().autoOff);
+        autoBackground = context.getManager().get(context.getAssetObject().autoBackground);
 
-        sandTopTexture = new Texture("assets/ui/sand_top.png");
-        sandBottomTexture = new Texture("assets/ui/sand_bot.png");
-
-        sandTrickleTexture = new Texture("assets/ui/sand_trickle.png");
-        sandTrickle = new TextureRegion(sandTrickleTexture, 0, 0, 1, 43);
-
+        sandTopTexture = context.getManager().get(context.getAssetObject().sandTop);
+        sandBottomTexture = context.getManager().get(context.getAssetObject().sandBottom);
+        
         sandTop = new TextureRegion(sandTopTexture, 19, 43);
         sandBottom= new TextureRegion(sandBottomTexture, 19, 43);
+        
+        sandTrickleTexture = context.getManager().get(context.getAssetObject().sandTrickle);
+        sandTrickle = new TextureRegion(sandTrickleTexture, 0, 0, 1, 43);
 
-        cannonSlots = new Texture("assets/ui/cannonslots.png");
-        moves = new Texture("assets/ui/move.png");
-        emptyMoves = new Texture("assets/ui/move_empty.png");
-        tooltipBackground = new Texture("assets/ui/tooltip_background.png");
-        shiphand = new Texture("assets/ui/shiphand.png");
-        hourGlass = new Texture("assets/ui/hourglass.png");
-        controlBackground = new Texture("assets/ui/moves-background.png");
-        shipStatus = new Texture("assets/ui/status.png");
-        shipStatusBg = new Texture("assets/ui/status-bg.png");
-        moveGetTargetTexture = new Texture("assets/ui/sel_border_square.png");
-        cannonSelectionEmpty = new Texture("assets/ui/grapplecannon_empty.png");
-        cannonSelection = new Texture("assets/ui/grapplecannon.png");
-        damage = new TextureRegion(new Texture("assets/ui/damage.png"));
-        bilge = new TextureRegion(new Texture("assets/ui/bilge.png"));
+        cannonSlots = context.getManager().get(context.getAssetObject().cannonSlot);
+        moves = context.getManager().get(context.getAssetObject().moves);
+        emptyMoves = context.getManager().get(context.getAssetObject().emptyMoves);
+        tooltipBackground = context.getManager().get(context.getAssetObject().toolTipBackground);
+        shiphand = context.getManager().get(context.getAssetObject().shipHand);
+        hourGlass = context.getManager().get(context.getAssetObject().hourGlass);
+        controlBackground = context.getManager().get(context.getAssetObject().controlBackground);
+        shipStatus = context.getManager().get(context.getAssetObject().shipStatus);
+        shipStatusBg = context.getManager().get(context.getAssetObject().shipStatusBg);
+        moveGetTargetTexture = context.getManager().get(context.getAssetObject().moveGetTarget);
+        cannonSelectionEmpty = context.getManager().get(context.getAssetObject().cannonSelectionEmpty);
+        cannonSelection = context.getManager().get(context.getAssetObject().cannonSelection);
+        damage = new TextureRegion(
+        		context.getManager().get(context.getAssetObject().damage));
+        bilge = new TextureRegion(
+        		context.getManager().get(context.getAssetObject().bilge));
         damage.flip(false, true);
         bilge.flip(false, true);
 
@@ -666,26 +660,26 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         moveTargetSelForce = new TextureRegion(moveGetTargetTexture, 0, 0, 36, 36);
         moveTargetSelAuto = new TextureRegion(moveGetTargetTexture, 36, 0, 36, 36);
 
-        disengageUp = new Texture("assets/ui/disengage.png");
-        disengageDown = new Texture("assets/ui/disengagePressed.png");
-        disengageBackground = new Texture("assets/ui/center_background.png");
+        disengageUp = context.getManager().get(context.getAssetObject().disengageUp);
+        disengageDown = context.getManager().get(context.getAssetObject().disengageDown);
+        disengageBackground = context.getManager().get(context.getAssetObject().disengageBackground);
 
-        chatBackground = new Texture("assets/ui/chat_background.png");
-        chatBackgroundFrame = new Texture("assets/ui/chat_background_frame.png");
-        chatIndicator  = new Texture("assets/ui/chat_indicator.png");
-        chatBarBackground = new Texture("assets/ui/chat_bar_background.png");
-        chatButtonSend = new Texture("assets/ui/chat_button_send.png");
-        chatButtonSendPressed = new Texture("assets/ui/chat_button_sendPressed.png");
+        chatBackground = context.getManager().get(context.getAssetObject().chatBackground);
+        chatBackgroundFrame = context.getManager().get(context.getAssetObject().chatBackgroundFrame);
+        chatIndicator  = context.getManager().get(context.getAssetObject().chatIndicator);
+        chatBarBackground = context.getManager().get(context.getAssetObject().chatBarBackground);
+        chatButtonSend = context.getManager().get(context.getAssetObject().chatButtonSend);
+        chatButtonSendPressed = context.getManager().get(context.getAssetObject().chatButtonSendPressed);
         
-        chatMessagePlayer = new Texture("assets/ui/chat_message_player.png");
-        chatMessageServerBroadcast = new Texture("assets/ui/chat_message_server_broadcast.png");
-        chatMessageServerPrivate = new Texture("assets/ui/chat_message_server_private.png");
+        chatMessagePlayer = context.getManager().get(context.getAssetObject().chatMessagePlayer);
+        chatMessageServerBroadcast = context.getManager().get(context.getAssetObject().chatMessageServerBroadcast);
+        chatMessageServerPrivate = context.getManager().get(context.getAssetObject().chatMessageServerPrivate);
         
         // stage for chatContainer
         chatContainerStage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         
         // instantiate the ChatBar
-        chatBar = new ChatBar(context, CHAT_MESSAGE_MAX_LENGTH, CHAT_shape_chatBox);
+        setChatBar(new ChatBar(context, CHAT_MESSAGE_MAX_LENGTH, CHAT_shape_chatBox));
         
         // make a container to encapsulate the table. this is what we will scroll.
         chatContainer = new Container<Table>();
@@ -694,30 +688,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         chatContainer.fillX();
         
         // style of the chat messages (backgrounds applied later)
-        messageFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        messageFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        messageFontParameter.size = 11;
-        chatLabelStylePlayer = new LabelStyle();
-        chatLabelStylePlayer.font = messageFontGenerator.generateFont(messageFontParameter);
-        chatLabelStylePlayer.fontColor = new Color();
-        chatLabelStylePlayer.fontColor.r = 0f;
-        chatLabelStylePlayer.fontColor.b = 0f;
-        chatLabelStylePlayer.fontColor.g = 0f;
-        chatLabelStylePlayer.fontColor.a = 1f;
-        chatLabelStyleServerBroadcast = new LabelStyle();
-        chatLabelStyleServerBroadcast.font = messageFontGenerator.generateFont(messageFontParameter);
-        chatLabelStyleServerBroadcast.fontColor = new Color();
-        chatLabelStyleServerBroadcast.fontColor.r = 0f;
-        chatLabelStyleServerBroadcast.fontColor.b = 0f;
-        chatLabelStyleServerBroadcast.fontColor.g = 0f;
-        chatLabelStyleServerBroadcast.fontColor.a = 1f;
-        chatLabelStyleServerPrivate = new LabelStyle();
-        chatLabelStyleServerPrivate.font = messageFontGenerator.generateFont(messageFontParameter);
-        chatLabelStyleServerPrivate.fontColor = new Color();
-        chatLabelStyleServerPrivate.fontColor.r = 0f;
-        chatLabelStyleServerPrivate.fontColor.b = 0f;
-        chatLabelStyleServerPrivate.fontColor.g = 0f;
-        chatLabelStyleServerPrivate.fontColor.a = 1f;
+        chatLabelStylePlayer = new LabelStyle(
+        		context.getManager().get(context.getAssetObject().chatMessageFont),new Color(0f,0f,0f,1f));
+        chatLabelStyleServerBroadcast = new LabelStyle(
+        		context.getManager().get(context.getAssetObject().chatMessageFont),new Color(0f,0f,0f,1f));
+        chatLabelStyleServerPrivate = new LabelStyle(
+        		context.getManager().get(context.getAssetObject().chatMessageFont),new Color(0f,0f,0f,1f));
         
         // create a table to maintain order of messages
         chatTable = new Table();
@@ -737,12 +713,12 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         resetChatView();
 
         // get scroll bar textures
-        chatScrollBarUp = new Texture("assets/ui/scrollbar_top.png");
-        chatScrollBarUpPressed = new Texture("assets/ui/scrollbar_topPressed.png");
-        chatScrollBarDown = new Texture("assets/ui/scrollbar_bottom.png");
-        chatScrollBarDownPressed = new Texture("assets/ui/scrollbar_bottomPressed.png");
-        chatScrollBarMiddle = new Texture("assets/ui/scrollbar_center.png");
-        chatScrollBarScroll = new Texture("assets/ui/scrollbar_scroll.png");
+        chatScrollBarUp = context.getManager().get(context.getAssetObject().chatScrollBarUp);
+        chatScrollBarUpPressed = context.getManager().get(context.getAssetObject().chatScrollBarUpPressed);
+        chatScrollBarDown = context.getManager().get(context.getAssetObject().chatScrollBarDown);
+        chatScrollBarDownPressed = context.getManager().get(context.getAssetObject().chatScrollBarDownPressed);
+        chatScrollBarMiddle = context.getManager().get(context.getAssetObject().chatScrollBarMiddle);
+        chatScrollBarScroll = context.getManager().get(context.getAssetObject().chatScrollBarScroll);
 
         // initialise
         setDamagePercentage(0);
@@ -760,9 +736,8 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         // define the background textures based on the message source
         // is it broadcast, private, regular?
         TextureRegion tr;
-        Label.LabelStyle ls = new LabelStyle();
-        ls.font = messageFontGenerator.generateFont(messageFontParameter);
-        ls.fontColor = new Color(0f, 0f, 0f, 1f);
+        Label.LabelStyle ls = new LabelStyle(
+        		context.getManager().get(context.getAssetObject().chatMessageFont),new Color(0f,0f,0f,1f));
         chat1 = new Label(message, ls);
 
         // background width will vary depending on the width of the label
@@ -805,7 +780,17 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         // jump scroll to bottom
         resetChatView();
     }
-    
+    /**
+     * clear chat table contents
+     */
+	public void clearChat() {
+		while (chatTable.getCells().size > 0) {
+			Cell<Label> cell = chatTable.getCells().first();
+			cell.getActor().getStyle().font.dispose();
+			cell.getActor().remove();
+			chatTable.getCells().removeValue(cell, true);
+		}
+	}
     /**
      * given a change in chatbox position, update the scrollbar position
      * note: only called when not dragging scrollbar
@@ -915,31 +900,38 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         sandTop.setRegionHeight((int) Math.round(time * ratio));
 
         ratio =  (double) 43 / (double) turnDuration;
-
         sandBottom.setRegionY(43 - (int) Math.round((turnDuration - time) * ratio));
         sandBottom.setRegionHeight((int) Math.round((turnDuration - time) * ratio));
     }
 
     @Override
     public void render() {
+//    	batch.draw(sandBottom,0,53);
         renderMoveControl();
         renderDisengage();
         renderChatBackground();
         chatContainerStage.act();
         chatContainerStage.draw();
         renderChat();
-        chatBar.spin();
+        getChatBar().spin();
     }
-
-    @Override
-    public void dispose() {
-        targetMove = MoveType.FORWARD;
+    
+    public void reset() {
+		targetMove = MoveType.FORWARD;
         enableRadio(1);
 
         auto=true;
         resetPlacedMovesAfterTurn();        // reset the moves placed
         resetMoveHistory(); // reset the tooltip counts to zero
         updateMoveHistoryWithNewMoves(leftMoves, forwardMoves, rightMoves); // set tooltip most recent to current moves available
+    }
+
+    @Override
+    public void dispose() {
+    	//batch.dispose();
+        //shape.dispose();
+        //chatContainerStage.dispose();
+    	//clearChat();
     }
 
 
@@ -1255,13 +1247,13 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
             draggingPosition = null;
         } else {
-            isDragging = false; // bugfix locked controls
+        	isDragging = false; // bugfix locked controls
             if (disengageButtonIsDown && isClickingDisengage(x, y)) {
                 getContext().sendDisengageRequestPacket();
                 disengageButtonIsDown = false;
             }
             else if (sendChatButtonIsDown && isClickingSend(x, y)) {
-                chatBar.sendChat();
+                getChatBar().sendChat();
                 sendChatButtonIsDown = false;
             }
             else if (scrollUpButtonIsDown && isClickingScrollUp(x,y)) {
@@ -1758,7 +1750,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         batch.draw((leftMoves == 0)?emptyLeftMoveTexture:leftMoveTexture, MOVES_leftX, MOVES_leftY);
         batch.draw((forwardMoves == 0)?emptyForwardMoveTexture:forwardMoveTexture, MOVES_forwardX, MOVES_forwardY);
         batch.draw((rightMoves == 0)?emptyRightMoveTexture:rightMoveTexture,  MOVES_rightX, MOVES_rightY);
-
         // radios
         Texture onTex  = auto?radioOnDisable:radioOn;
         Texture offTex = auto?radioOffDisable:radioOff;
@@ -1951,14 +1942,20 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         }
     }
 
-    @Override
+    public ChatBar getChatBar() {
+		return chatBar;
+	}
+	public void setChatBar(ChatBar chatBar) {
+		this.chatBar = chatBar;
+	}
+	@Override
     public boolean keyDown(int keycode) {
-        return chatBar.keyDown(keycode);
+        return getChatBar().keyDown(keycode);
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        return chatBar.keyUp(keycode);
+        return getChatBar().keyUp(keycode);
     }
 
     @Override
@@ -1966,7 +1963,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
      * keytyped fires on keyDown, then subsequently if key remains down.
      */
     public boolean keyTyped(char character) {
-        return chatBar.keyTyped(character);
+        return getChatBar().keyTyped(character);
     }
 
     @Override

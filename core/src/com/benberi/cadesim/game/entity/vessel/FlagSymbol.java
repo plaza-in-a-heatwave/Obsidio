@@ -2,9 +2,12 @@ package com.benberi.cadesim.game.entity.vessel;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.cade.Team;
 
 public class FlagSymbol extends TextureRegion {
+	
+	private GameContext context;
 
     private int size;
 
@@ -14,10 +17,11 @@ public class FlagSymbol extends TextureRegion {
 
     private boolean isBlue;
 
-    public FlagSymbol(int size, boolean atWar, Team controllerTeam) {
+    public FlagSymbol(GameContext context, int size, boolean atWar, Team controllerTeam) {
         this.size = size;
         this.war = atWar;
         this.team = controllerTeam;
+        this.context = context;
     }
 
     public void setLocal(boolean b) {
@@ -33,7 +37,8 @@ public class FlagSymbol extends TextureRegion {
     }
 
     public void createTexture() {
-        setTexture(new Texture("assets/cade/buoy_symbols.png"));
+        setTexture(
+        		context.getManager().get(context.getAssetObject().flag));
         if (isBlue) {
             switch (size) {
                 case 1:

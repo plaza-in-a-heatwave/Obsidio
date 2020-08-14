@@ -40,7 +40,7 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run() {	
         group(worker);
         channel(NioSocketChannel.class);
         option(ChannelOption.TCP_NODELAY, true);
@@ -62,12 +62,16 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
                 callback.onSuccess(f.channel());
             }
             f.channel().closeFuture().sync();
-            context.dispose();
+            f.channel().flush();
         } catch (Exception e) {
             e.printStackTrace();
             callback.onFailure();
         } finally {
             worker.shutdownGracefully();
+            context.setIsInLobby(true);
+            context.setIsConnected(false);
+            context.dispose();
         }
-    }
+	}
+ 
 }

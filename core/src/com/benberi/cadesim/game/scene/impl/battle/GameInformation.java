@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.scene.GameScene;
@@ -19,6 +18,8 @@ public class GameInformation extends SceneComponent {
      */
     private SpriteBatch batch;
 
+    private GameContext context;
+    
     private Texture panel;
     private Texture contenders;
     private TextureRegion defenderThem;
@@ -53,53 +54,26 @@ public class GameInformation extends SceneComponent {
 
     GameInformation(GameContext context, GameScene owner) {
         super(context, owner);
+        this.context = context;
     }
 
     @Override
     public void create() {
         this.batch = new SpriteBatch();
-        this.panel = new Texture("assets/ui/info.png");
-        this.contenders = new Texture("assets/cade/contender_icons.png");
+        this.panel = context.getManager().get(context.getAssetObject().infoPanel);
+        this.contenders = context.getManager().get(context.getAssetObject().contenders);
         this.defenderThem = new TextureRegion(contenders, 0, 0, 13, 18);
         this.defenderUs = new TextureRegion(contenders, 13, 0, 13, 18);
         this.attackerThem = new TextureRegion(contenders, 26, 0, 13, 18);
         this.attackerUs = new TextureRegion(contenders, 39, 0, 13, 18);
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/FjallaOne-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 14;
-        parameter.shadowColor = new Color(0, 0, 0, 0.8f);
-        parameter.shadowOffsetY = 1;
-        fontTeamAttacker = generator.generateFont(parameter);
-        fontTeamDefender = generator.generateFont(parameter);
-        
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 13;
-        parameter.shadowColor = new Color(0, 0, 0, 0.6f);
-        parameter.shadowOffsetY = 1;
-        fontPointsAttacker = generator.generateFont(parameter);
-        fontPointsDefender = generator.generateFont(parameter);
-
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/BreeSerif-Regular.ttf"));
-        parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 30;
-
-        parameter.shadowColor = new Color(0, 0, 0, 0.3f);
-        parameter.shadowOffsetY = 2;
-        timeFont = generator.generateFont(parameter);
-        timeFont.setColor(new Color(1, 230 / 255f, 59 / 255f, 1));
-
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/font/Roboto-Regular.ttf"));
-        parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 13;
-
-        parameter.shadowColor = new Color(0, 0, 0, 0.3f);
-        parameter.shadowOffsetY = 2;
-        breakInfoFont = generator.generateFont(parameter);
-        breakInfoFont.setColor(new Color(1, 230 / 255f, 59 / 255f, 1));
-
-        areDefender = getContext().myTeam.name().equals(Team.DEFENDER.toString());
+        fontTeamAttacker = context.getManager().get(context.getAssetObject().fontTeamAttacker);
+        fontTeamDefender = context.getManager().get(context.getAssetObject().fontTeamDefender);
+        fontPointsAttacker = context.getManager().get(context.getAssetObject().fontTeamAttacker_Points);
+        fontPointsDefender = context.getManager().get(context.getAssetObject().fontTeamDefender_Points);
+        timeFont = context.getManager().get(context.getAssetObject().fontTime);
+        breakInfoFont = context.getManager().get(context.getAssetObject().fontBreak);
+        areDefender = context.myTeam.name().equals(Team.DEFENDER.toString());
 
         if (areDefender) {
         	fontTeamDefender.setColor(new Color(100 / 255f, 182 / 255f, 232 / 255f, 1));
