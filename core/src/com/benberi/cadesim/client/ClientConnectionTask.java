@@ -69,8 +69,13 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
 		            	@Override public void operationComplete(ChannelFuture future) throws Exception{
 		            		worker.shutdownGracefully().addListener(e -> {
 		            			context.dispose();
-		            			context.getConnectScene().closePopup();});
-		    		        }
+		            			context.getConnectScene().closePopup();
+		            		});
+		            			if (!context.clientInitiatedDisconnect()) { // whodunnit?
+		            				context.handleServersideDisconnect();
+		            			}
+	            				context.setClientInitiatedDisconnect(false); // clear flag
+		    		    }
 		        	});
 		        	callback.onSuccess(channel);
 		        }
