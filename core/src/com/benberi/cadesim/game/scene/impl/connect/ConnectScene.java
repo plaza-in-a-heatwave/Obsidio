@@ -100,6 +100,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     private SelectBox<RoomNumberLabel> roomLabel;
 
     private boolean popup;
+    private boolean allowPopupClose;
     private String popupMessage;
     private boolean popupCloseHover;
     private boolean loginHover;
@@ -481,18 +482,23 @@ public class ConnectScene implements GameScene, InputProcessor {
                 renderer.setColor(new Color(213 / 255f, 54 / 255f, 53 / 255f, 1));
                 renderer.rect(x, y, width, height);
 
-                if (popupCloseHover) {
+                if (popupCloseHover && allowPopupClose) {
                     renderer.setColor(new Color(250 / 255f, 93 / 255f, 93 / 255f, 1));
                 } else {
                     renderer.setColor(new Color(170 / 255f, 39 / 255f, 39 / 255f, 1));
                 }
-                renderer.rect(x + 330, y, 70, 50);
+
+                if (allowPopupClose) {
+                    renderer.rect(x + 330, y, 70, 50);
+                }
                 renderer.end();
                 batch.begin();
                 font.setColor(Color.WHITE);
                 font.draw(batch, popupMessage, x + ((400 / 2) - layout.width / 2) - 30, y + (25 + (layout.height / 2)));
 
-                font.draw(batch, "Close", x + 400 - 55, y + (25 + (layout.height / 2)));
+                if (allowPopupClose) {
+                    font.draw(batch, "Close", x + 400 - 55, y + (25 + (layout.height / 2)));
+                }
                 batch.end();
             }
         }
@@ -541,8 +547,9 @@ public class ConnectScene implements GameScene, InputProcessor {
     }
 
 
-    public void setPopup(String message) {
+    public void setPopup(String message, boolean allowPopupClose) {
         popup = true;
+        this.allowPopupClose = allowPopupClose;
         popupMessage = message;
         name.setDisabled(true);
         address.setDisabled(true);
@@ -652,23 +659,17 @@ public class ConnectScene implements GameScene, InputProcessor {
     private void performLogin() throws UnknownHostException {
         loginAttemptTimestampMillis = System.currentTimeMillis();
 
-        if (name.getText().length() > Constants.MAX_NAME_SIZE) {
-            setPopup("Display name must be less than " + Constants.MAX_NAME_SIZE + " letters.");
-        }
-        else if (code.getText().length() > Constants.MAX_CODE_SIZE)
-        {
-        	setPopup("Server code must be less than " + Constants.MAX_CODE_SIZE + " letters.");
-        }
-        else if (name.getText().length() <= 0) {
-            setPopup("Please enter a display name.");
-        }
-        else if (address.getText().length() <= 0) {
-            setPopup("Please enter an IP Address.");
-        }
-        else if (!RandomUtils.validIP(address.getText()) && !RandomUtils.validUrl(address.getText())) {
-            setPopup("Please enter a valid IP Address or URL.");
-        }
-        else {
+		if (name.getText().length() > Constants.MAX_NAME_SIZE) {
+			setPopup("Display name must be less than " + Constants.MAX_NAME_SIZE + " letters.", true);
+		} else if (code.getText().length() > Constants.MAX_CODE_SIZE) {
+			setPopup("Server code must be less than " + Constants.MAX_CODE_SIZE + " letters.", true);
+		} else if (name.getText().length() <= 0) {
+			setPopup("Please enter a display name.", true);
+		} else if (address.getText().length() <= 0) {
+			setPopup("Please enter an IP Address.", true);
+		} else if (!RandomUtils.validIP(address.getText()) && !RandomUtils.validUrl(address.getText())) {
+			setPopup("Please enter a valid IP Address or URL.", true);
+		} else {
             // Save current choices for next time
             try {
                 String[] resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
@@ -738,7 +739,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     }
 
     public void loginFailed() {
-        setPopup("Could not connect to server.");
+        setPopup("Could not connect to server.", true);
     }
 
     public void setState(ConnectionSceneState state) {
