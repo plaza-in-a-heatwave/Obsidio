@@ -5,6 +5,8 @@ import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.client.codec.ClientChannelHandler;
 import com.benberi.cadesim.client.codec.util.PacketDecoder;
 import com.benberi.cadesim.client.codec.util.PacketEncoder;
+import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -21,7 +23,7 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
     /**
      * The worker
      */
-    private EventLoopGroup worker = new NioEventLoopGroup(2);
+    private EventLoopGroup worker = new NioEventLoopGroup(1);
 
     /**
      * The IP Address to connect
@@ -32,6 +34,7 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
      * The callback to notify
      */
     private ClientConnectionCallback callback;
+    private Channel channel;
 
     public ClientConnectionTask(GameContext context, String ip, ClientConnectionCallback callback) {
         this.context = context;
@@ -53,25 +56,27 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
                 p.addLast("handler", new ClientChannelHandler(context));
             }
         });
+        ChannelFuture future = connect(ip,Constants.PROTOCOL_PORT);
+        future.addListener(new ChannelFutureListener() {
+        	@Override public void operationComplete(ChannelFuture future) throws Exception{
+		        if(!future.isSuccess()) {
+		        	if(channel != null) {channel.flush();}
+		        	future.channel().close();
+		        	callback.onFailure();
+		        }else {
+		        	channel = future.channel();
+		        	channel.closeFuture().addListener(new ChannelFutureListener() {
+		            	@Override public void operationComplete(ChannelFuture future) throws Exception{
+		            		worker.shutdownGracefully().addListener(e -> {
+		            			context.dispose();
+		            			context.getConnectScene().closePopup();});
+		    		        }
+		        	});
+		        	callback.onSuccess(channel);
+		        }
+        	}
+        });
 
-        ChannelFuture f = null;
-
-        try {
-            f = connect(ip, Constants.PROTOCOL_PORT).sync();
-            if (f.isSuccess()) {
-                callback.onSuccess(f.channel());
-            }
-            f.channel().closeFuture().sync();
-            f.channel().flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-            callback.onFailure();
-        } finally {
-            worker.shutdownGracefully();
-            context.setIsInLobby(true);
-            context.setIsConnected(false);
-            context.dispose();
-        }
 	}
  
 }

@@ -25,6 +25,7 @@ import com.benberi.cadesim.util.GameToolsContainer;
 import com.benberi.cadesim.util.RandomUtils;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -129,6 +130,7 @@ public class GameContext {
 
     private ConnectScene connectScene;
     public Team myTeam;
+    public ChannelPipeline pipeline;
 
     public GameContext(BlockadeSimulator main) {
         this.tools = new GameToolsContainer();
@@ -326,8 +328,6 @@ public class GameContext {
                 myVessel = displayName;
                 myVesselType = ship;
                 myTeam = Team.forId(team);
-                setIsInLobby(false);
-                setIsConnected(true);
             }
 
             @Override
@@ -335,8 +335,7 @@ public class GameContext {
                 // only show if server appears dead
                 if (!haveServerResponse) {
                 	connectScene.loginFailed();
-                    setIsInLobby(true);
-                    setIsConnected(false);
+                	dispose();
                 }
             }
         }));
@@ -451,6 +450,8 @@ public class GameContext {
         setIsConnected(false);
         setIsInLobby(true);
         getServerChannel().disconnect();
+		getConnectScene().setState(ConnectionSceneState.DEFAULT);
+		connectScene.setPopup("Returning to Lobby...");
     }
 
     public SceneAssetManager getAssetObject() {
