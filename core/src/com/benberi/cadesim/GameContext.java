@@ -132,6 +132,8 @@ public class GameContext {
     public Team myTeam;
     public ChannelPipeline pipeline;
 
+	private boolean clientDisconnected;
+
     public GameContext(BlockadeSimulator main) {
         this.tools = new GameToolsContainer();
 
@@ -353,22 +355,22 @@ public class GameContext {
 
             switch (response) {
                 case LoginResponsePacket.BAD_VERSION:
-                    connectScene.setPopup("Outdated client");
+                    connectScene.setPopup("Outdated client", true);
                     break;
                 case LoginResponsePacket.NAME_IN_USE:
-                    connectScene.setPopup("Display name already in use");
+                    connectScene.setPopup("Display name already in use", true);
                     break;
                 case LoginResponsePacket.BAD_SHIP:
-                    connectScene.setPopup("The selected ship is not allowed");
+                    connectScene.setPopup("The selected ship is not allowed", true);
                     break;
                 case LoginResponsePacket.SERVER_FULL:
-                    connectScene.setPopup("The server is full");
+                    connectScene.setPopup("The server is full", true);
                     break;
                 case LoginResponsePacket.BAD_NAME:
-                	connectScene.setPopup("That ship name is not allowed");
+                	connectScene.setPopup("That ship name is not allowed", true);
                 	break;
                 default:
-                    connectScene.setPopup("Unknown login failure");
+                    connectScene.setPopup("Unknown login failure", true);
                     break;
             }
 
@@ -400,7 +402,7 @@ public class GameContext {
 		if ((!getIsConnected()) && getIsInLobby()) {
 			System.out.println("Returned to lobby");
 		}else {
-			connectScene.setPopup("You have disconnected from the server.");
+			connectScene.setPopup("You have disconnected from the server.", true);
 		}
 	}
 
@@ -445,13 +447,30 @@ public class GameContext {
     	sendPacket(packet);
     }
 
+    /*
+     * When the client (or user) decides to disconnect
+     */
     public void disconnect() {
+    	setClientInitiatedDisconnect(true); // wedunnit!
         setReady(false);
         setIsConnected(false);
         setIsInLobby(true);
         getServerChannel().disconnect();
 		getConnectScene().setState(ConnectionSceneState.DEFAULT);
-		connectScene.setPopup("Returning to Lobby...");
+		connectScene.setPopup("Returning to Lobby...", false);
+		System.out.println("we disconnectedd.");
+    }
+
+    /*
+     * When the server decides to disconnect
+     */
+    public void handleServersideDisconnect() {
+        setReady(false);
+        setIsConnected(false);
+        setIsInLobby(true);
+		getConnectScene().setState(ConnectionSceneState.DEFAULT);
+		System.out.println("server disconnected");
+		connectScene.setPopup("Server disconnected, returning to Lobby...", false);
     }
 
     public SceneAssetManager getAssetObject() {
@@ -475,4 +494,12 @@ public class GameContext {
     public boolean getIsInLobby() {
         return isInLobby;
     }
+
+	public boolean clientInitiatedDisconnect() {
+		return clientDisconnected;
+	}
+
+	public void setClientInitiatedDisconnect(boolean clientDisconnected) {
+		this.clientDisconnected = clientDisconnected;
+	}
 }
