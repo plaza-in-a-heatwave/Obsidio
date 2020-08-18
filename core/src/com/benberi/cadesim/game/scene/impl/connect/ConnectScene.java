@@ -167,6 +167,12 @@ public class ConnectScene implements GameScene, InputProcessor {
         greetings.add("Living the Bream");
         greetings.add("micro/nano Blockade SIMs available!");
         greetings.add("Written by pirates, for pirates");
+        greetings.add("Precariously Perched!");
+        greetings.add("Hake it out, Hake it out, ooh whoa");
+        greetings.add("It's Turbot-charged!");
+        greetings.add("Albatross!");
+        greetings.add("You're in for a shark!");
+        greetings.add("We Booched It!");
         chosenGreeting = greetings.get(prng.nextInt(greetings.size()));
         
         batch = new SpriteBatch();
@@ -432,7 +438,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         if (state == ConnectionSceneState.DEFAULT) {
         	titleFont.draw(batch, "Blockade Simulator", 156, MAIN_GROUP_OFFSET_Y + 450);
         	notesFont.draw(batch, chosenGreeting,       587, MAIN_GROUP_OFFSET_Y + 429);
-        	notesFont.draw(batch, "Version " + Constants.VERSION + " by Cyclist, based on the Cadesim by Benberi", 15, 75);
+			notesFont.draw(batch, "Version " + Constants.VERSION + " by Cyclist & Fatigue, based on the Cadesim by Benberi", 15, 75);
         	notesFont.draw(batch, "Inspired by the original Dachimpy Cadesim", 15, 50);
         	notesFont.draw(batch, "Found a bug? Let us know!", 15, 25);
         	
