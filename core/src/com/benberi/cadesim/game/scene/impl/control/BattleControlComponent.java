@@ -928,10 +928,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public void dispose() {
-    	//batch.dispose();
-        //shape.dispose();
-        //chatContainerStage.dispose();
-    	//clearChat();
     }
 
 

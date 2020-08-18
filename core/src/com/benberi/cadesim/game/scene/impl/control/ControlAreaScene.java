@@ -57,7 +57,6 @@ public class ControlAreaScene implements GameScene {
     @Override
     public void dispose() {
         getControl().dispose();
-//        shapeRenderer.dispose();
     }
 
     @Override
