@@ -397,6 +397,11 @@ public class SeaBattleScene implements GameScene {
             if (!waitForSink) {
                 context.notifyFinishTurn();
                 turnFinished = false;
+                
+                BattleControlComponent b = context.getControlScene().getBnavComponent();
+                b.updateMoveHistoryAfterTurn();  // post-process tooltips
+                b.resetPlacedMovesAfterTurn();   // reset moves post-turn
+                b.setLockedDuringAnimate(false); // unlock control
             }
         }
         information.update();
@@ -749,17 +754,15 @@ public class SeaBattleScene implements GameScene {
     }
 
     public void setTurnExecute() {
-        BattleControlComponent b = context.getControlScene().getBnavComponent();
-        b.updateMoveHistoryAfterTurn();  // post-process tooltips
-        b.resetPlacedMovesAfterTurn();   // reset moves post-turn
-        b.setLockedDuringAnimate(false); // unlock control
-        
         this.currentSlot = 0;
         this.currentPhase = MovePhase.MOVE_TOKEN;
         for (Vessel vessel : context.getEntities().listVesselEntities()) {
             vessel.setMovePhase(null);
         }
         recountVessels();
+        
+        //lock controls
+        context.getControlScene().getBnavComponent().setLockedDuringAnimate(true);
     }
 
     public BlockadeMap getMap() {

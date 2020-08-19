@@ -524,7 +524,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             else if (connectAnimationState == 2) {
                 dot = "...";
             }
-
+            
                 font.setColor(Color.YELLOW);
                 String text = "(" + ((System.currentTimeMillis() - loginAttemptTimestampMillis)) + "ms) ";
 
@@ -547,6 +547,10 @@ public class ConnectScene implements GameScene, InputProcessor {
             }
             if(connectAnimationState > 2) {
                 connectAnimationState = 0;
+            }
+            // if screen hangs on connecting for long period of time.
+            if(System.currentTimeMillis() - loginAttemptTimestampMillis >= 5000) {
+            	setState(ConnectionSceneState.DEFAULT);
             }
             batch.end();
         }
