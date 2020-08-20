@@ -1,5 +1,6 @@
 package com.benberi.cadesim.game.scene.impl.connect;
 
+import java.awt.Rectangle;
 import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -12,14 +13,22 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.benberi.cadesim.Constants;
 import com.benberi.cadesim.GameContext;
@@ -103,13 +112,17 @@ public class ConnectScene implements GameScene, InputProcessor {
     private boolean allowPopupClose;
     private String popupMessage;
     private boolean popupCloseHover;
-    private boolean loginHover;
     private boolean codeURL;
     
     private String old_Name;
     private String room_info;
     
     private final int MAIN_GROUP_OFFSET_Y = 20;
+    
+    private Drawable regularDrawable;
+    private Drawable hoverDrawable;
+    private ImageButton buttonConn;
+    private ImageButtonStyle buttonStyle;
 
     public ConnectScene(GameContext ctx) {
         this.context = ctx;
@@ -178,9 +191,28 @@ public class ConnectScene implements GameScene, InputProcessor {
         batch = new SpriteBatch();
         background = context.getManager().get(context.getAssetObject().background);
         textfieldTexture = context.getManager().get(context.getAssetObject().textfieldTexture);
-        loginButton = context.getManager().get(context.getAssetObject().loginButton);
-        loginButtonHover = context.getManager().get(context.getAssetObject().loginButtonHover);
 
+        buttonStyle = new ImageButtonStyle();
+        loginButton = context.getManager().get(context.getAssetObject().loginButton);
+        regularDrawable = new TextureRegionDrawable(new TextureRegion(loginButton));
+        loginButtonHover = context.getManager().get(context.getAssetObject().loginButtonHover);
+        hoverDrawable = new TextureRegionDrawable(new TextureRegion(loginButtonHover));
+        
+        buttonStyle = new ImageButtonStyle();
+        buttonStyle.imageUp = hoverDrawable;
+        buttonStyle.imageDown = regularDrawable;
+        buttonStyle.imageChecked = hoverDrawable;
+        buttonStyle.imageOver = regularDrawable;
+        buttonConn = new ImageButton(buttonStyle); //Set the button up
+        buttonConn.addListener(new ClickListener() { 
+            public void clicked(InputEvent event, float x, float y){
+                try {
+                    performLogin();
+                } catch (UnknownHostException e) {
+                    return;
+                }
+            }});
+        buttonConn.setPosition(165, 290);
         renderer = new ShapeRenderer();
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
@@ -364,6 +396,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage.addActor(resolutionType);
         stage.addActor(teamType);
         stage.addActor(roomLabel);
+        stage.addActor(buttonConn);
         
         getServerCode(); // initialize server code with currently selected room
         
@@ -454,10 +487,6 @@ public class ConnectScene implements GameScene, InputProcessor {
 	        batch.draw(textfieldTexture, 316, MAIN_GROUP_OFFSET_Y + 325, 140, 49);
 	        batch.draw(textfieldTexture, 472, MAIN_GROUP_OFFSET_Y + 325, 140, 49);
             font.draw(batch, "Settings:", 640, 195);
-
-            batch.draw(loginHover?loginButton:loginButtonHover, 165, MAIN_GROUP_OFFSET_Y + 270);
-            font.setColor(new Color(0.1f, 0.1f, 0.1f, 1));
-            font.draw(batch, "Connect", 340, MAIN_GROUP_OFFSET_Y + 296);
             batch.end();
 
             // buttons need to be drawn, then ship texture is drawn over them
@@ -466,6 +495,8 @@ public class ConnectScene implements GameScene, InputProcessor {
             
             Texture t;
             batch.begin();
+            font.setColor(new Color(0.1f, 0.1f, 0.1f, 1));
+            font.draw(batch, "Connect", 340, MAIN_GROUP_OFFSET_Y + 296);
             t = shipType.getSelected().getType();
             batch.draw(t, 735, 5); // draw t, whatever it may be
             batch.end();
@@ -550,6 +581,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             }
             // if screen hangs on connecting for long period of time.
             if(System.currentTimeMillis() - loginAttemptTimestampMillis >= 5000) {
+            	System.out.println("Here");
             	setState(ConnectionSceneState.DEFAULT);
             }
             batch.end();
@@ -656,13 +688,6 @@ public class ConnectScene implements GameScene, InputProcessor {
         if (popup && popupCloseHover) {
             closePopup();
         }
-        else if (loginHover) {
-            try {
-                performLogin();
-            } catch (UnknownHostException e) {
-                return failed;
-            }
-        }
         return false;
     }
 
@@ -732,13 +757,11 @@ public class ConnectScene implements GameScene, InputProcessor {
             int popuprightedge = width / 2 + 200;
             int popuptopedge = height / 2;
             int popupbottomedge = height / 2 + 50;
-            loginHover = false;
            // 505 398
             popupCloseHover = screenX >= popupleftedge && screenX <= popuprightedge && screenY >= popuptopedge && screenY <= popupbottomedge;
         }
         else {
         	codeURL = isMouseOverCodeUrl(screenX, height - screenY);
-            loginHover = screenX >= 164 && screenX <= 606 && screenY >= height - (MAIN_GROUP_OFFSET_Y + 310) && screenY <= height - (MAIN_GROUP_OFFSET_Y + 270);
         }
         return false;
     }
@@ -747,6 +770,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     public boolean scrolled(int amount) {
         return false;
     }
+    
 
     public void loginFailed() {
         setPopup("Could not connect to server.", true);

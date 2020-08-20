@@ -214,9 +214,15 @@ public class GameContext {
         seaBattleScene.create();
         this.controlArea = new ControlAreaScene(this);
         controlArea.create();
-        scenes.clear();
-        scenes.add(controlArea);
-        scenes.add(seaBattleScene);
+        //fix crash on server disconnect after dispose has been called
+		if(scenes.size() == 0) {
+	        scenes.add(controlArea);
+	        scenes.add(seaBattleScene);
+		}else {
+	        scenes.set(0, controlArea);
+	        scenes.set(1, seaBattleScene);
+		}
+		
     }
 
     public SeaBattleScene getBattleScene() {
@@ -394,7 +400,6 @@ public class GameContext {
     }
 
 	public void dispose() {
-		scenes.clear();
 		if (entities != null) {
 			entities.dispose();
 		}
