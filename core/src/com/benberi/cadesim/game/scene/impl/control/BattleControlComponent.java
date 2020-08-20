@@ -906,7 +906,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public void render() {
-//    	batch.draw(sandBottom,0,53);
         renderMoveControl();
         renderDisengage();
         renderChatBackground();
@@ -928,10 +927,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
 
     @Override
     public void dispose() {
-    	//batch.dispose();
-        //shape.dispose();
-        //chatContainerStage.dispose();
-    	//clearChat();
     }
 
 

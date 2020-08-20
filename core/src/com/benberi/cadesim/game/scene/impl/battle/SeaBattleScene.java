@@ -397,7 +397,7 @@ public class SeaBattleScene implements GameScene {
             if (!waitForSink) {
                 context.notifyFinishTurn();
                 turnFinished = false;
-
+                
                 BattleControlComponent b = context.getControlScene().getBnavComponent();
                 b.updateMoveHistoryAfterTurn();  // post-process tooltips
                 b.resetPlacedMovesAfterTurn();   // reset moves post-turn
@@ -648,7 +648,6 @@ public class SeaBattleScene implements GameScene {
         currentSlot = -1;
         information.dispose();
         recountVessels();
-        //renderer.dispose();
         camera = null;
     }
 
@@ -761,8 +760,8 @@ public class SeaBattleScene implements GameScene {
             vessel.setMovePhase(null);
         }
         recountVessels();
-
-        // lock the control until turn is over
+        
+        //lock controls
         context.getControlScene().getBnavComponent().setLockedDuringAnimate(true);
     }
 

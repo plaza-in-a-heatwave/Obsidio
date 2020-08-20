@@ -85,7 +85,7 @@ public class TextureCollection {
     	vessels.put("warbrig", context.getManager().get(context.getAssetObject().warbrig));
     	vessels.put("warfrig", context.getManager().get(context.getAssetObject().warfrig));
     	vessels.put("wargal", context.getManager().get(context.getAssetObject().wargal));
-    	vessels.put("xebec", context.getManager().get(context.getAssetObject().xebec_sinking));
+    	vessels.put("xebec", context.getManager().get(context.getAssetObject().xebec));
 
     	// sink textures (the Black Ship doesn't sink!)
     	vessels.put("baghlah_sinking", context.getManager().get(context.getAssetObject().baghlah_sinking));
