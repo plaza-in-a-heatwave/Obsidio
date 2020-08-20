@@ -1,6 +1,5 @@
 package com.benberi.cadesim.game.scene.impl.connect;
 
-import java.awt.Rectangle;
 import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,7 +24,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -208,6 +205,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             public void clicked(InputEvent event, float x, float y){
                 try {
                     performLogin();
+                    buttonConn.toggle();
                 } catch (UnknownHostException e) {
                     return;
                 }
