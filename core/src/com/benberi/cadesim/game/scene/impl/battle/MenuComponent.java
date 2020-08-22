@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.scene.SceneComponent;
@@ -33,17 +34,17 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     // reference coords - menu control
     private int MENU_REF_X       = 0;
     private int MENU_REF_Y       = 0;
-    private int MENU_buttonX     = MENU_REF_X + 764;
-    private int MENU_buttonY     = MENU_REF_Y + 362;
+    private int MENU_buttonX     = MENU_REF_X + (Gdx.graphics.getWidth() - 36);
+    private int MENU_buttonY     = MENU_REF_Y + (Gdx.graphics.getHeight() - 238);
 
-    private int MENU_tableX     = MENU_REF_X + 720;
-    private int MENU_tableY     = MENU_REF_Y + 279;
+    private int MENU_tableX     = MENU_REF_X + (Gdx.graphics.getWidth() - 80);
+    private int MENU_tableY     = MENU_REF_Y + (Gdx.graphics.getHeight() - 321);
     
-    private int MENU_lobbyButtonX     = MENU_REF_X + 724;
-    private int MENU_lobbyButtonY     = MENU_REF_Y + 327;
+    private int MENU_lobbyButtonX     = MENU_REF_X + (Gdx.graphics.getWidth() - 76);
+    private int MENU_lobbyButtonY     = MENU_REF_Y + (Gdx.graphics.getHeight() - 273);
     
-    private int MENU_mapsButtonX     = MENU_REF_X + 724;
-    private int MENU_mapsButtonY     = MENU_REF_Y + 292;
+    private int MENU_mapsButtonX     = MENU_REF_X + (Gdx.graphics.getWidth() - 76);
+    private int MENU_mapsButtonY     = MENU_REF_Y + (Gdx.graphics.getHeight() - 308);
     
 	
     // DISENGAGE shapes
