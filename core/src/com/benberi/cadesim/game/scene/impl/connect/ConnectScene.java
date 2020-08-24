@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -74,6 +73,7 @@ public class ConnectScene implements GameScene, InputProcessor {
      * The main stage for elements
      */
     public Stage stage;
+    public Stage stage_dialog;
 
     private TextField name;
     private TextField address;
@@ -120,6 +120,11 @@ public class ConnectScene implements GameScene, InputProcessor {
     private Drawable hoverDrawable;
     private ImageButton buttonConn;
     private ImageButtonStyle buttonStyle;
+    
+    private String[] resolution;
+    private String[] oldResolution;
+    private Dialog dialog;
+    private int indexResolution;
 
     public ConnectScene(GameContext ctx) {
         this.context = ctx;
@@ -216,7 +221,10 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         setup();
-
+        //resolution extras
+        oldResolution = ResolutionTypeLabel.restypeToRes(Integer.parseInt(prop.getProperty("user.last_resolution")));
+        stage_dialog = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        //styles
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = font;
         style.fontColor = new Color(0.16f, 0.16f, 0.16f, 1);
@@ -395,6 +403,34 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage.addActor(teamType);
         stage.addActor(roomLabel);
         stage.addActor(buttonConn);
+
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+		dialog = new Dialog("Resolution", skin, "dialog") {
+			protected void result(Object object)
+            {
+				//if 'No' is pushed
+				if (object.equals(2L))
+			    {
+					revertResolution();
+			    } else if(object.equals(1L)){
+			    	Gdx.input.setInputProcessor(stage);
+			    }
+            }
+		};
+
+		if(resolution != null) {
+			String text = String.format("Selected screen resolution - %s", 
+					ResolutionTypeLabel.resToString(resolution));
+	        
+			dialog.text(text
+					+ "\nWould you like to accept the changes?");
+			dialog.button("Yes", 1L);
+			dialog.button("No", 2L);
+			stage_dialog.addActor(dialog);
+			dialog.show(stage_dialog);
+			dialog.setVisible(false);
+		}
+        
         
         getServerCode(); // initialize server code with currently selected room
         
@@ -417,7 +453,16 @@ public class ConnectScene implements GameScene, InputProcessor {
                 }
             }
         });
-
+        
+        //use click listener to get previous item selected in selectbox for resolutions
+        resolutionType.addListener(new ClickListener() {
+        	@Override
+            public void clicked(InputEvent event, float x, float y) {
+        		oldResolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
+        		indexResolution = resolutionType.getSelectedIndex();
+        	}
+        });
+      
         resolutionType.addListener(new ChangeListener() {
 
             @Override
@@ -425,9 +470,8 @@ public class ConnectScene implements GameScene, InputProcessor {
                 // if graphics state not what it was, reload graphics
                 try {
                     String last_res = getProperty("user.config", "user.last_resolution");
-
-                    if (Integer.parseInt(last_res) != resolutionType.getSelectedIndex()) {
-                        String[] resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
+                    if (Integer.parseInt(last_res) != resolutionType.getSelectedIndex() || indexResolution != resolutionType.getSelectedIndex()) {
+                        resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
 
                         // save for next time
                         changeProperty("user.config", "user.width", resolution[0]);
@@ -436,9 +480,11 @@ public class ConnectScene implements GameScene, InputProcessor {
                         changeProperty("user.config", "user.last_room_index", Integer.toString(roomLabel.getSelectedIndex()));
                         changeProperty("user.config", "user.last_team", Integer.toString(teamType.getSelectedIndex()));
                         
-                        // reload for now
                         Gdx.graphics.setWindowedMode(Integer.parseInt(resolution[0]), Integer.parseInt(resolution[1]));
-                        context.create();
+                        create();
+                        dialog.setVisible(true);
+                        
+                        Gdx.input.setInputProcessor(stage_dialog);
                     }
 
                 } catch (IOException e) {
@@ -498,6 +544,9 @@ public class ConnectScene implements GameScene, InputProcessor {
             t = shipType.getSelected().getType();
             batch.draw(t, 735, 5); // draw t, whatever it may be
             batch.end();
+            
+            stage_dialog.act();
+            stage_dialog.draw();
 
             if (popup) {
                 Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -579,7 +628,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             }
             // if screen hangs on connecting for long period of time.
             if(System.currentTimeMillis() - loginAttemptTimestampMillis >= 5000) {
-            	System.out.println("Here");
+            	System.out.println("Unable to login; return to lobby.");
             	setState(ConnectionSceneState.DEFAULT);
             }
             batch.end();
@@ -705,7 +754,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 		} else {
             // Save current choices for next time
             try {
-                String[] resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
+                resolution = ResolutionTypeLabel.restypeToRes(resolutionType.getSelectedIndex());
                 changeProperty("user.config", "user.username", name.getText());
                 changeProperty("user.config", "user.last_address", address.getText());
                 changeProperty("user.config", "user.width", resolution[0]);
@@ -784,6 +833,12 @@ public class ConnectScene implements GameScene, InputProcessor {
         inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+    
+    public void revertResolution() {
+    	resolutionType.setSelectedIndex(indexResolution);
+		Gdx.graphics.setWindowedMode(Integer.parseInt(oldResolution[0]), Integer.parseInt(oldResolution[1]));
+		create();
     }
 
     public boolean hasPopup() {

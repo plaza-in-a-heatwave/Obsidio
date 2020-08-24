@@ -38,7 +38,10 @@ public class ResolutionTypeLabel extends Label {
     	// didnt find it
     	return -1;
     }
-
+    public static String resToString(String[] res) {
+    	String combinedRes = res[0] + "x" + res[1];
+    	return combinedRes;
+    }
     private int type;
 
     public ResolutionTypeLabel(int type, CharSequence text, LabelStyle style) {

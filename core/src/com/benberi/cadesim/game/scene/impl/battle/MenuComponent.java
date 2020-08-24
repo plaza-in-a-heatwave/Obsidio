@@ -133,13 +133,13 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
      */
     private boolean isPointInRect(float mouseX, float mouseY, Rectangle rec) {
     	if (( mouseX >= rec.getMinX() && mouseX <= rec.getMaxX() )
-    		   && ( mouseY >= rec.getMinY() && mouseY <= rec.getMaxY()))
-    		   {
-    			return true;
-    		   }
-    	else {
-    		return false;
-    	}
+     		   && ( mouseY >= rec.getMinY() && mouseY <= rec.getMaxY()))
+     		   {
+     			return true;
+     		   }
+     	else {
+     		return false;
+     	}
     }
 
     private boolean isClickingMenuButton(float x, float y) {

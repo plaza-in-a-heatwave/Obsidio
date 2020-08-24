@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -765,7 +764,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
         // handle chat if it has grown too big?
         if (chatTable.getCells().size > CHAT_MAX_NUMBER_OF_MESSAGES) {
             Cell<Label> cell = chatTable.getCells().first();
-            cell.getActor().getStyle().font.dispose();    // rm font, bugfix #37 chat messages cause memory leak
             cell.getActor().remove();                     // rm actor
             chatTable.getCells().removeValue(cell, true); // rm lingering physical presence
             chatTable.invalidate();
@@ -1187,6 +1185,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
     @Override
     public boolean handleRelease(float x, float y, int button) {
         boolean controlsLocked = context.getBattleScene().getInformation().getIsBreak() || isLockedDuringAnimate();
+
         if (isDragging && (!controlsLocked)) {
             isDragging = false;
             int endDragSlot = getSlotForPosition(x, y);
@@ -1266,33 +1265,6 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 }
                 getContext().sendToggleAuto(auto);
             }
-            else if (!auto){
-                // can either click on the radio button or the move
-                if (
-                        (isPointInRect(x,y,MOVES_shape_leftRadio)) ||
-                        (isPointInRect(x,y,MOVES_shape_leftToken))
-                ) {
-                    targetMove = MoveType.LEFT;
-                    getContext().sendGenerationTarget(targetMove);
-                }
-                else if (
-                        (isPointInRect(x,y,MOVES_shape_forwardRadio)) ||
-                        (isPointInRect(x,y,MOVES_shape_forwardToken))
-                ) {
-                    targetMove = MoveType.FORWARD;
-                    getContext().sendGenerationTarget(targetMove);
-                }
-                else if (
-                        (isPointInRect(x,y,MOVES_shape_rightRadio)) ||
-                        (isPointInRect(x,y,MOVES_shape_rightToken))
-                ) {
-                     targetMove = MoveType.RIGHT;
-                     getContext().sendGenerationTarget(targetMove);
-                }
-            }
-            else if (controlsLocked) {
-                // pass - cant set moves on break
-            }
             else if ((startDragSlot >=0) && (startDragSlot <=3) && isPlacingMoves(x, y)) {
                 int slot = getSlotForPosition(x,y);
                 switch (slot) {
@@ -1342,6 +1314,33 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
                 {
                     getContext().sendAddCannon(1,3);
                 }
+            }
+            else if (!auto){
+                // can either click on the radio button or the move
+                if (
+                        (isPointInRect(x,y,MOVES_shape_leftRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_leftToken))
+                ) {
+                    targetMove = MoveType.LEFT;
+                    getContext().sendGenerationTarget(targetMove);
+                }
+                else if (
+                        (isPointInRect(x,y,MOVES_shape_forwardRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_forwardToken))
+                ) {
+                    targetMove = MoveType.FORWARD;
+                    getContext().sendGenerationTarget(targetMove);
+                }
+                else if (
+                        (isPointInRect(x,y,MOVES_shape_rightRadio)) ||
+                        (isPointInRect(x,y,MOVES_shape_rightToken))
+                ) {
+                     targetMove = MoveType.RIGHT;
+                     getContext().sendGenerationTarget(targetMove);
+                }
+            }
+            else if (controlsLocked) {
+                // pass - cant set moves on break
             }
         }
 
