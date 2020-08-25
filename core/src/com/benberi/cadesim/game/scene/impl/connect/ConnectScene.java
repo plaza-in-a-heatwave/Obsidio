@@ -39,6 +39,7 @@ public class ConnectScene implements GameScene, InputProcessor {
     // the connect state
     private ConnectionSceneState state = ConnectionSceneState.DEFAULT;
     private long loginAttemptTimestampMillis; // initialised when used
+    private long popupTimestamp;
 
     /**
      * Batch for opening screen
@@ -403,7 +404,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage.addActor(teamType);
         stage.addActor(roomLabel);
         stage.addActor(buttonConn);
-
+        
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		dialog = new Dialog("Resolution", skin, "dialog") {
 			protected void result(Object object)
@@ -411,8 +412,10 @@ public class ConnectScene implements GameScene, InputProcessor {
 				//if 'No' is pushed
 				if (object.equals(2L))
 			    {
+					dialog.setVisible(false);
 					revertResolution();
 			    } else if(object.equals(1L)){
+			    	dialog.setVisible(false);
 			    	Gdx.input.setInputProcessor(stage);
 			    }
             }
@@ -421,17 +424,15 @@ public class ConnectScene implements GameScene, InputProcessor {
 		if(resolution != null) {
 			String text = String.format("Selected screen resolution - %s", 
 					ResolutionTypeLabel.resToString(resolution));
-	        
 			dialog.text(text
-					+ "\nWould you like to accept the changes?");
+					+ "\n(Changes will revert in 15 seconds)"
+					+ "\n\nWould you like to accept the changes?");
 			dialog.button("Yes", 1L);
 			dialog.button("No", 2L);
 			stage_dialog.addActor(dialog);
 			dialog.show(stage_dialog);
-			dialog.setVisible(false);
 		}
-        
-        
+		dialog.setVisible(false);
         getServerCode(); // initialize server code with currently selected room
         
         name.addListener(new ChangeListener(){
@@ -485,6 +486,8 @@ public class ConnectScene implements GameScene, InputProcessor {
                         dialog.setVisible(true);
                         
                         Gdx.input.setInputProcessor(stage_dialog);
+                        popupTimestamp = System.currentTimeMillis();
+      
                     }
 
                 } catch (IOException e) {
@@ -509,6 +512,12 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     @Override
     public void render() {
+        if(dialog.isVisible()) {
+        	if((System.currentTimeMillis() - popupTimestamp) >= 15000) {
+        		dialog.setVisible(false);
+        		revertResolution();
+            	}
+        }
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         batch.begin();
         batch.draw(background, 0, 0);
