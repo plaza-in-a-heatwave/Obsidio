@@ -463,7 +463,7 @@ public class GameContext {
         getServerChannel().disconnect();
 		getConnectScene().setState(ConnectionSceneState.DEFAULT);
 		connectScene.setPopup("Returning to Lobby...", false);
-		System.out.println("we disconnected.");
+		System.out.println("Client disconnected.");
     }
 
     /*

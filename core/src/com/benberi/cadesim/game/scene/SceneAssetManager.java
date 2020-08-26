@@ -150,6 +150,8 @@ public class SceneAssetManager {
     private final static String TEXTFIELDTEXTURE = "assets/skin/textfield.png";
     private final static String LOGINBUTTON = "assets/skin/login.png";
     private final static String LOGINBUTTONHOVER = "assets/skin/login-hover.png";
+    private final static String UPDATEBUTTON = "assets/ui/update.png";
+    private final static String UPDATEBUTTONHOVER = "assets/ui/update-hover.png";
     
     private final static String CURSOR = "assets/skin/textfield-cursor.png";
     private final static String SELECTION  = "assets/skin/textfield-selection.png";
@@ -296,6 +298,8 @@ public class SceneAssetManager {
     public AssetDescriptor<Texture> textfieldTexture = new AssetDescriptor<Texture>(TEXTFIELDTEXTURE, Texture.class);
     public AssetDescriptor<Texture> loginButton = new AssetDescriptor<Texture>(LOGINBUTTON, Texture.class);
     public AssetDescriptor<Texture> loginButtonHover = new AssetDescriptor<Texture>(LOGINBUTTONHOVER, Texture.class);
+    public AssetDescriptor<Texture> updateButton = new AssetDescriptor<Texture>(UPDATEBUTTON, Texture.class);
+    public AssetDescriptor<Texture> updateButtonHover = new AssetDescriptor<Texture>(UPDATEBUTTONHOVER, Texture.class);
     
     public AssetDescriptor<Texture> cursor = new AssetDescriptor<Texture>(CURSOR, Texture.class);
     public AssetDescriptor<Texture> selection = new AssetDescriptor<Texture>(SELECTION, Texture.class);
@@ -470,6 +474,8 @@ public class SceneAssetManager {
 		manager.load(textfieldTexture);
 		manager.load(loginButton);
 		manager.load(loginButtonHover);
+		manager.load(updateButton);
+		manager.load(updateButtonHover);
 		manager.load(cursor);
 		manager.load(selection);
 		manager.load(selectBoxBackground);

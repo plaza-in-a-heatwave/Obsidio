@@ -84,6 +84,8 @@ public class ConnectScene implements GameScene, InputProcessor {
     private Texture textfieldTexture;
     private Texture loginButton;
     private Texture loginButtonHover;
+    private Texture updateButton;
+    private Texture updateButtonHover;
 
     private Texture baghlah;
     private Texture blackship;
@@ -121,6 +123,11 @@ public class ConnectScene implements GameScene, InputProcessor {
     private Drawable hoverDrawable;
     private ImageButton buttonConn;
     private ImageButtonStyle buttonStyle;
+    
+    private Drawable regularUpdateDrawable;
+    private Drawable hoverUpdateDrawable;
+    private ImageButton buttonUpdate;
+    private ImageButtonStyle updateButtonStyle;
     
     private String[] resolution;
     private String[] oldResolution;
@@ -217,6 +224,31 @@ public class ConnectScene implements GameScene, InputProcessor {
                 }
             }});
         buttonConn.setPosition(165, 290);
+        
+      updateButtonStyle = new ImageButtonStyle();
+      updateButton = context.getManager().get(context.getAssetObject().updateButton);
+      regularUpdateDrawable = new TextureRegionDrawable(new TextureRegion(updateButton));
+      updateButtonHover = context.getManager().get(context.getAssetObject().updateButtonHover);
+      hoverUpdateDrawable = new TextureRegionDrawable(new TextureRegion(updateButtonHover));
+      
+      updateButtonStyle = new ImageButtonStyle();
+      updateButtonStyle.imageUp = hoverUpdateDrawable;
+      updateButtonStyle.imageDown = regularUpdateDrawable;
+      updateButtonStyle.imageChecked = hoverUpdateDrawable;
+      updateButtonStyle.imageOver = regularUpdateDrawable;
+        
+        buttonUpdate = new ImageButton(updateButtonStyle); //Set the button up
+        buttonUpdate.addListener(new ClickListener() { 
+            public void clicked(InputEvent event, float x, float y){
+                try {
+					ProcessBuilder pb = new ProcessBuilder("java", "-jar", "getdown.jar");
+					Process p = pb.start();
+					System.exit(0);
+				}catch(Exception e){
+					System.out.println(e);
+				}
+            }});
+        buttonUpdate.setPosition(Gdx.graphics.getWidth()-45, Gdx.graphics.getHeight()-45);
         renderer = new ShapeRenderer();
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
@@ -404,6 +436,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage.addActor(teamType);
         stage.addActor(roomLabel);
         stage.addActor(buttonConn);
+        stage.addActor(buttonUpdate);
         
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		dialog = new Dialog("Resolution", skin, "dialog") {
