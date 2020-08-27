@@ -140,7 +140,6 @@ public class ConnectScene implements GameScene, InputProcessor {
     
     @Override
     public void create() {
-
         Properties prop = new Properties();
         String fileName = "user.config";
         InputStream is = null;
@@ -240,13 +239,30 @@ public class ConnectScene implements GameScene, InputProcessor {
         buttonUpdate = new ImageButton(updateButtonStyle); //Set the button up
         buttonUpdate.addListener(new ClickListener() { 
             public void clicked(InputEvent event, float x, float y){
-                try {
-					ProcessBuilder pb = new ProcessBuilder("java", "-jar", "getdown.jar");
-					Process p = pb.start();
-					System.exit(0);
-				}catch(Exception e){
-					System.out.println(e);
-				}
+            	//only run if update isn't the same on server
+            	if(!Constants.SERVER_VERSION_BOOL) {
+	                try {
+	                	//delete required files in order to update client
+	                	File digest1 = new File("digest.txt");
+	                	File digest2 = new File("digest2.txt");
+	                	File version = new File("version.txt");
+	                	try {
+	                		digest1.delete();
+	                		digest2.delete();
+	                		version.delete();
+	                		System.out.println("All files deleted.");
+	                	}catch(Exception e) {
+	                		System.out.println("Did not delete files.");
+	                	}
+						ProcessBuilder pb = new ProcessBuilder("java", "-jar", "getdown.jar");
+						Process p = pb.start();
+						System.exit(0);
+					}catch(Exception e){
+						System.out.println(e);
+					}
+            	}else {
+            		setPopup("Client is up-to-date.",true);
+            		buttonUpdate.toggle();            	}
             }});
         buttonUpdate.setPosition(Gdx.graphics.getWidth()-45, Gdx.graphics.getHeight()-45);
         renderer = new ShapeRenderer();
