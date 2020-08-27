@@ -43,6 +43,7 @@ public class GameContext {
     public boolean isInLobby = true;
 
     private int shipId = 0;
+    private int responseId = 0;
 
     /**
      * to allow client to display popup messages properly
@@ -343,7 +344,6 @@ public class GameContext {
                 // only show if server appears dead
                 if (!haveServerResponse) {
                 	connectScene.loginFailed();
-                	dispose();
                 }
             }
         }));
@@ -355,28 +355,28 @@ public class GameContext {
      * @param response  The response code
      */
     public void handleLoginResponse(int response) {
+    	System.out.println(response);
         if (response != LoginResponsePacket.SUCCESS) {
         	haveServerResponse = true;
-            serverChannel.disconnect();
 
             switch (response) {
                 case LoginResponsePacket.BAD_VERSION:
-                    connectScene.setPopup("Outdated client", true);
+                    connectScene.setPopup("Outdated client", false);
                     break;
                 case LoginResponsePacket.NAME_IN_USE:
-                    connectScene.setPopup("Display name already in use", true);
+                    connectScene.setPopup("Display name already in use", false);
                     break;
                 case LoginResponsePacket.BAD_SHIP:
-                    connectScene.setPopup("The selected ship is not allowed", true);
+                    connectScene.setPopup("The selected ship is not allowed", false);
                     break;
                 case LoginResponsePacket.SERVER_FULL:
-                    connectScene.setPopup("The server is full", true);
+                    connectScene.setPopup("The server is full", false);
                     break;
                 case LoginResponsePacket.BAD_NAME:
-                	connectScene.setPopup("That ship name is not allowed", true);
+                	connectScene.setPopup("That ship name is not allowed", false);
                 	break;
                 default:
-                    connectScene.setPopup("Unknown login failure", true);
+                    connectScene.setPopup("Unknown login failure", false);
                     break;
             }
 
@@ -475,7 +475,7 @@ public class GameContext {
         setIsInLobby(true);
 		getConnectScene().setState(ConnectionSceneState.DEFAULT);
 		System.out.println("server disconnected");
-		connectScene.setPopup("Server disconnected, returning to Lobby...", false);
+		handleLoginResponse(getServerResponse());
     }
 
     public SceneAssetManager getAssetObject() {
@@ -498,6 +498,18 @@ public class GameContext {
      */
     public boolean getIsInLobby() {
         return isInLobby;
+    }
+    /**
+     * Sets server response
+     */
+    public void setServerResponse(int id) {
+    	responseId = id;
+    }
+    /**
+     * Gets server response
+     */
+    public int getServerResponse() {
+    	return responseId;
     }
 
 	public boolean clientInitiatedDisconnect() {
