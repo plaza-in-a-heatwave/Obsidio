@@ -84,8 +84,6 @@ public class ConnectScene implements GameScene, InputProcessor {
     private Texture textfieldTexture;
     private Texture loginButton;
     private Texture loginButtonHover;
-    private Texture updateButton;
-    private Texture updateButtonHover;
 
     private Texture baghlah;
     private Texture blackship;
@@ -123,11 +121,6 @@ public class ConnectScene implements GameScene, InputProcessor {
     private Drawable hoverDrawable;
     private ImageButton buttonConn;
     private ImageButtonStyle buttonStyle;
-    
-    private Drawable regularUpdateDrawable;
-    private Drawable hoverUpdateDrawable;
-    private ImageButton buttonUpdate;
-    private ImageButtonStyle updateButtonStyle;
     
     private String[] resolution;
     private String[] oldResolution;
@@ -212,59 +205,35 @@ public class ConnectScene implements GameScene, InputProcessor {
         buttonStyle.imageDown = regularDrawable;
         buttonStyle.imageChecked = hoverDrawable;
         buttonStyle.imageOver = regularDrawable;
+        //login button
         buttonConn = new ImageButton(buttonStyle); //Set the button up
         buttonConn.addListener(new ClickListener() { 
             public void clicked(InputEvent event, float x, float y){
-                try {
-                    performLogin();
-                    buttonConn.toggle();
-                } catch (UnknownHostException e) {
-                    return;
-                }
-            }});
-        buttonConn.setPosition(165, 290);
-        
-      updateButtonStyle = new ImageButtonStyle();
-      updateButton = context.getManager().get(context.getAssetObject().updateButton);
-      regularUpdateDrawable = new TextureRegionDrawable(new TextureRegion(updateButton));
-      updateButtonHover = context.getManager().get(context.getAssetObject().updateButtonHover);
-      hoverUpdateDrawable = new TextureRegionDrawable(new TextureRegion(updateButtonHover));
-      
-      updateButtonStyle = new ImageButtonStyle();
-      updateButtonStyle.imageUp = hoverUpdateDrawable;
-      updateButtonStyle.imageDown = regularUpdateDrawable;
-      updateButtonStyle.imageChecked = hoverUpdateDrawable;
-      updateButtonStyle.imageOver = regularUpdateDrawable;
-        
-        buttonUpdate = new ImageButton(updateButtonStyle); //Set the button up
-        buttonUpdate.addListener(new ClickListener() { 
-            public void clicked(InputEvent event, float x, float y){
-            	//only run if update isn't the same on server
+            	//only run if there is an update listed on server
             	if(!Constants.SERVER_VERSION_BOOL) {
 	                try {
 	                	//delete required files in order to update client
 	                	File digest1 = new File("digest.txt");
 	                	File digest2 = new File("digest2.txt");
 	                	File version = new File("version.txt");
-	                	try {
-	                		digest1.delete();
-	                		digest2.delete();
-	                		version.delete();
-	                		System.out.println("All files deleted.");
-	                	}catch(Exception e) {
-	                		System.out.println("Did not delete files.");
-	                	}
+                		digest1.delete();
+                		digest2.delete();
+                		version.delete();
 						ProcessBuilder pb = new ProcessBuilder("java", "-jar", "getdown.jar");
-						Process p = pb.start();
+						Process p = pb.start(); //assign to process for something in future
 						System.exit(0);
-					}catch(Exception e){
-						System.out.println(e);
-					}
-            	}else {
-            		setPopup("Client is up-to-date.",true);
-            		buttonUpdate.toggle();            	}
+					}catch(Exception e){System.out.println(e);}
+	                }
+	            else {
+	                try {
+	                    performLogin();
+	                    buttonConn.toggle();
+	                } catch (UnknownHostException e) {
+	                    return;
+	                }
+	            }
             }});
-        buttonUpdate.setPosition(Gdx.graphics.getWidth()-45, Gdx.graphics.getHeight()-45);
+        buttonConn.setPosition(165, 290);
         renderer = new ShapeRenderer();
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
@@ -452,7 +421,6 @@ public class ConnectScene implements GameScene, InputProcessor {
         stage.addActor(teamType);
         stage.addActor(roomLabel);
         stage.addActor(buttonConn);
-        stage.addActor(buttonUpdate);
         
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		dialog = new Dialog("Resolution", skin, "dialog") {
@@ -485,7 +453,6 @@ public class ConnectScene implements GameScene, InputProcessor {
         getServerCode(); // initialize server code with currently selected room
         
         name.addListener(new ChangeListener(){
-
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 setOld_Name(name.getText());
@@ -514,7 +481,6 @@ public class ConnectScene implements GameScene, InputProcessor {
         });
       
         resolutionType.addListener(new ChangeListener() {
-
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 // if graphics state not what it was, reload graphics
@@ -536,9 +502,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                         
                         Gdx.input.setInputProcessor(stage_dialog);
                         popupTimestamp = System.currentTimeMillis();
-      
                     }
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

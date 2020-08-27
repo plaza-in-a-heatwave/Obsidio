@@ -19,7 +19,6 @@ public class BlockadeSimulator extends ApplicationAdapter {
 		context.create();
 	}
 
-
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 1);

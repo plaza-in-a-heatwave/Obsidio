@@ -20,7 +20,6 @@ import com.benberi.cadesim.Constants;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Thread updateThread = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				try {
@@ -40,8 +39,6 @@ public class DesktopLauncher {
 					String serverVersion = reader.readLine().replaceAll("\\s+","");
 					boolean updateBool = serverVersion.equals(txtVersion);
 					if(!updateBool) {
-						System.out.println(serverVersion);
-						System.out.println(txtVersion);
 						Constants.SERVER_VERSION_BOOL = false;
 					}else {
 						Constants.SERVER_VERSION_BOOL = true;
