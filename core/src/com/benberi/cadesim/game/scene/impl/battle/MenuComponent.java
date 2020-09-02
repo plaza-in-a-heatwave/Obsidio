@@ -72,21 +72,18 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 	private boolean menuLobbyIsDown = false; // initial
 	private boolean menuMapsIsDown = false; // initial
     
-	public Stage stage;
-	public Dialog dialog;
-	private SelectBox<String> selectBox;
-	private InputProcessor input;
-	private SeaBattleScene owner;
+//	public Stage stage;
+//	private SelectBox<String> selectBox;
+//	private InputProcessor input;
 	
     protected MenuComponent(GameContext context, SeaBattleScene owner) {
         super(context, owner);
         this.context = context;
-        this.owner = owner;
     }
 
     @Override
     public void create() {
-    	stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+//    	stage = new Stage();
         batch = new SpriteBatch();
         menuUp = context.getManager().get(context.getAssetObject().menuUp);
         menuDown = context.getManager().get(context.getAssetObject().menuDown);
@@ -95,41 +92,15 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         mapUp = context.getManager().get(context.getAssetObject().mapsUp);
         mapDown = context.getManager().get(context.getAssetObject().mapsDown);
         font = context.getManager().get(context.getAssetObject().menuFont);
-//TO-DO       
+//TO-DO
+//        
 //        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 //		selectBox=new SelectBox<String>(skin);
 //		selectBox.setSize(100, 100);
 //		selectBox.setPosition(10, 10);
 //		selectBox.setItems("XYZ","ABC","PQR","LMN");
-//        
-//		dialog = new Dialog("Select Map", skin, "dialog"){
-//			protected void result(Object object)
-//            {
-//				//if 'Cancel' is pushed
-//				if (object.equals(2L))
-//			    {
-//					System.out.println("Canceled");
-//					Gdx.input.setInputProcessor(input);
-//					dialog.setVisible(false);
-//			    } else if(object.equals(1L)){
-//			    	System.out.println("Changed Map");
-//			    	Gdx.input.setInputProcessor(input);
-//			    	dialog.setVisible(false);
-//			    }
-//            }
-//		};
-//		dialog.text("Select map from list:");
-//		selectBox.setPosition(dialog.getWidth()/2, dialog.getHeight()/2);
-//		dialog.add(selectBox);
-//		dialog.button("Ok", 1L);
-//		dialog.button("Cancel", 2L);
-//		dialog.pack();
-//		stage.addActor(dialog);
-//		dialog.show(stage);
-//		dialog.toFront();
-//		dialog.setVisible(false);
-//		dialog.setMovable(true);
-//      
+//		selectBox.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+//		stage.addActor(selectBox);
     }
     
     @Override
@@ -166,7 +137,6 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         	menuButtonIsDown = false;
         	menuLobbyIsDown = false;
         	menuMapsIsDown = false;
-//        	dialog.setVisible(false);
 //        	Gdx.input.setInputProcessor(input);
         	return false;
         }
@@ -175,8 +145,9 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     		context.disconnect();
     		return true;
     	}
-    	else if(menuButtonIsDown && isClickingMapsButton(x,y) && (!dialog.isVisible())) {
+    	else if(menuButtonIsDown && isClickingMapsButton(x,y)) {
     		menuMapsIsDown = true;
+//    		Gdx.input.setInputProcessor(stage);
     		//TO-DO: make window that shows a list of the maps for user to select.
 //    		for(String map : context.getMaps()) {
 //    			System.out.println(map);
@@ -281,4 +252,15 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 	public boolean handleMouseMove(float x, float y) {
 		return false;
 	}
+	
+	public static Texture createTexture(int width, int height, Color col,
+            float alfa) {
+        Pixmap pixmap = new Pixmap(width, height, Format.Alpha);
+        Color color = col;
+        pixmap.setColor(color.r, color.g, color.b, alfa);
+        pixmap.fillRectangle(0, 0, width, height);
+
+        Texture pixmaptexture = new Texture(pixmap);
+        return pixmaptexture;
+    }
 }
