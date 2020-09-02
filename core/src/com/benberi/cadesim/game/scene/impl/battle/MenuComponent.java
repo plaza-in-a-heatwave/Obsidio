@@ -1,13 +1,25 @@
 package com.benberi.cadesim.game.scene.impl.battle;
 
 import java.awt.Rectangle;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.scene.SceneComponent;
+import com.benberi.cadesim.game.scene.impl.control.ControlAreaScene;
 
 public class MenuComponent extends SceneComponent<SeaBattleScene> implements InputProcessor {
     /**
@@ -60,13 +72,21 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 	private boolean menuLobbyIsDown = false; // initial
 	private boolean menuMapsIsDown = false; // initial
     
+	public Stage stage;
+	public Dialog dialog;
+	private SelectBox<String> selectBox;
+	private InputProcessor input;
+	private SeaBattleScene owner;
+	
     protected MenuComponent(GameContext context, SeaBattleScene owner) {
         super(context, owner);
         this.context = context;
+        this.owner = owner;
     }
 
     @Override
     public void create() {
+    	stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         batch = new SpriteBatch();
         menuUp = context.getManager().get(context.getAssetObject().menuUp);
         menuDown = context.getManager().get(context.getAssetObject().menuDown);
@@ -75,6 +95,41 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         mapUp = context.getManager().get(context.getAssetObject().mapsUp);
         mapDown = context.getManager().get(context.getAssetObject().mapsDown);
         font = context.getManager().get(context.getAssetObject().menuFont);
+//TO-DO       
+//        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+//		selectBox=new SelectBox<String>(skin);
+//		selectBox.setSize(100, 100);
+//		selectBox.setPosition(10, 10);
+//		selectBox.setItems("XYZ","ABC","PQR","LMN");
+//        
+//		dialog = new Dialog("Select Map", skin, "dialog"){
+//			protected void result(Object object)
+//            {
+//				//if 'Cancel' is pushed
+//				if (object.equals(2L))
+//			    {
+//					System.out.println("Canceled");
+//					Gdx.input.setInputProcessor(input);
+//					dialog.setVisible(false);
+//			    } else if(object.equals(1L)){
+//			    	System.out.println("Changed Map");
+//			    	Gdx.input.setInputProcessor(input);
+//			    	dialog.setVisible(false);
+//			    }
+//            }
+//		};
+//		dialog.text("Select map from list:");
+//		selectBox.setPosition(dialog.getWidth()/2, dialog.getHeight()/2);
+//		dialog.add(selectBox);
+//		dialog.button("Ok", 1L);
+//		dialog.button("Cancel", 2L);
+//		dialog.pack();
+//		stage.addActor(dialog);
+//		dialog.show(stage);
+//		dialog.toFront();
+//		dialog.setVisible(false);
+//		dialog.setMovable(true);
+//      
     }
     
     @Override
@@ -89,9 +144,11 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         	batch.draw((menuLobbyIsDown)?lobbyDown:lobbyUp, MENU_lobbyButtonX, MENU_lobbyButtonY);
         	font.draw(batch,"Lobby",MENU_lobbyButtonX+25,MENU_lobbyButtonY+21);
         	batch.draw((menuMapsIsDown)?mapDown:mapUp, MENU_mapsButtonX, MENU_mapsButtonY);
-        	font.draw(batch,"Show Maps",MENU_mapsButtonX+17,MENU_mapsButtonY+21);
+        	font.draw(batch,"Select Map",MENU_mapsButtonX+17,MENU_mapsButtonY+21);
         }
         batch.end();
+//        stage.act();
+//        stage.draw();
     }
 
     @Override
@@ -109,6 +166,8 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         	menuButtonIsDown = false;
         	menuLobbyIsDown = false;
         	menuMapsIsDown = false;
+//        	dialog.setVisible(false);
+//        	Gdx.input.setInputProcessor(input);
         	return false;
         }
     	else if(menuButtonIsDown && isClickingLobbyButton(x,y)) {
@@ -116,8 +175,12 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     		context.disconnect();
     		return true;
     	}
-    	else if(menuButtonIsDown && isClickingMapsButton(x,y)) {
+    	else if(menuButtonIsDown && isClickingMapsButton(x,y) && (!dialog.isVisible())) {
     		menuMapsIsDown = true;
+    		//TO-DO: make window that shows a list of the maps for user to select.
+//    		for(String map : context.getMaps()) {
+//    			System.out.println(map);
+//    		}
     		//work-around until server sends detail to client
     		context.getControlScene().getBnavComponent().getChatBar().getTextfield().setText("/show maps");
     		context.getControlScene().getBnavComponent().getChatBar().sendChat();

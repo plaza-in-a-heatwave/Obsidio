@@ -12,6 +12,9 @@ import com.benberi.cadesim.client.packet.in.LoginResponsePacket;
 import com.benberi.cadesim.client.packet.out.*;
 import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.entity.EntityManager;
+import com.benberi.cadesim.game.entity.vessel.Vessel;
+import com.benberi.cadesim.game.entity.vessel.move.MoveAnimationTurn;
+import com.benberi.cadesim.game.entity.vessel.move.MovePhase;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectScene;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
@@ -30,7 +33,9 @@ import io.netty.channel.ChannelPipeline;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,8 +48,6 @@ public class GameContext {
     public boolean isInLobby = true;
 
     private int shipId = 0;
-    private int responseId = 0;
-
     /**
      * to allow client to display popup messages properly
      */
@@ -106,6 +109,11 @@ public class GameContext {
      * List of scenes
      */
     private List<GameScene> scenes = new ArrayList<GameScene>();
+    
+    /**
+     * List of maps
+     */
+    private List<String> maps = new ArrayList<String>();
 
     /**
      * If connected to server
@@ -168,7 +176,11 @@ public class GameContext {
     public List<GameScene> getScenes() {
         return this.scenes;
     }
-
+    
+    public List<String> getMaps() {
+        return this.maps;
+    }
+    
     public EntityManager getEntities() {
         return this.entities;
     }
@@ -211,10 +223,10 @@ public class GameContext {
     public void createFurtherScenes(int shipId) {
     	ControlAreaScene.shipId = shipId;
     	this.input = new GameInputProcessor(this);
-        this.seaBattleScene = new SeaBattleScene(this);
-        seaBattleScene.create();
         this.controlArea = new ControlAreaScene(this);
         controlArea.create();
+        this.seaBattleScene = new SeaBattleScene(this);
+        seaBattleScene.create();
         //fix crash on server disconnect after dispose has been called
 		if(scenes.size() == 0) {
 	        scenes.add(controlArea);
@@ -310,7 +322,6 @@ public class GameContext {
         sendPacket(packet);
     }
 
-
     /**
      * Attempts to connect to server
      *
@@ -337,6 +348,8 @@ public class GameContext {
                 myVessel = displayName;
                 myVesselType = ship;
                 myTeam = Team.forId(team);
+                Gdx.graphics.setTitle("CadeSim: " + myVessel + " (" + myTeam + ")");
+               
             }
 
             @Override
@@ -355,8 +368,8 @@ public class GameContext {
      * @param response  The response code
      */
     public void handleLoginResponse(int response) {
-    	System.out.println(response);
         if (response != LoginResponsePacket.SUCCESS) {
+        	getServerChannel().disconnect();
         	haveServerResponse = true;
 
             switch (response) {
@@ -400,14 +413,19 @@ public class GameContext {
     }
 
 	public void dispose() {
-		if (entities != null) {
-			entities.dispose();
+		try {
+			if (entities != null) {
+				entities.dispose();
+			}
+			connectScene.setup();
+			if ((!getIsConnected()) && getIsInLobby()) {
+				System.out.println("Returned to lobby");
+			}else {
+				connectScene.setPopup("You have disconnected from the server.", true);
+			}
 		}
-		connectScene.setup();
-		if ((!getIsConnected()) && getIsInLobby()) {
-			System.out.println("Returned to lobby");
-		}else {
-			connectScene.setPopup("You have disconnected from the server.", true);
+		catch(Exception e) {
+			System.out.println(e);
 		}
 	}
 
@@ -463,6 +481,7 @@ public class GameContext {
         getServerChannel().disconnect();
 		getConnectScene().setState(ConnectionSceneState.DEFAULT);
 		connectScene.setPopup("Returning to Lobby...", false);
+		Gdx.graphics.setTitle("CadeSim: v" + Constants.VERSION);
 		System.out.println("Client disconnected.");
     }
 
@@ -470,12 +489,19 @@ public class GameContext {
      * When the server decides to disconnect
      */
     public void handleServersideDisconnect() {
-        setReady(false);
-        setIsConnected(false);
-        setIsInLobby(true);
-		getConnectScene().setState(ConnectionSceneState.DEFAULT);
-		System.out.println("server disconnected");
-		handleLoginResponse(getServerResponse());
+    	if(getServerResponse()) {
+    		getServerChannel().disconnect();
+    		System.out.println("Login error; handling response.");
+    		Gdx.graphics.setTitle("CadeSim: v" + Constants.VERSION);
+    	}else {
+	        setReady(false);
+	        setIsConnected(false);
+	        setIsInLobby(true);
+			getConnectScene().setState(ConnectionSceneState.DEFAULT);
+			getServerChannel().disconnect();
+			connectScene.setPopup("Server Disconnected; Returning to Lobby...", false);
+			Gdx.graphics.setTitle("CadeSim");
+    	}
     }
 
     public SceneAssetManager getAssetObject() {
@@ -499,17 +525,12 @@ public class GameContext {
     public boolean getIsInLobby() {
         return isInLobby;
     }
-    /**
-     * Sets server response
-     */
-    public void setServerResponse(int id) {
-    	responseId = id;
-    }
+
     /**
      * Gets server response
      */
-    public int getServerResponse() {
-    	return responseId;
+    public boolean getServerResponse() {
+    	return haveServerResponse;
     }
 
 	public boolean clientInitiatedDisconnect() {

@@ -1240,7 +1240,7 @@ public class BattleControlComponent extends SceneComponent<ControlAreaScene> imp
             }
 
             draggingPosition = null;
-        } else {
+        } else if((!controlsLocked)) { //fix adding moves
         	isDragging = false; // bugfix locked controls
             if (disengageButtonIsDown && isClickingDisengage(x, y)) {
                 getContext().sendDisengageRequestPacket();

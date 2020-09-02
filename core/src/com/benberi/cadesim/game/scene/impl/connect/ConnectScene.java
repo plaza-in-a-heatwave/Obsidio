@@ -35,6 +35,7 @@ import com.benberi.cadesim.game.entity.vessel.Vessel;
 public class ConnectScene implements GameScene, InputProcessor {
 
     private GameContext context;
+    public InputMultiplexer inputMultiplexer;
 
     // the connect state
     private ConnectionSceneState state = ConnectionSceneState.DEFAULT;
@@ -75,6 +76,7 @@ public class ConnectScene implements GameScene, InputProcessor {
      */
     public Stage stage;
     public Stage stage_dialog;
+    public Stage stage_maps;
 
     private TextField name;
     private TextField address;
@@ -237,7 +239,6 @@ public class ConnectScene implements GameScene, InputProcessor {
         renderer = new ShapeRenderer();
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-
         setup();
         //resolution extras
         oldResolution = ResolutionTypeLabel.restypeToRes(Integer.parseInt(prop.getProperty("user.last_resolution")));
@@ -354,7 +355,7 @@ public class ConnectScene implements GameScene, InputProcessor {
         /*
          * Parse server code/port data for rooms
          */
-        try {
+        try {	
 			room_info = ConnectScene.getProperty("user.config", "user.room_locations");
 			//Split info for each room (Port:Server Code)
 			String[] rooms = room_info.split(",");
@@ -437,7 +438,6 @@ public class ConnectScene implements GameScene, InputProcessor {
 			    }
             }
 		};
-
 		if(resolution != null) {
 			String text = String.format("Selected screen resolution - %s", 
 					ResolutionTypeLabel.resToString(resolution));
@@ -851,7 +851,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 
     public void setup() {
         setState(ConnectionSceneState.DEFAULT);
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(inputMultiplexer);

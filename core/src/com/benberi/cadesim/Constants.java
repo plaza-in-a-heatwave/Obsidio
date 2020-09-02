@@ -5,7 +5,7 @@ public class Constants {
 	/**
 	 * Name of client
 	 */
-    public static final String name = "Cadesim client";
+    public static final String name = "CadeSim";
 
     /**
      * Name the server identifies itself with

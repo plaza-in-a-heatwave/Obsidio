@@ -24,7 +24,6 @@ public class LoginResponsePacket extends ClientPacketExecutor {
         int roundDuration = p.readShort();
         getContext().setTurnDuration(turnDuration);
         getContext().setRoundDuration(roundDuration);
-        getContext().setServerResponse(response);
         getContext().handleLoginResponse(response);
     }
 

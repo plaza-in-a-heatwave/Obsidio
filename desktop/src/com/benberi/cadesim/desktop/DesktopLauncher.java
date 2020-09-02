@@ -60,7 +60,7 @@ public class DesktopLauncher {
 		config.height = res[1];
 		//config.backgroundFPS = 20;    // bugfix high CPU
 		config.vSyncEnabled = false; // "
-		config.title = Constants.name + " (version " + Constants.VERSION + ")";
+		config.title = "CadeSim: v" + Constants.VERSION;
 		new LwjglApplication(cadesim, config);
 	}
 

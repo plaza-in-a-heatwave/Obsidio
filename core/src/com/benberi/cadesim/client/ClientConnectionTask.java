@@ -71,10 +71,14 @@ public class ClientConnectionTask extends Bootstrap implements Runnable {
 		            			context.dispose();
 		            			context.getConnectScene().closePopup();
 		            		});
-		            			if (!context.clientInitiatedDisconnect()) { // whodunnit?
-		            				context.handleServersideDisconnect();
-		            			}
-	            				context.setClientInitiatedDisconnect(false); // clear flag
+		            			try {
+			            			if (!context.clientInitiatedDisconnect()) { // whodunnit?
+			            				context.handleServersideDisconnect();
+			            			}
+		            			}catch(Exception e) {
+			            			System.out.println(e);
+			            		}
+		            			context.setClientInitiatedDisconnect(false); // clear flag
 		    		    }
 		        	});
 		        	callback.onSuccess(channel);

@@ -60,7 +60,7 @@ public class EntityManager {
         return vessels;
     }
 
-    public int countVsselsByPhase(MovePhase phase) {
+    public int countVesselsByPhase(MovePhase phase) {
         int count = 0;
         for (Vessel vessel : vessels) {
             if (vessel.isSinking()) {
@@ -127,6 +127,10 @@ public class EntityManager {
 
     public int countNonSinking() {
         return (int) vessels.stream().filter(v -> !v.isSinking()).count();
+    }
+    
+    public int countSinking() {
+        return (int) vessels.stream().filter(v -> v.isSinking()).count();
     }
 
     public void remove(Vessel vessel) {

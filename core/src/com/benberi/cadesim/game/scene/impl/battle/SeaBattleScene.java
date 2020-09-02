@@ -13,6 +13,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.entity.projectile.CannonBall;
 import com.benberi.cadesim.game.entity.vessel.*;
@@ -28,7 +33,13 @@ import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Whirlpool;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Wind;
 import com.benberi.cadesim.game.scene.impl.control.BattleControlComponent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class SeaBattleScene implements GameScene {
 
@@ -93,7 +104,7 @@ public class SeaBattleScene implements GameScene {
     private MovePhase currentPhase;
 
     private BlockadeMap blockadeMap;
-    private MenuComponent mainmenu;
+    public MenuComponent mainmenu;
 
     private int vesselsCountWithCurrentPhase = 0;
     private int vesselsCountNonSinking = 0;
@@ -112,7 +123,7 @@ public class SeaBattleScene implements GameScene {
     }
 
     private void recountVessels() {
-        vesselsCountWithCurrentPhase = context.getEntities().countVsselsByPhase(currentPhase);
+        vesselsCountWithCurrentPhase = context.getEntities().countVesselsByPhase(currentPhase);
         vesselsCountNonSinking = context.getEntities().countNonSinking();
     }
 
@@ -127,53 +138,52 @@ public class SeaBattleScene implements GameScene {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
         this.mainmenu = new MenuComponent(context, this);
         mainmenu.create();
+
     }
 
     @Override
     public void update(){    	
         // update the camera
         camera.update();
-
         if (currentSlot > -1) {
-           // if (context.getEntities().countVsselsByPhase(currentPhase) == context.getEntities().countNonSinking()) {
-            if (vesselsCountWithCurrentPhase == vesselsCountNonSinking) {
-                MovePhase phase = MovePhase.getNext(currentPhase);
-                if (phase == null) {
-                    for (Vessel vessel : context.getEntities().listVesselEntities()) {
-                        MoveAnimationTurn turn = vessel.getStructure().getTurn(currentSlot);
-                        if (turn.isSunk()) {
-                            vessel.setSinking(true);
-                        }
-                    }
-                    currentPhase = MovePhase.MOVE_TOKEN;
-                    currentSlot++;
+             if (vesselsCountWithCurrentPhase == vesselsCountNonSinking) {
+                 MovePhase phase = MovePhase.getNext(currentPhase);
+                 if (phase == null) {
+                     for (Vessel vessel : context.getEntities().listVesselEntities()) {
+                         MoveAnimationTurn turn = vessel.getStructure().getTurn(currentSlot);
+                         if (turn.isSunk()) {
+                             vessel.setSinking(true);
+                         }
+                     }
+                     currentPhase = MovePhase.MOVE_TOKEN;
+                     currentSlot++;
 
-                    for (Vessel v : context.getEntities().listVesselEntities()) {
-                        v.setMovePhase(null);
-                    }
+                     for (Vessel v : context.getEntities().listVesselEntities()) {
+                         v.setMovePhase(null);
+                     }
 
-                    if (currentSlot > 3) {
-                        currentSlot = -1;
-                        turnFinished = true;
-                    }
+                     if (currentSlot > 3) {
+                         currentSlot = -1;
+                         turnFinished = true;
+                     }
 
-                    recountVessels();
-                }
-                else {
-                    currentPhase = phase;
-                    recountVessels();
-                }
-            }
-        }
+                     recountVessels();
+                 }
+                 else {
+                     currentPhase = phase;
+                     recountVessels();
+                 }
+             }
+         }
 
         for (Vessel vessel : context.getEntities().listVesselEntities()) {
+        	MovePhase phase = MovePhase.getNext(vessel.getMovePhase());
             if (vessel.isSinking()) {
-                if (!vessel.isSinkingTexture()) {
-                    vessel.tickNonSinkingTexture();
-                }
-                else {
-                    vessel.tickSinkingTexture();
-                }
+            	if(!vessel.isSinkingTexture) {
+            		vessel.tickNonSinkingTexture();
+            	}else {
+            		vessel.tickSinkingTexture();
+            	}
                 continue;
             }
             if (vessel.getMoveDelay() != -1) {
@@ -196,8 +206,7 @@ public class SeaBattleScene implements GameScene {
                             turn.setAnimation(VesselMovementAnimation.NO_ANIMATION);
                         }
                         else {
-                            vessel.setMovePhase(MovePhase.getNext(vessel.getMovePhase()));
-                            recountVessels();
+                            vessel.setMovePhase(phase);
 
                         }
                     }
@@ -213,14 +222,12 @@ public class SeaBattleScene implements GameScene {
                             turn.setSubAnimation(VesselMovementAnimation.NO_ANIMATION);
                         }
                         else {
-                            vessel.setMovePhase(MovePhase.getNext(vessel.getMovePhase()));
-                            recountVessels();
+                            vessel.setMovePhase(phase);
                         }
                     }
                     else if (currentPhase == MovePhase.SHOOT && vessel.getMovePhase() == MovePhase.ACTION_MOVE  && vessel.getMoveDelay() == -1 && vessel.getCannonballs().size() == 0 && !context.getEntities().hasDelayedVessels()) {
                         if (turn.getLeftShoots() == 0 && turn.getRightShoots() == 0) {
-                            vessel.setMovePhase(MovePhase.getNext(vessel.getMovePhase()));
-                            recountVessels();
+                            vessel.setMovePhase(phase);
                         }
                         else {
                             if (turn.getLeftShoots() > 0) {
@@ -328,9 +335,8 @@ public class SeaBattleScene implements GameScene {
                         if (!move.isOneDimensionMove())
                             vessel.setRotationIndex(vessel.getRotationTargetIndex());
 
-                        vessel.setMovePhase(MovePhase.getNext(vessel.getMovePhase()));
-                        recountVessels();
-
+                        vessel.setMovePhase(phase);
+       
                         vessel.setMoveDelay();
                     }
                     else {
@@ -384,7 +390,6 @@ public class SeaBattleScene implements GameScene {
                 }
             }
         }
-
         if (turnFinished) {
             boolean waitForSink = false;
             for (Vessel v : context.getEntities().listVesselEntities()) {
@@ -395,16 +400,18 @@ public class SeaBattleScene implements GameScene {
             }
 
             if (!waitForSink) {
-                context.notifyFinishTurn();
-                turnFinished = false;
                 
                 BattleControlComponent b = context.getControlScene().getBnavComponent();
                 b.updateMoveHistoryAfterTurn();  // post-process tooltips
                 b.resetPlacedMovesAfterTurn();   // reset moves post-turn
                 b.setLockedDuringAnimate(false); // unlock control
+                
+                context.notifyFinishTurn();
+                turnFinished = false;
             }
         }
         information.update();
+        recountVessels();
     }
 
     @Override
@@ -644,8 +651,8 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public void dispose() {
+    	currentSlot = 0;
         currentPhase = MovePhase.MOVE_TOKEN;
-        currentSlot = -1;
         information.dispose();
         recountVessels();
         camera = null;
@@ -754,8 +761,8 @@ public class SeaBattleScene implements GameScene {
     }
 
     public void setTurnExecute() {
-        this.currentSlot = 0;
-        this.currentPhase = MovePhase.MOVE_TOKEN;
+        currentSlot = 0;
+        currentPhase = MovePhase.MOVE_TOKEN;
         for (Vessel vessel : context.getEntities().listVesselEntities()) {
             vessel.setMovePhase(null);
         }
@@ -767,6 +774,13 @@ public class SeaBattleScene implements GameScene {
 
     public BlockadeMap getMap() {
         return blockadeMap;
+    }
+    
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+    public SpriteBatch getBatch() {
+        return batch;
     }
 
     public void initializePlayerCamera(Vessel vessel) {
