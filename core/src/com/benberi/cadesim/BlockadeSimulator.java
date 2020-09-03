@@ -38,7 +38,6 @@ public class BlockadeSimulator extends ApplicationAdapter {
 			scene.update();
 			scene.render();
 		}
-
 	}
 	
 	@Override

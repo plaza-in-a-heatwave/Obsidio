@@ -438,6 +438,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 			    }
             }
 		};
+		
 		if(resolution != null) {
 			String text = String.format("Selected screen resolution - %s", 
 					ResolutionTypeLabel.resToString(resolution));

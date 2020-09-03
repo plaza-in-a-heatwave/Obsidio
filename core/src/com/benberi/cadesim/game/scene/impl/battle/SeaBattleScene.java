@@ -8,16 +8,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.entity.projectile.CannonBall;
 import com.benberi.cadesim.game.entity.vessel.*;
@@ -33,13 +28,7 @@ import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Whirlpool;
 import com.benberi.cadesim.game.scene.impl.battle.map.tile.impl.Wind;
 import com.benberi.cadesim.game.scene.impl.control.BattleControlComponent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public class SeaBattleScene implements GameScene {
 
@@ -109,7 +98,7 @@ public class SeaBattleScene implements GameScene {
     private int vesselsCountWithCurrentPhase = 0;
     private int vesselsCountNonSinking = 0;
     private boolean turnFinished;
-
+	
     public SeaBattleScene(GameContext context) {
         this.context = context;
         information = new GameInformation(context, this);
@@ -429,7 +418,6 @@ public class SeaBattleScene implements GameScene {
         renderEntities();
 
         batch.end();
-
         information.render();
         mainmenu.render();
     }
@@ -651,8 +639,8 @@ public class SeaBattleScene implements GameScene {
 
     @Override
     public void dispose() {
-    	currentSlot = 0;
         currentPhase = MovePhase.MOVE_TOKEN;
+        currentSlot = -1;
         information.dispose();
         recountVessels();
         camera = null;
@@ -776,13 +764,6 @@ public class SeaBattleScene implements GameScene {
         return blockadeMap;
     }
     
-    public OrthographicCamera getCamera() {
-        return camera;
-    }
-    public SpriteBatch getBatch() {
-        return batch;
-    }
-
     public void initializePlayerCamera(Vessel vessel) {
         cameraFollowsVessel = true; // force reset
         camera.translate(

@@ -14,11 +14,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.scene.SceneComponent;
+import com.benberi.cadesim.game.scene.impl.connect.ResolutionTypeLabel;
 import com.benberi.cadesim.game.scene.impl.control.ControlAreaScene;
 
 public class MenuComponent extends SceneComponent<SeaBattleScene> implements InputProcessor {
@@ -72,9 +74,14 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 	private boolean menuLobbyIsDown = false; // initial
 	private boolean menuMapsIsDown = false; // initial
     
-//	public Stage stage;
-//	private SelectBox<String> selectBox;
-//	private InputProcessor input;
+	public Stage stage;
+	private SelectBox<String> selectBox;
+	private InputProcessor input;
+	private Table table;
+	private Dialog dialog;
+	private OrthographicCamera orthoCamera;
+	public Skin skin;
+	private String[] mapStrings;
 	
     protected MenuComponent(GameContext context, SeaBattleScene owner) {
         super(context, owner);
@@ -83,7 +90,7 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 
     @Override
     public void create() {
-//    	stage = new Stage();
+    	stage = new Stage();
         batch = new SpriteBatch();
         menuUp = context.getManager().get(context.getAssetObject().menuUp);
         menuDown = context.getManager().get(context.getAssetObject().menuDown);
@@ -92,15 +99,8 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         mapUp = context.getManager().get(context.getAssetObject().mapsUp);
         mapDown = context.getManager().get(context.getAssetObject().mapsDown);
         font = context.getManager().get(context.getAssetObject().menuFont);
-//TO-DO
-//        
-//        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-//		selectBox=new SelectBox<String>(skin);
-//		selectBox.setSize(100, 100);
-//		selectBox.setPosition(10, 10);
-//		selectBox.setItems("XYZ","ABC","PQR","LMN");
-//		selectBox.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
-//		stage.addActor(selectBox);
+    
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
     }
     
     @Override
@@ -115,11 +115,13 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         	batch.draw((menuLobbyIsDown)?lobbyDown:lobbyUp, MENU_lobbyButtonX, MENU_lobbyButtonY);
         	font.draw(batch,"Lobby",MENU_lobbyButtonX+25,MENU_lobbyButtonY+21);
         	batch.draw((menuMapsIsDown)?mapDown:mapUp, MENU_mapsButtonX, MENU_mapsButtonY);
-        	font.draw(batch,"Select Map",MENU_mapsButtonX+17,MENU_mapsButtonY+21);
+        	font.draw(batch,"Change Map",MENU_mapsButtonX+15,MENU_mapsButtonY+21);
         }
         batch.end();
-//        stage.act();
-//        stage.draw();
+        
+        stage.act();
+        stage.getViewport().apply();
+        stage.draw();
     }
 
     @Override
@@ -137,7 +139,9 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
         	menuButtonIsDown = false;
         	menuLobbyIsDown = false;
         	menuMapsIsDown = false;
-//        	Gdx.input.setInputProcessor(input);
+        	if(dialog != null) {
+        		dialog.setVisible(true);
+        	}
         	return false;
         }
     	else if(menuButtonIsDown && isClickingLobbyButton(x,y)) {
@@ -147,14 +151,45 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     	}
     	else if(menuButtonIsDown && isClickingMapsButton(x,y)) {
     		menuMapsIsDown = true;
-//    		Gdx.input.setInputProcessor(stage);
-    		//TO-DO: make window that shows a list of the maps for user to select.
-//    		for(String map : context.getMaps()) {
-//    			System.out.println(map);
-//    		}
-    		//work-around until server sends detail to client
-    		context.getControlScene().getBnavComponent().getChatBar().getTextfield().setText("/show maps");
-    		context.getControlScene().getBnavComponent().getChatBar().sendChat();
+            mapStrings = new String[context.getMaps().size()]; 
+        	for(int j =0;j<context.getMaps().size();j++){
+        		mapStrings[j] = context.getMaps().get(j);
+        	}
+            dialog = new Dialog("Map Selection", skin, "dialog") {
+    			protected void result(Object object)
+                {
+    				//if 'No' is pushed
+    				if (object.equals(2L))
+    			    {
+    					dialog.setVisible(false);
+    					Gdx.input.setInputProcessor(input);
+    			    } else if(object.equals(1L)){
+    			    	dialog.setVisible(false);
+    			    	Gdx.input.setInputProcessor(input);
+    			    	String mapCommand = String.format("/propose changemap %s.txt",selectBox.getSelected());
+    			    	context.getControlScene().getBnavComponent().getChatBar().getTextfield().setText(
+    			    			mapCommand);
+    		    		context.getControlScene().getBnavComponent().getChatBar().sendChat();
+    			    }
+                }
+    		};
+    		
+    		dialog.text("Select new map:");
+    		dialog.setMovable(true);
+    		stage.addActor(dialog);
+    		dialog.show(stage);
+    		dialog.setSize(400, 200);
+    		selectBox=new SelectBox<String>(skin);
+    		selectBox.setItems(mapStrings);
+    		selectBox.setMaxListCount(6);
+    		dialog.getContentTable().add().row();
+    		dialog.getContentTable().add(selectBox).row();
+    		dialog.button("Ok", 1L).pad(20, 20, 20, 20);
+    		dialog.button("Cancel", 2L).pad(20, 20, 20, 20);
+    		dialog.setPosition(Gdx.graphics.getWidth()/2 - 200, Gdx.graphics.getHeight()/2);
+    		dialog.setVisible(true);
+    		input = Gdx.input.getInputProcessor();
+    		Gdx.input.setInputProcessor(stage);
     		return true;
     	}
         else {

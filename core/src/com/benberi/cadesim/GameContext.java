@@ -12,9 +12,6 @@ import com.benberi.cadesim.client.packet.in.LoginResponsePacket;
 import com.benberi.cadesim.client.packet.out.*;
 import com.benberi.cadesim.game.cade.Team;
 import com.benberi.cadesim.game.entity.EntityManager;
-import com.benberi.cadesim.game.entity.vessel.Vessel;
-import com.benberi.cadesim.game.entity.vessel.move.MoveAnimationTurn;
-import com.benberi.cadesim.game.entity.vessel.move.MovePhase;
 import com.benberi.cadesim.game.entity.vessel.move.MoveType;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectScene;
 import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
@@ -33,9 +30,7 @@ import io.netty.channel.ChannelPipeline;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -114,7 +109,7 @@ public class GameContext {
      * List of maps
      */
     private List<String> maps = new ArrayList<String>();
-
+    public String[] mapStrings;
     /**
      * If connected to server
      */
@@ -155,7 +150,6 @@ public class GameContext {
      * Create!
      */
     public void create() {
-
         assetManager = new SceneAssetManager();
         assetManager.loadConnectSceneTextures();
         assetManager.loadAllShipTextures();
@@ -170,7 +164,6 @@ public class GameContext {
 
         this.connectScene = new ConnectScene(this);
         connectScene.create();
-
     }
 
     public List<GameScene> getScenes() {
@@ -179,6 +172,13 @@ public class GameContext {
     
     public List<String> getMaps() {
         return this.maps;
+    }
+    
+    public void mapsToStringArray() {
+    	mapStrings = new String[getMaps().size()];              
+    	for(int j =0;j<getMaps().size();j++){
+    		mapStrings[j] = getMaps().get(j);
+    	}
     }
     
     public EntityManager getEntities() {
@@ -234,8 +234,7 @@ public class GameContext {
 		}else {
 	        scenes.set(0, controlArea);
 	        scenes.set(1, seaBattleScene);
-		}
-		
+		}	
     }
 
     public SeaBattleScene getBattleScene() {
@@ -349,7 +348,6 @@ public class GameContext {
                 myVesselType = ship;
                 myTeam = Team.forId(team);
                 Gdx.graphics.setTitle("CadeSim: " + myVessel + " (" + myTeam + ")");
-               
             }
 
             @Override
