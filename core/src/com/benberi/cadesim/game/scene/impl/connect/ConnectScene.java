@@ -214,6 +214,7 @@ public class ConnectScene implements GameScene, InputProcessor {
             	//only run if there is an update listed on server
             	if(!Constants.SERVER_VERSION_BOOL) {
 	                try {
+	                	System.out.println("Performing update, deleting files...");
 	                	//delete required files in order to update client
 	                	File digest1 = new File("digest.txt");
 	                	File digest2 = new File("digest2.txt");
@@ -228,6 +229,7 @@ public class ConnectScene implements GameScene, InputProcessor {
 	                }
 	            else {
 	                try {
+	                	System.out.println("Performing login");
 	                    performLogin();
 	                    buttonConn.toggle();
 	                } catch (UnknownHostException e) {

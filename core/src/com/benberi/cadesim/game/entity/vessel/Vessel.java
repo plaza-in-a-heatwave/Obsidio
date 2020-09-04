@@ -120,7 +120,7 @@ public abstract class Vessel extends Entity {
     private List<CannonBall> cannonballs = new ArrayList<CannonBall>();
     private int moveDelay;
     private boolean bumpReached;
-    private boolean sinkingAnimationFinished = true;
+    public boolean sinkingAnimationFinished = true;
 
     public Vessel(GameContext context, String name, int x, int y) {
         super(context);

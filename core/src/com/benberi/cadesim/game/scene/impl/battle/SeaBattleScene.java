@@ -168,7 +168,7 @@ public class SeaBattleScene implements GameScene {
         for (Vessel vessel : context.getEntities().listVesselEntities()) {
         	MovePhase phase = MovePhase.getNext(vessel.getMovePhase());
             if (vessel.isSinking()) {
-            	if(!vessel.isSinkingTexture) {
+            	if(!vessel.isSinkingTexture()) {
             		vessel.tickNonSinkingTexture();
             	}else {
             		vessel.tickSinkingTexture();

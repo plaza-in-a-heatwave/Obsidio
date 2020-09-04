@@ -174,13 +174,6 @@ public class GameContext {
         return this.maps;
     }
     
-    public void mapsToStringArray() {
-    	mapStrings = new String[getMaps().size()];              
-    	for(int j =0;j<getMaps().size();j++){
-    		mapStrings[j] = getMaps().get(j);
-    	}
-    }
-    
     public EntityManager getEntities() {
         return this.entities;
     }
@@ -234,7 +227,8 @@ public class GameContext {
 		}else {
 	        scenes.set(0, controlArea);
 	        scenes.set(1, seaBattleScene);
-		}	
+		}
+		Gdx.graphics.setTitle("CadeSim: " + myVessel + " (" + myTeam + ")");
     }
 
     public SeaBattleScene getBattleScene() {
@@ -347,7 +341,6 @@ public class GameContext {
                 myVessel = displayName;
                 myVesselType = ship;
                 myTeam = Team.forId(team);
-                Gdx.graphics.setTitle("CadeSim: " + myVessel + " (" + myTeam + ")");
             }
 
             @Override

@@ -38,6 +38,7 @@ public class DesktopLauncher {
 							new InputStreamReader(cadesimServer.openStream()));
 					String serverVersion = reader.readLine().replaceAll("\\s+","");
 					boolean updateBool = serverVersion.equals(txtVersion);
+					System.out.println("Finished checking server version.");
 					if(!updateBool) {
 						Constants.SERVER_VERSION_BOOL = false;
 					}else {
