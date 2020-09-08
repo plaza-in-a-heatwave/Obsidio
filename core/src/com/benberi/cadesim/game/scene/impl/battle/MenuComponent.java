@@ -197,7 +197,6 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     		selectBox.addListener(new ChangeListener(){
                 @Override
                 public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                	String mapString = String.format("maps/%s.png", selectBox.getSelected());
                 	try {
 	                	Pixmap pixmap = context.pixmapArray[selectBox.getSelectedIndex()];
 	                	if(pixmap != null) {
@@ -207,7 +206,8 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 	                	}else {
 	                		System.out.println("Not available");
 	                		dialog.setSize(400, 250);
-	                		Label notAvailable = new Label("Map not available.",skin);
+	                		dialog.setPosition(Gdx.graphics.getWidth()/2-200, Gdx.graphics.getHeight()/2 - 100);
+	                		Label notAvailable = new Label("Map preview not available.",skin);
 	                		cell.setActor(notAvailable);
 	                	}
                 	}catch(Exception e) {
