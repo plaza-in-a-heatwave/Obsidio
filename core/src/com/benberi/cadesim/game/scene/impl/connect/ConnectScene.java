@@ -135,6 +135,10 @@ public class ConnectScene implements GameScene, InputProcessor {
     
     @Override
     public void create() {
+    	port_numbers.clear();
+    	room_names.clear();
+    	server_codes.clear();
+    	greetings.clear();
         Properties prop = new Properties();
         String fileName = "user.config";
         InputStream is = null;

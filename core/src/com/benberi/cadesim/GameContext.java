@@ -110,7 +110,6 @@ public class GameContext {
      * List of maps
      */
     private List<String> maps = new ArrayList<String>();
-    public String[] mapStrings;
     public Pixmap[] pixmapArray;
     /**
      * If connected to server
@@ -476,6 +475,8 @@ public class GameContext {
 		connectScene.setPopup("Returning to Lobby...", false);
 		Gdx.graphics.setTitle("CadeSim: v" + Constants.VERSION);
 		System.out.println("Client disconnected.");
+	    maps.clear();
+	    pixmapArray = null;
     }
 
     /*
