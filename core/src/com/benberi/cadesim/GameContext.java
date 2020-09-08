@@ -3,6 +3,7 @@ package com.benberi.cadesim;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.benberi.cadesim.client.ClientConnectionCallback;
 import com.benberi.cadesim.client.ClientConnectionTask;
 import com.benberi.cadesim.client.codec.util.Packet;
@@ -110,6 +111,7 @@ public class GameContext {
      */
     private List<String> maps = new ArrayList<String>();
     public String[] mapStrings;
+    public Pixmap[] pixmapArray;
     /**
      * If connected to server
      */

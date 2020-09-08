@@ -9,11 +9,17 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Gdx;
@@ -82,6 +88,7 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 	private OrthographicCamera orthoCamera;
 	public Skin skin;
 	private String[] mapStrings;
+	Texture texture;
 	
     protected MenuComponent(GameContext context, SeaBattleScene owner) {
         super(context, owner);
@@ -173,20 +180,45 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     			    }
                 }
     		};
-    		
-    		dialog.text("Select new map:");
     		dialog.setMovable(true);
     		stage.addActor(dialog);
     		dialog.show(stage);
-    		dialog.setSize(400, 200);
+    		dialog.setSize(650, 450);
+    		dialog.setResizable(true);
     		selectBox=new SelectBox<String>(skin);
     		selectBox.setItems(mapStrings);
     		selectBox.setMaxListCount(6);
-    		dialog.getContentTable().add().row();
-    		dialog.getContentTable().add(selectBox).row();
-    		dialog.button("Ok", 1L).pad(20, 20, 20, 20);
+    		Table table = new Table();
+    		table.add().row();
+    		Cell<?> cell = table.add();
+    		table.add().row();
+    		table.add(selectBox);
+    		dialog.getContentTable().add(table).row();
+    		selectBox.addListener(new ChangeListener(){
+                @Override
+                public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                	String mapString = String.format("maps/%s.png", selectBox.getSelected());
+                	try {
+	                	Pixmap pixmap = context.pixmapArray[selectBox.getSelectedIndex()];
+	                	if(pixmap != null) {
+		                	Texture textureMap = new Texture(pixmap);
+		                	Image map = new Image(textureMap);
+		                	cell.setActor(map);
+	                	}else {
+	                		System.out.println("Not available");
+	                		dialog.setSize(400, 250);
+	                		Label notAvailable = new Label("Map not available.",skin);
+	                		cell.setActor(notAvailable);
+	                	}
+                	}catch(Exception e) {
+                		System.out.println("File does not exist");
+                		
+                	}
+                }
+            });
+    		dialog.button("Change", 1L).pad(20, 20, 20, 20);
     		dialog.button("Cancel", 2L).pad(20, 20, 20, 20);
-    		dialog.setPosition(Gdx.graphics.getWidth()/2 - 200, Gdx.graphics.getHeight()/2);
+    		dialog.setPosition(Gdx.graphics.getWidth()/2 - 325, Gdx.graphics.getHeight()/2 - 200);
     		dialog.setVisible(true);
     		input = Gdx.input.getInputProcessor();
     		Gdx.input.setInputProcessor(stage);
