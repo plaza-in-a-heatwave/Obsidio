@@ -20,7 +20,7 @@ public class TurnAnimationPacket extends ClientPacketExecutor {
 
     @Override
     public void execute(Packet p) {
-        int numberOfShips = p.readByte();
+    	int numberOfShips = p.readByte();
 
         for (int i = 0; i < numberOfShips; i++) {
             String name = p.readByteString();

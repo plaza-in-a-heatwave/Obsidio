@@ -5,8 +5,6 @@ import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.client.codec.ClientChannelHandler;
 import com.benberi.cadesim.client.codec.util.PacketDecoder;
 import com.benberi.cadesim.client.codec.util.PacketEncoder;
-import com.benberi.cadesim.game.scene.impl.connect.ConnectionSceneState;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

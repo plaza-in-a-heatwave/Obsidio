@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.benberi.cadesim.GameContext;
 import com.benberi.cadesim.game.entity.projectile.CannonBall;
 import com.benberi.cadesim.game.entity.vessel.*;
@@ -127,7 +126,6 @@ public class SeaBattleScene implements GameScene {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - 200);
         this.mainmenu = new MenuComponent(context, this);
         mainmenu.create();
-
     }
 
     @Override
@@ -196,7 +194,7 @@ public class SeaBattleScene implements GameScene {
                         }
                         else {
                             vessel.setMovePhase(phase);
-
+                            recountVessels();
                         }
                     }
                     else if (currentPhase == MovePhase.ACTION_MOVE && vessel.getMovePhase() == MovePhase.MOVE_TOKEN && vessel.getMoveDelay() == -1 && !context.getEntities().hasDelayedVessels()) {
@@ -212,11 +210,13 @@ public class SeaBattleScene implements GameScene {
                         }
                         else {
                             vessel.setMovePhase(phase);
+                            recountVessels();
                         }
                     }
                     else if (currentPhase == MovePhase.SHOOT && vessel.getMovePhase() == MovePhase.ACTION_MOVE  && vessel.getMoveDelay() == -1 && vessel.getCannonballs().size() == 0 && !context.getEntities().hasDelayedVessels()) {
                         if (turn.getLeftShoots() == 0 && turn.getRightShoots() == 0) {
                             vessel.setMovePhase(phase);
+                            recountVessels();
                         }
                         else {
                             if (turn.getLeftShoots() > 0) {
@@ -324,8 +324,8 @@ public class SeaBattleScene implements GameScene {
                         if (!move.isOneDimensionMove())
                             vessel.setRotationIndex(vessel.getRotationTargetIndex());
 
-                        vessel.setMovePhase(phase);
-       
+                        vessel.setMovePhase(MovePhase.getNext(vessel.getMovePhase()));
+                        recountVessels();
                         vessel.setMoveDelay();
                     }
                     else {
@@ -389,18 +389,17 @@ public class SeaBattleScene implements GameScene {
             }
 
             if (!waitForSink) {
+                context.notifyFinishTurn();
+                turnFinished = false;
                 
                 BattleControlComponent b = context.getControlScene().getBnavComponent();
                 b.updateMoveHistoryAfterTurn();  // post-process tooltips
                 b.resetPlacedMovesAfterTurn();   // reset moves post-turn
                 b.setLockedDuringAnimate(false); // unlock control
                 
-                context.notifyFinishTurn();
-                turnFinished = false;
             }
         }
         information.update();
-        recountVessels();
     }
 
     @Override
