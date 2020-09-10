@@ -132,8 +132,13 @@ public class SeaBattleScene implements GameScene {
     public void update(){    	
         // update the camera
         camera.update();
-        if (currentSlot > -1) {
-             if (vesselsCountWithCurrentPhase == vesselsCountNonSinking) {
+        if (currentSlot > -1) { 
+        	if (vesselsCountWithCurrentPhase != vesselsCountNonSinking) { //bug fix-new players joining
+        		MovePhase phase = MovePhase.getNext(currentPhase);
+        		currentPhase = phase;
+                recountVessels();
+        	}
+        	if (vesselsCountWithCurrentPhase == vesselsCountNonSinking) {
                  MovePhase phase = MovePhase.getNext(currentPhase);
                  if (phase == null) {
                      for (Vessel vessel : context.getEntities().listVesselEntities()) {
@@ -144,7 +149,6 @@ public class SeaBattleScene implements GameScene {
                      }
                      currentPhase = MovePhase.MOVE_TOKEN;
                      currentSlot++;
-
                      for (Vessel v : context.getEntities().listVesselEntities()) {
                          v.setMovePhase(null);
                      }
