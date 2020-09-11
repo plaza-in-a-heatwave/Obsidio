@@ -13,13 +13,14 @@ public class SendMapPacket extends ClientPacketExecutor {
     @Override
     public void execute(Packet p) {
         int[][] map = new int[20][36];
+        getContext().currentMapName  = p.readByteString().replace(".txt", ""); 
         while(p.getBuffer().readableBytes() >= 3) {
             int tile = p.readByte();
             int x = p.readByte();
             int y = p.readByte();
             map[x][y] = tile;
         }
-
+        
         getContext().getBattleScene().createMap(map);
         getContext().setReady(true);
     }

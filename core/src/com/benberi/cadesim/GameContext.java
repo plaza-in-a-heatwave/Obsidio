@@ -111,6 +111,7 @@ public class GameContext {
      */
     private List<String> maps = new ArrayList<String>();
     public Pixmap[] pixmapArray;
+    public String currentMapName;
     /**
      * If connected to server
      */

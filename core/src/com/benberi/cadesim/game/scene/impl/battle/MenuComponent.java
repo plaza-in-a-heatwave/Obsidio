@@ -194,6 +194,19 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
     		table.add().row();
     		table.add(selectBox);
     		dialog.getContentTable().add(table).row();
+    		selectBox.setSelected(context.currentMapName);
+        	Pixmap pixmap = context.pixmapArray[selectBox.getSelectedIndex()];
+        	if(pixmap != null) {
+            	Texture textureMap = new Texture(pixmap);
+            	Image map = new Image(textureMap);
+            	cell.setActor(map);
+        	}else {
+        		System.out.println("Not available");
+        		dialog.setSize(400, 250);
+        		dialog.setPosition(Gdx.graphics.getWidth()/2-100, Gdx.graphics.getHeight()/2 - 50);
+        		Label notAvailable = new Label("Map preview not available.",skin);
+        		cell.setActor(notAvailable);
+        	}
     		selectBox.addListener(new ChangeListener(){
                 @Override
                 public void changed(ChangeListener.ChangeEvent event, Actor actor) {

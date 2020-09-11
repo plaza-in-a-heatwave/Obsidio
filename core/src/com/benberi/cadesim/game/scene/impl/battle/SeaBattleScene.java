@@ -135,10 +135,15 @@ public class SeaBattleScene implements GameScene {
         if (currentSlot > -1) { 
         	if (vesselsCountWithCurrentPhase != vesselsCountNonSinking) { //bug fix-new players joining
         		MovePhase phase = MovePhase.getNext(currentPhase);
-        		currentPhase = phase;
-                recountVessels();
+        		if (phase == null) {
+                    for (Vessel v : context.getEntities().listVesselEntities()) {
+                        v.setMovePhase(null);
+                    }
+	        		currentPhase = phase;
+	                recountVessels();
+        		}
         	}
-        	if (vesselsCountWithCurrentPhase == vesselsCountNonSinking) {
+        	else if (vesselsCountWithCurrentPhase == vesselsCountNonSinking) {
                  MovePhase phase = MovePhase.getNext(currentPhase);
                  if (phase == null) {
                      for (Vessel vessel : context.getEntities().listVesselEntities()) {
