@@ -642,7 +642,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                     text += "Connected - creating profile";
                 }
                 else if (state == ConnectionSceneState.CREATING_MAP) {
-                    text += "Connected - waiting for board map update";
+                    text += "Connected - loading board map";
                 }
 
                 GlyphLayout layout = new GlyphLayout(font, text);
@@ -656,7 +656,7 @@ public class ConnectScene implements GameScene, InputProcessor {
                 connectAnimationState = 0;
             }
             // if screen hangs on connecting for long period of time.
-            if(System.currentTimeMillis() - loginAttemptTimestampMillis >= 5000) {
+            if(System.currentTimeMillis() - loginAttemptTimestampMillis >= 8000) {
             	System.out.println("Unable to login; return to lobby.");
             	setState(ConnectionSceneState.DEFAULT);
             }

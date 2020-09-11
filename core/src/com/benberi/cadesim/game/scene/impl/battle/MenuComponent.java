@@ -200,10 +200,12 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
             	Texture textureMap = new Texture(pixmap);
             	Image map = new Image(textureMap);
             	cell.setActor(map);
+            	dialog.setSize(650, 450);
+            	dialog.setPosition(Gdx.graphics.getWidth()/2 - 325, Gdx.graphics.getHeight()/2 - 200);
         	}else {
         		System.out.println("Not available");
         		dialog.setSize(400, 250);
-        		dialog.setPosition(Gdx.graphics.getWidth()/2-100, Gdx.graphics.getHeight()/2 - 50);
+        		dialog.setPosition(Gdx.graphics.getWidth()/2-200, Gdx.graphics.getHeight()/2 - 100);
         		Label notAvailable = new Label("Map preview not available.",skin);
         		cell.setActor(notAvailable);
         	}
@@ -216,6 +218,8 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
 		                	Texture textureMap = new Texture(pixmap);
 		                	Image map = new Image(textureMap);
 		                	cell.setActor(map);
+		                	dialog.setSize(650, 450);
+		                	dialog.setPosition(Gdx.graphics.getWidth()/2 - 325, Gdx.graphics.getHeight()/2 - 200);
 	                	}else {
 	                		System.out.println("Not available");
 	                		dialog.setSize(400, 250);
@@ -231,7 +235,6 @@ public class MenuComponent extends SceneComponent<SeaBattleScene> implements Inp
             });
     		dialog.button("Change", 1L).pad(20, 20, 20, 20);
     		dialog.button("Cancel", 2L).pad(20, 20, 20, 20);
-    		dialog.setPosition(Gdx.graphics.getWidth()/2 - 325, Gdx.graphics.getHeight()/2 - 200);
     		dialog.setVisible(true);
     		input = Gdx.input.getInputProcessor();
     		Gdx.input.setInputProcessor(stage);
